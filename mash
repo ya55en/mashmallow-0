@@ -1,0 +1,20 @@
+#! /bin/sh
+
+. ./lib/libma.sh
+
+# Params:
+RECIPES_DIR=recipes
+
+# Dev variables
+DEBUG=true  # use DEBUG=false to suppress debuggin
+
+# Cmd argyuments
+dir="${1}"
+script="${2}.sh"
+
+script_path="./${RECIPES_DIR}/${dir}/${script}"
+log debug "script_path=[${script_path}]"
+
+[ -e "${script_path}" ] || die 2 "Unknown verb=[${dir}] and/or script [${script}]"
+
+. $script_path

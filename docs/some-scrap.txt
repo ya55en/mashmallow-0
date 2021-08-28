@@ -1,0 +1,50 @@
+
+Processing triggers for linux-image-5.11.0-27-generic (5.11.0-27.29~20.04.1) ...
+/etc/kernel/postinst.d/initramfs-tools:
+update-initramfs: Generating /boot/initrd.img-5.11.0-27-generic
+W: Possible missing firmware /lib/firmware/i915/skl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/bxt_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/kbl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/glk_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/kbl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/kbl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/cml_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/icl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/ehl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/ehl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/tgl_huc_7.5.0.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/tgl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/tgl_huc_7.5.0.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/tgl_guc_49.0.1.bin for module i915
+W: Possible missing firmware /lib/firmware/i915/dg1_dmc_ver2_02.bin for module i915
+/etc/kernel/postinst.d/zz-update-grub:
+Sourcing file `/etc/default/grub'
+Sourcing file `/etc/default/grub.d/init-select.cfg'
+Sourcing file `/etc/default/grub.d/oem-flavour.cfg'
+Generating grub configuration file ...
+Found theme: /usr/share/grub/themes/zorin/theme.txt
+Found linux image: /boot/vmlinuz-5.11.0-27-generic
+Found initrd image: /boot/initrd.img-5.11.0-27-generic
+Found linux image: /boot/vmlinuz-5.10.0-1044-oem
+Found initrd image: /boot/initrd.img-5.10.0-1044-oem
+Found Windows Boot Manager on /dev/nvme1n1p2@/efi/Microsoft/Boot/bootmgfw.efi
+Found Linux Mint 20.2 Uma (20.2) on /dev/nvme1n1p5
+Adding boot menu entry for UEFI Firmware Settings
+done
+
+
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/skl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/bxt_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/kbl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/glk_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/kbl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/kbl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/cml_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/icl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/ehl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/ehl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/tgl_huc_7.5.0.bin 
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/tgl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/tgl_huc_7.5.0.bin 
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/tgl_guc_49.0.1.bin
+wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/i915/dg1_dmc_ver2_02.bin
