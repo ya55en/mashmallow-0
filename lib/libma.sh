@@ -1,3 +1,4 @@
+#! /bin/sh
 # libmash - Library functions to use from mash scripts (Bourne Shell)
 
 _ARCH=x86_64

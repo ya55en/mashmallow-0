@@ -1,6 +1,8 @@
 #! /bin/sh
 
-. ./lib/libma.sh
+alias include='.'
+
+include ./lib/libma.sh
 
 # Params:
 RECIPES_DIR=recipes
@@ -17,4 +19,4 @@ log debug "script_path=[${script_path}]"
 
 [ -e "${script_path}" ] || die 2 "Unknown verb=[${dir}] and/or script [${script}]"
 
-. $script_path
+include $script_path
