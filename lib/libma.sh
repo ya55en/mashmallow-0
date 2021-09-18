@@ -15,9 +15,10 @@ die() {
 }
 
 log() {
+    #: Log the message (conditionally if a debug message)
+
     level=$1
     msg="$2"
-    #: Log the message (conditionally if a debug message)
     case $level in
         err*)
             echo "ERROR: $msg"
@@ -63,5 +64,6 @@ into_dir_do() {
         log error "into_dir_do(): eval FAILED: script=[$script]"
         return $?
     }
+    log debug "into_dir_do(): eval rc=$?"
     cd "$cwd" || return 0
 }

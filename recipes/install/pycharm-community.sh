@@ -56,11 +56,11 @@ create_symlink() {
     #: to the pycharm installaton directory.
 
     # cwd="$(pwd)" && cd "${_LOCAL}/opt" && ln -fs "$(basename "${pycharm_dir}")" pycharm-${flavor} && cd "$cwd"
-    # shellcheck disable=SC2016  # Need to pass this verbatim
+    # shellcheck disable=SC2016  # Need to pass this verbatim to into_dir_do()
     into_dir_do "${_LOCAL}/opt" 'ln -fs "$(basename "${pycharm_dir}")" pycharm-${flavor}'
 
     linked_dir="$_LOCAL/opt/pycharm-${flavor}"
-    [ -e "${linked_dir}" ] || die 2 "Linked directory NOT found: ${linked_dir}"
+    [ -L "${linked_dir}" ] || die 2 "Linked directory NOT found: ${linked_dir}"
     printf "%s" "$linked_dir"
 }
 
