@@ -5,6 +5,7 @@
 
 # Assumming lib/libma.sh has been sourced already.
 
+# shellcheck disable=SC2034  # Used in sourced logging code
 DEBUG=true # use DEBUG=false to suppress debugging
 
 version='2021.2.2'
@@ -54,7 +55,10 @@ create_symlink() {
     #: Create a "pycharm-${flavor}" symlink in ~/.local/opt/ pointing
     #: to the pycharm installaton directory.
 
-    cwd="$(pwd)" && cd "${_LOCAL}/opt" && ln -fs "$(basename "${pycharm_dir}")" pycharm-${flavor} && cd "$cwd"
+    # cwd="$(pwd)" && cd "${_LOCAL}/opt" && ln -fs "$(basename "${pycharm_dir}")" pycharm-${flavor} && cd "$cwd"
+    # shellcheck disable=SC2016  # Need to pass this verbatim
+    into_dir_do "${_LOCAL}/opt" 'ln -fs "$(basename "${pycharm_dir}")" pycharm-${flavor}'
+
     linked_dir="$_LOCAL/opt/pycharm-${flavor}"
     [ -e "${linked_dir}" ] || die 2 "Linked directory NOT found: ${linked_dir}"
     printf "%s" "$linked_dir"
@@ -82,8 +86,9 @@ instruct_user() {
     cat << EOS
 
 In order to have all your terminals know about the add-to-path change,
-you need to EITHER source the add-top-path script (see below) in all
-open terminals, OR log out, then log back in.
+you need to:
+  - EITHER source the add-top-path script (see below) in all open terminals,
+  - OR log out, then log back in.
 
 To source the add-to-path script, do (note the dot in front):
 
@@ -97,7 +102,7 @@ To source the add-to-path script, do (note the dot in front):
 EOS
 }
 
-main() {
+doit() {
     log debug "Installing pycharm version=[$version], flavor=${flavor}"
     download_tarball skip-if-exists
     check_hashsum
@@ -109,4 +114,24 @@ main() {
     log info 'SUCCESS.'
 }
 
-main
+undo() {
+    log warn "UNinstalling pycharm version=[$version], flavor=${flavor}"
+    rm "$HOME/.bashrc.d/42-pycharm-${flavor}.sh" ||
+        log warn "Could NOT remove add-to-path file $HOME/.bashrc.d/42-pycharm-${flavor}.sh!"
+    rm -f "$_LOCAL/opt/pycharm-${flavor}" ||
+        log warn "Could NOT remove symlink $_LOCAL/opt/pycharm-${flavor}!"
+    rm -r "$pycharm_dir" ||
+        log warn "Could NOT remove directory $pycharm_dir!"
+    # TODO: remove the .desktop file
+    cat << EOS
+
+In order to have all your terminals know about the add-to-path change,
+you need to EITHER source the add-top-path script (see below) in all
+open terminals, OR log out, then log back in.
+
+UNinstallation ended.
+
+EOS
+}
+
+doit
