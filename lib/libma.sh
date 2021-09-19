@@ -21,16 +21,16 @@ log() {
     msg="$2"
     case $level in
         err*)
-            echo "ERROR: $msg"
+            echo "ERROR: $msg" >> /dev/stderr
             ;;
         warn*)
-            echo "WARN: $msg"
+            echo "WARN: $msg" >> /dev/stderr
             ;;
         info*)
             echo "I: $msg"
             ;;
         debug*)
-            $DEBUG && echo "DEBUG: $msg"
+            [ $DEBUG != false ] && echo "DEBUG: $msg" >> /dev/stderr
             ;;
         testfail)
             echo "TEST-FAIL: $msg"

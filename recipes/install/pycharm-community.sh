@@ -116,17 +116,23 @@ doit() {
 
 undo() {
     log warn "UNinstalling pycharm version=[$version], flavor=${flavor}"
+
+    log info "Removing $HOME/.bashrc.d/42-pycharm-${flavor}.sh..."
     rm "$HOME/.bashrc.d/42-pycharm-${flavor}.sh" ||
         log warn "Could NOT remove add-to-path file $HOME/.bashrc.d/42-pycharm-${flavor}.sh!"
+
+    log info "Removing $_LOCAL/opt/pycharm-${flavor} symlink..."
     rm -f "$_LOCAL/opt/pycharm-${flavor}" ||
         log warn "Could NOT remove symlink $_LOCAL/opt/pycharm-${flavor}!"
+
+    log info "Removing $pycharm_dir..."
     rm -r "$pycharm_dir" ||
         log warn "Could NOT remove directory $pycharm_dir!"
     # TODO: remove the .desktop file
     cat << EOS
 
 In order to have all your terminals know about the add-to-path change,
-you need to EITHER source the add-top-path script (see below) in all
+you need to EITHER source the add-to-path script (see below) in all
 open terminals, OR log out, then log back in.
 
 UNinstallation ended.
@@ -135,3 +141,4 @@ EOS
 }
 
 doit
+# undo
