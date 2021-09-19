@@ -2,6 +2,12 @@
 #: See https://makefiletutorial.com/
 
 
+#: Show commands for deleting current branch
+del-branch:
+	@echo "git checkout main && git branch -d $$(git branch --no-color --show-current)"
+	@echo git push origin --delete -d $$(git branch --no-color --show-current)
+
+
 #: Set environment variables so that this project's mash is active
 setenv:
 	@MASH_HOME="$$(pwd)/src" ; export MASH_HOME
@@ -14,4 +20,4 @@ setenv:
 # 	rm -f hey one two
 
 
-.PHONY:  setenv
+.PHONY:  setenv del-branch
