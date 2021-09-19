@@ -1,22 +1,51 @@
 #! /bin/sh
 
-alias include='.'
-
-include ./lib/libma.sh
+# [ -n "$MASH_HOME" ] || die 1 "mash NOT configured - MASH_HOME not set (E1211)"
+_MASH_HOME="${MASH_HOME:-$(dirname "$0")}"
 
 # Params:
-RECIPES_DIR=recipes
 
 # Dev variables
-DEBUG=true  # use DEBUG=false to suppress debuggin
+DEBUG=true # use DEBUG=false to suppress debuggin
 
-# Cmd argyuments
-dir="${1}"
-script="${2}.sh"
+# TODO: Decide if we need include* and move (or remove) these.
 
-script_path="./${RECIPES_DIR}/${dir}/${script}"
-log debug "script_path=[${script_path}]"
+# alias include='. $MASH_HOME/'
+# alias include_recipe='. $MASH_HOME/share/recipes'
 
-[ -e "${script_path}" ] || die 2 "Unknown verb=[${dir}] and/or script [${script}]"
+# include() {
+#     lib_script="$1"
+#     # shellcheck disable=SC1090
+#     . "${_LIB_DIR}/${lib_script}"
+# }
 
-include $script_path
+# include_recipe() {
+#     verb_n_script="$1"
+#     # shellcheck disable=SC1090
+#     . "${_RECIPES_DIR}/${verb_n_script}"
+# }
+
+# include libma.sh
+
+# shellcheck disable=SC1090
+{
+    . "${_MASH_HOME}/etc/mashrc"
+    . "${_LIB_DIR}/libma.sh"
+}
+
+verb="${1}"
+recipe="${2}"
+
+script_dir="${_RECIPES_DIR}/${verb}"
+script_full_path="${script_dir}/${recipe}.sh"
+
+log debug "script_dir=${script_dir}"
+log debug "script_full_path=${script_full_path}"
+
+[ -e "${script_dir}" ] || die 2 "Unknown verb '${verb}'"
+[ -f "${script_full_path}" ] || die 2 "Unknown recipe '${recipe}'"
+
+# shellcheck disable=SC1090
+. "${script_full_path}"
+
+# include_recipe "${verb}/${script}"

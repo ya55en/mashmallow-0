@@ -10,7 +10,7 @@ DEBUG=false # use DEBUG=false to suppress debugging
 die() {
     rc=$1
     msg="$2"
-    echo "CRITICAL: $msg"
+    echo "FATAL: $msg"
     exit $rc
 }
 

@@ -1,6 +1,0 @@
-#! /bin/sh
-# mashmallow settings
-
-_LOCAL="$HOME/.local"
-# shellcheck disable=SC2034  # Used in files sourcing this one
-_MASH_HOME="$_LOCAL/opt/mash"
