@@ -1,13 +1,21 @@
 #! /bin/sh
 
-#: WIP!
 #: Install mash core.
 #: mash (full name ma(r)shmallow) is a recipe store and runner
 #: for POSIX environments. See https://mashmallow.dev
 
 _LOCAL="$HOME/.local"
 _LOCAL_SUBDIRS='bin lib opt share'
-_MASH_HOME="$_LOCAL/opt/mash"
+_MASH_HOME="${MASH_HOME:-${_LOCAL}/opt/mash}"
+_DOWNLOAD_CACHE=/tmp
+
+_VERSION='0.0.1' # TODO: auto-detect latest version
+_MASH_FILENAME="mash-v${_VERSION}.tgz"
+_URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${_VERSION}/${_MASH_FILENAME}"
+
+echo "DEBUG: _MASH_HOME='${_MASH_HOME}'"
+echo "DEBUG: _MASH_FILENAME='${_MASH_FILENAME}'"
+echo "DEBUG: _URL_DOWNLOAD='${_URL_DOWNLOAD}'"
 
 create_local() {
     #: Create ~/.local/{bin,lib,opt,share}. Download
@@ -16,33 +24,59 @@ create_local() {
     if [ -e "$_LOCAL" ]; then
         echo "W: $_LOCAL already exists, skipping."
     else
-        mkdir "$_LOCAL"
+        echo "I: Creating directory ${_LOCAL}..."
+        mkdir "${_LOCAL}"
     fi
 
     for directory in $_LOCAL_SUBDIRS; do
         thedir="${_LOCAL}/${directory}"
-        if [ -e "$thedir" ]; then
-            echo "W: $thedir already exists, skipping."
+        if [ -e "${thedir}" ]; then
+            echo "W: ${thedir} already exists, skipping."
         else
-            mkdir "$thedir"
+            echo "I: Creating ${thedir}..."
+            mkdir "${thedir}"
         fi
     done
 }
 
-create_local_mash() {
-    #: Create ~/.local/mash/{bin,lib,etc,var,lib/recipes}. Download
-    #: and install mash core.
+download_mash_core() {
+    #: Download mash core tarball and install it.
 
-    true
+    target_filename="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
+    echo "install_mash(): target_filename=${target_filename}"
+
+    if [ -e "${target_filename}" ]; then
+        echo "Release file already downloaded, skipping."
+    else
+        echo "Downloading ${target_filename}..."
+        curl -sL "$_URL_DOWNLOAD" -o "${target_filename}" ||
+            die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
+    fi
+
+}
+
+install_mash_core() {
+    #: Install mash core into $_MASH_HOME, creating
+    #: $_MASH_HOME/{bin,etc,lib,share/recipes}.
+
+    target_filename="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
+
+    if [ -e "${_MASH_HOME}" ]; then
+        echo "Target directory already exists: ${_MASH_HOME}, skipping."
+    else
+        echo "Deploying mash archive to target directory ${_MASH_HOME}..."
+        mkdir -p "${_MASH_HOME}"
+        tar xf "${target_filename}" -C "${_MASH_HOME}"
+    fi
 }
 
 create_bashrcd() {
     #: Create ~/.bashrc.d/
 
     if [ -e "$HOME/.bashrc.d" ]; then
-        echo "W: $HOME/.bashrc.d already exists, skipping."
+        echo "W: $HOME/.bashrc.d/ already exists, skipping."
     else
-        echo "I: Creating $HOME/.bashrc.d..."
+        echo "I: Creating $HOME/.bashrc.d/..."
         mkdir "$HOME/.bashrc.d"
     fi
 }
@@ -50,26 +84,64 @@ create_bashrcd() {
 create_add_to_path_script() {
     #: Create add-to-path script ~/.bashrc.d/99-mash-setup.sh
 
-    cat > "$HOME/.bashrc.d/99-mash-setup.sh" << EOS
-MASH_HOME=$_MASH_HOME ; export MASH_HOME
-add-to-path "${_MASH_HOME}/bin"
+    target_filename="$HOME/.bashrc.d/99-mash-setup.sh"
+
+    if [ -e "${target_filename}" ]; then
+        echo "Add-to-path script already exists, skipping. (${target_filename})"
+    else
+        echo "Installing add-to-path script ${target_filename}..."
+        cat > "${target_filename}" << EOS
+#: mash: on shell initialization set variables and do add-to-path
+MASH_HOME="$_MASH_HOME" ; export MASH_HOME
+#add-to-path "${_MASH_HOME}/bin"  # TODO: implement add-to-path?
+echo \$PATH | grep -q "\$MASH_HOME/bin" ||
+    PATH="\$MASH_HOME/bin:\$PATH" ; export PATH
 EOS
+    fi
 }
 
 add_bashrcd_sourcing_snippet() {
     #: Add ~/.bashrc.d/ activation code to ~/.bashrc
 
-    true
+    # shellcheck disable=SC2016
+    if grep -q 'for file in "$HOME/.bashrc.d/"*.sh; do' ~/.bashrc; then
+        echo "bashrc.d sourcing snippet already set, skipping."
+    else
+        echo "Setting bashrc.d sourcing snippet..."
+        cat >> "$HOME/.bashrc" << EOS
+
+#: mash: sourcing initializing scripts from ~/.bashrc.d/*.sh
+for file in "\$HOME/.bashrc.d/"*.sh; do
+    . "\$file"
+done
+EOS
+    fi
 }
 
 instruct_user() {
     #: Print adequate instructions on the console.
 
-    true
+    cat << EOS
+
+Please close and reopen any shell-based terminals
+in order to refresh your variables.
+
+TODO: ** Instruct user what to do after installation. **
+
+TODO: Think on having a refresh-env commad to reload env
+vars from ~/bashrc.d/.
+
+EOS
 }
 
 main() {
     create_local
+    download_mash_core
+    install_mash_core
+    create_bashrcd
+    create_add_to_path_script
+    add_bashrcd_sourcing_snippet
+    instruct_user
 }
 
 main

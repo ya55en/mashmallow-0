@@ -9,4 +9,7 @@
     _MASH_HOME="${MASH_HOME:-$_LOCAL/opt/mash}"
     _RECIPES_DIR="${_MASH_HOME}/share/recipes"
     _LIB_DIR="${_MASH_HOME}/lib"
+
+    _CACHE_DIR="$HOME/.cache/mash"
+    _DOWNLOAD_CACHE="${_CACHE_DIR}/downloads"
 }

@@ -3,6 +3,8 @@
 *~
 ~.bak
 
+dist/
+build/
 
 # IDEs
 .idea/
