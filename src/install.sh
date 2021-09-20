@@ -81,21 +81,49 @@ create_bashrcd() {
     fi
 }
 
-create_add_to_path_script() {
+create_add_to_path_script_00() {
+    #: Create add-to-path script ~/.bashrc.d/00-mash-init.sh
+
+    target_filename="$HOME/.bashrc.d/00-mash-init.sh"
+
+    if [ -e "${target_filename}" ]; then
+        echo "Add-to-path init script already exists, skipping. (${target_filename})"
+    else
+        echo "Installing add-to-path init script ${target_filename}..."
+        cat > "${target_filename}" << EOS
+# ~/.bashrc.d/00-mash-init.sh - mash: initialization: first things first ;)
+
+_LOCAL="\$HOME/.local"
+_LOCAL_SHARE_APPS="\$_LOCAL/share/applications"
+
+echo "\$PATH" | grep -q "\$_LOCAL/bin" || PATH="\$_LOCAL/bin:\$PATH"
+
+# Set XDG_DATA_DIRS, if needed, so it includes user's private share section if it exists.
+# See https://specifications.freedesktop.org/desktop-entry-spec/latest/ar01s02.html
+echo "\$XDG_DATA_DIRS" | grep -q "\$_LOCAL_SHARE_APPS" ||
+    XDG_DATA_DIRS="\$_LOCAL_SHARE_APPS:\$XDG_DATA_DIRS"
+
+EOS
+    fi
+}
+
+create_add_to_path_script_99() {
     #: Create add-to-path script ~/.bashrc.d/99-mash-setup.sh
 
     target_filename="$HOME/.bashrc.d/99-mash-setup.sh"
 
     if [ -e "${target_filename}" ]; then
-        echo "Add-to-path script already exists, skipping. (${target_filename})"
+        echo "Add-to-path setup script already exists, skipping. (${target_filename})"
     else
-        echo "Installing add-to-path script ${target_filename}..."
+        echo "Installing add-to-path setup script ${target_filename}..."
         cat > "${target_filename}" << EOS
-#: mash: on shell initialization set variables and do add-to-path
+# ~/.bashrc.d/99-mash-setup.sh - mash: set some variables and do add-to-path mash/bin
+
 MASH_HOME="$_MASH_HOME" ; export MASH_HOME
-#add-to-path "${_MASH_HOME}/bin"  # TODO: implement add-to-path?
+
 echo \$PATH | grep -q "\$MASH_HOME/bin" ||
     PATH="\$MASH_HOME/bin:\$PATH" ; export PATH
+
 EOS
     fi
 }
@@ -139,7 +167,8 @@ main() {
     download_mash_core
     install_mash_core
     create_bashrcd
-    create_add_to_path_script
+    create_add_to_path_script_00
+    create_add_to_path_script_99
     add_bashrcd_sourcing_snippet
     instruct_user
 }
