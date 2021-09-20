@@ -13,11 +13,14 @@ del-branch:
 	@echo git push origin --delete -d $$(git branch --no-color --show-current)
 
 
-#: Release this commit after versioning
-release:
+dist:
 	@mkdir -p ./dist
 	@tar czvf ./dist/mash-$$(git tag | tail -1).tgz -C src --exclude=install.sh .
-	@# @gh release create "$(git tag | tail -1)" --notes "Unofficial release (still)" ./dist/mash-$$(git tag | tail -1).tgz
+
+
+#: Release this commit after versioning
+release:  dist
+	@gh release create "$(git tag | tail -1)" --notes "Unofficial release (still)" ./dist/mash-$$(git tag | tail -1).tgz
 
 
 #: Clean up generated artifacts
@@ -25,4 +28,4 @@ clean:
 	rm -rf ./dist
 
 
-.PHONY:  setenv del-branch release clean
+.PHONY:  setenv del-branch dist release clean
