@@ -9,7 +9,7 @@ _LOCAL_SUBDIRS='bin lib opt share'
 _MASH_HOME="${MASH_HOME:-${_LOCAL}/opt/mash}"
 _DOWNLOAD_CACHE=/tmp
 
-_VERSION='0.0.1' # TODO: auto-detect latest version
+_VERSION='0.0.2' # TODO: auto-detect latest version
 _MASH_FILENAME="mash-v${_VERSION}.tgz"
 _URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${_VERSION}/${_MASH_FILENAME}"
 

@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # [ -n "$MASH_HOME" ] || die 1 "mash NOT configured - MASH_HOME not set (E1211)"
-_MASH_HOME="${MASH_HOME:-$(dirname "$0")}"
+_MASH_HOME="${MASH_HOME:-$(dirname "$(dirname "$0")")}"
 
 # Params:
 
@@ -28,6 +28,10 @@ DEBUG=true # use DEBUG=false to suppress debuggin
 # }
 
 # include libma.sh
+
+
+[ x$DEBUG = xtrue ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
+
 
 # shellcheck disable=SC1090
 {
