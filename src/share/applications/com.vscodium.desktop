@@ -1,0 +1,20 @@
+cat << EOS
+# ~/.local/share/applications/com.vscodium.desktop
+# VS Codium - https://vscodium.com/
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=VS Codium
+GenericName=Text Editor
+Comment=Free/Libre VSCode
+Keywords=vscodium;codium;vscode;code;editor;text;
+Exec=${_LOCAL}/opt/vscodium-${version}/bin/codium %F
+TryExec=${_LOCAL}/opt/vscodium-${version}/bin/codium
+Icon=${_LOCAL}/opt/vscodium-${version}/resources/app/resources/linux/code.png
+Terminal=false
+Categories=Utility;Development;IDE;
+StartupNotify=true
+StartupWMClass=vscodium
+MimeType=text/plain;inode/directory;application/x-code-workspace;
+EOS

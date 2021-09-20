@@ -13,25 +13,26 @@ flavor='community'
 
 pycharm_filename="pycharm-${flavor}-${version}.tar.gz"
 pycharm_dir="$_LOCAL/opt/pycharm-${flavor}-${version}"
-download_cache_dir=/tmp
+dot_desktop_file_src='com.jetbrains.pycharm-any.desktop'
+dot_desktop_file_dst="com.jetbrains.pycharm-${flavor}.desktop"
 
 _URL_DOWNLOAD="https://download-cdn.jetbrains.com/python/${pycharm_filename}"
 _URL_HASHSUM="https://download-cdn.jetbrains.com/python/${pycharm_filename}.sha256"
 
 download_tarball() {
-    #: Download pycharm tarball into download_cache_dir
+    #: Download pycharm tarball into $_DOWNLOAD_CACHE
     skip="${1:-no-skip}"
 
-    if [ "$skip" = skip-if-exists ] && [ -f "${download_cache_dir}/${pycharm_filename}" ]; then
+    if [ "x$skip" = xskip-if-exists ] && [ -f "${_DOWNLOAD_CACHE}/${pycharm_filename}" ]; then
+        log warn "File exits: ${_DOWNLOAD_CACHE}/${pycharm_filename}"
         log warn "Target archive already downloaded, skipping."
-        log warn "File exits: ${download_cache_dir}/${pycharm_filename}"
     else
         log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
         log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
-        log debug "download_cache_dir=$download_cache_dir"
+        log debug "_DOWNLOAD_CACHE=$_DOWNLOAD_CACHE"
         log info "Downloading Pycharm ${flavor} edition, v${version}..."
-        rm -f "${download_cache_dir}/${pycharm_filename}"
-        curl -sL "$_URL_DOWNLOAD" -o "${download_cache_dir}/${pycharm_filename}" ||
+        rm -f "${_DOWNLOAD_CACHE}/${pycharm_filename}"
+        curl -sL "$_URL_DOWNLOAD" -o "${_DOWNLOAD_CACHE}/${pycharm_filename}" ||
             die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
     fi
 }
@@ -45,9 +46,9 @@ check_hashsum() {
 extract_into_opt() {
     #: Extract the pycharm tarball into ~/.local/opt/.
 
-    log info "Extracting ${download_cache_dir}/${pycharm_filename}..."
-    tar xf "${download_cache_dir}/${pycharm_filename}" -C "$_LOCAL/opt/" ||
-        die $? "Extracting ${download_cache_dir}/${pycharm_filename} FAILED (rc=$?)"
+    log info "Extracting ${_DOWNLOAD_CACHE}/${pycharm_filename}..."
+    tar xf "${_DOWNLOAD_CACHE}/${pycharm_filename}" -C "$_LOCAL/opt/" ||
+        die $? "Extracting ${_DOWNLOAD_CACHE}/${pycharm_filename} FAILED (rc=$?)"
     [ -d "${pycharm_dir}/bin" ] || die 2 "Bin directory NOT found: ${pycharm_dir}/bin"
 }
 
@@ -61,7 +62,7 @@ create_symlink() {
 
     linked_dir="$_LOCAL/opt/pycharm-${flavor}"
     [ -L "${linked_dir}" ] || die 2 "Linked directory NOT found: ${linked_dir}"
-    printf "%s" "$linked_dir"
+    printf "%s" "$linked_dir"  # return value - do NOT alter
 }
 
 create_add_to_path_script() {
@@ -69,15 +70,32 @@ create_add_to_path_script() {
 
     linked_dir="$1"
     cat > "$HOME/.bashrc.d/42-pycharm-${flavor}.sh" << EOS
-export PATH="${linked_dir}/bin:\$PATH"
+# ~/.bashrc.d/42-pycharm-${flavor}.sh - mash: add pycharm bin to PATH
+
+_LINKED_DIR='${linked_dir}'
+
+echo \$PATH | grep -q "\${_LINKED_DIR}/bin" || PATH="\${_LINKED_DIR}/bin:\$PATH"
+
 EOS
+}
+
+install_dot_desktop() {
+    dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file_dst}"
+    if [ -e "${dot_desktop_fullpath}" ]; then
+        log warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
+    else
+        log info "Installing a dot-desktop file ... (${dot_desktop_fullpath})"
+        # shellcheck disable=SC1090
+        . "${_APPLICATIONS_DIR}/${dot_desktop_file_src}" > "${dot_desktop_fullpath}"
+    fi
 }
 
 smoke_test() {
     #: Smoke-test the installation invoking 'printenv.py' from
     #: pycharm's bin/ directory.
 
-    include "$HOME/.bashrc.d/42-pycharm-${flavor}.sh"
+    # shellcheck disable=SC1090
+    . "$HOME/.bashrc.d/42-pycharm-${flavor}.sh"
     printenv.py /dev/null || die 9 "Smoke test running 'printenv.py' FAILED."
     log debug "Smoke Test: OK (printenv.py /dev/null)"
 }
@@ -94,7 +112,7 @@ To source the add-to-path script, do (note the dot in front):
 
  $ . "~/.bashrc.d/42-pycharm-${flavor}.sh"
 
- Pycharm should be accessible now from anywhere on the command line,
+ Pycharm should be then accessible from anywhere on the command line,
  with:
 
   $ pycharm.sh
@@ -107,6 +125,7 @@ doit() {
     download_tarball skip-if-exists
     check_hashsum
     extract_into_opt
+    install_dot_desktop
     linked_dir="$(create_symlink)"
     create_add_to_path_script "$linked_dir"
     smoke_test
@@ -125,6 +144,10 @@ undo() {
     rm -f "$_LOCAL/opt/pycharm-${flavor}" ||
         log warn "Could NOT remove symlink $_LOCAL/opt/pycharm-${flavor}!"
 
+    dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file_dst}"
+    log info "Removing dot-desktop ${dot_desktop_fullpath} ..."
+    rm "${dot_desktop_fullpath}"
+
     log info "Removing $pycharm_dir..."
     rm -r "$pycharm_dir" ||
         log warn "Could NOT remove directory $pycharm_dir!"
@@ -132,13 +155,12 @@ undo() {
     cat << EOS
 
 In order to have all your terminals know about the add-to-path change,
-you need to EITHER source the add-to-path script (see below) in all
-open terminals, OR log out, then log back in.
+you need to close (and re-open) all open terminals, OR log out, then log
+back in.
 
-UNinstallation ended.
+UN-installation ended.
 
 EOS
 }
 
 doit
-# undo

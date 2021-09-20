@@ -10,8 +10,16 @@ DEBUG=false # use DEBUG=false to suppress debugging
 die() {
     rc=$1
     msg="$2"
+
     echo "FATAL: $msg"
     exit $rc
+}
+
+include() {
+    lib_script="$1"
+
+    # shellcheck disable=SC1090
+    . "${_LIB_DIR}/${lib_script}"
 }
 
 log() {
@@ -66,4 +74,12 @@ into_dir_do() {
     }
     log debug "into_dir_do(): eval rc=$?"
     cd "$cwd" || return 0
+}
+
+## string functions
+
+capitalize() {
+    #: Echo back a capitalized version of given word.
+    word="$1"
+    echo "$word" | sed 's/.*/\u&/'
 }

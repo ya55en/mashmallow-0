@@ -1,0 +1,19 @@
+cat << EOS
+# ~/.local/share/applications/com.jetbrains.pycharm-community.desktop
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pycharm $(capitalize "${flavor}")
+GenericName=IDE
+Comment=Python IDE for Professional Developers
+Keywords=pycharm;python;ide;
+Exec=${_LOCAL}/opt/pycharm-${flavor}/bin/pycharm.sh %F
+TryExec=${_LOCAL}/opt/pycharm-${flavor}/bin/pycharm.sh
+Icon=${_LOCAL}/opt/pycharm-${flavor}/bin/pycharm.svg
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true
+StartupWMClass=jetbrains-pycharm-ce
+MimeType=text/x-python;application/x-sh;text/plain;application/javascript
+EOS

@@ -23,11 +23,14 @@ _URL_HASHSUM="https://github.com/VSCodium/vscodium/releases/download/${version}/
 
 vscodium_filename="VSCodium-linux-${ARCH_SHORT}-${version}.tar.gz"
 vscodium_opt_dirname="vscodium-${version}"
+dot_desktop_file='com.vscodium.desktop'
 download_cache_dir="$HOME/.cache/mash/downloads"
 mkdir -p "${download_cache_dir}"
 
 download_tarball() {
     #: Download codium tarball into download_cache_dir
+
+    # TODO: implement download skip if file already there and having proper hashsum
 
     log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
     log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
@@ -69,9 +72,21 @@ make_symlink_in_local_bin() {
     [ -L "$linked_binary" ] || die 2 "Linked binary NOT found: ${linked_binary}"
 }
 
+install_dot_desktop() {
+    dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file}"
+    if [ -e "${dot_desktop_fullpath}" ]; then
+        log warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
+    else
+        log info "Installing a dot-desktop file ... (${dot_desktop_fullpath})"
+        # shellcheck disable=SC1090
+        . "${_APPLICATIONS_DIR}/${dot_desktop_file}" > "${dot_desktop_fullpath}"
+    fi
+}
+
 smoke_test() {
     # codium --version > /dev/null  # || die 25 "Codium NOT working! (rc=$?) :("
-    codium --version > /dev/null 2>&1 ; rc=$?
+    codium --version > /dev/null 2>&1
+    rc=$?
     if [ $rc = 0 ]; then
         log info "Smoke Test OK (codium --version)"
     fi
@@ -83,16 +98,19 @@ doit() {
     download_tarball
     check_hashsum || die 77 "Hashsum check FAILED! Please check, aborting."
     extract_to_opt
+    install_dot_desktop
     make_symlink_in_local_bin
     smoke_test
 }
 
 undo() {
     log info "*UN*installing codium ${version} (${ARCH_SHORT})..."
-    rm "$_LOCAL/bin/codium" || die 15 "Cannot remove $_LOCAL/bin/codium"
+    rm "${_LOCAL}/bin/codium" || die 15 "Cannot remove ${_LOCAL}/bin/codium"
     rm -r "${_LOCAL}/opt/${vscodium_opt_dirname}" || die 15 "Cannot remove ${_LOCAL}/opt/${vscodium_opt_dirname}"
+    rm "${_LOCAL}/share/applications/${dot_desktop_file}"
     smoke_test && die 99 "Coduim NOT removed, still working"
     echo 'Undo install done.'
 }
 
 doit
+# undo

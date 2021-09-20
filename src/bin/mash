@@ -13,6 +13,8 @@ DEBUG=true # use DEBUG=false to suppress debuggin
 # alias include='. $MASH_HOME/'
 # alias include_recipe='. $MASH_HOME/share/recipes'
 
+# TODO: move (or remove) include*()
+
 # include() {
 #     lib_script="$1"
 #     # shellcheck disable=SC1090

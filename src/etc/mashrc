@@ -3,13 +3,17 @@
 
 # shellcheck disable=SC2034
 {
-    _BASHRCD="${MASH_BASHRCD:-$HOME/.bashrc.d}"
-    _LOCAL="${MASH_LOCAL:-$HOME/.local}"
 
-    _MASH_HOME="${MASH_HOME:-$_LOCAL/opt/mash}"
-    _RECIPES_DIR="${_MASH_HOME}/share/recipes"
-    _LIB_DIR="${_MASH_HOME}/lib"
+_BASHRCD="${MASH_BASHRCD:-$HOME/.bashrc.d}"
+_LOCAL="${MASH_LOCAL:-$HOME/.local}"
 
-    _CACHE_DIR="$HOME/.cache/mash"
-    _DOWNLOAD_CACHE="${_CACHE_DIR}/downloads"
+_MASH_HOME="${MASH_HOME:-$_LOCAL/opt/mash}"
+_RECIPES_DIR="${_MASH_HOME}/share/recipes"
+_APPLICATIONS_DIR="${_MASH_HOME}/share/applications"
+_ICONS_DIR="${_MASH_HOME}/share/icons"
+_LIB_DIR="${_MASH_HOME}/lib"
+
+_CACHE_DIR="$HOME/.cache/mash"
+_DOWNLOAD_CACHE="${_CACHE_DIR}/downloads"
+
 }

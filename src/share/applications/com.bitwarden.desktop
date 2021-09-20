@@ -1,0 +1,19 @@
+cat << EOS
+# ~/.local/share/applications/com.vscodium.desktop
+# VS Codium - https://vscodium.com/
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Bitwarden
+GenericName=Password Manager
+Comment=Open Source Password Manager for Business
+Keywords=bitwarden;password;manager;
+Exec=${_LOCAL}/bin/bitwarden-desktop
+TryExec=${_LOCAL}/bin/bitwarden-desktop
+Icon=${_LOCAL}/opt/bitwarden/bitwarden-icon.png
+Terminal=false
+Categories=Utility;Security;Other
+StartupNotify=true
+StartupWMClass=bitwarden
+EOS
