@@ -163,4 +163,4 @@ UN-installation ended.
 EOS
 }
 
-doit
+$mash_action

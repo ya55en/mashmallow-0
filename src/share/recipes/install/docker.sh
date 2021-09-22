@@ -94,7 +94,7 @@ Cheers! ;)
 EOS
 }
 
-main() {
+doit() {
     if already_has_docker; then
         systemctl restart docker.service
         smoke_test
@@ -109,4 +109,4 @@ main() {
 
 }
 
-main
+$mash_action

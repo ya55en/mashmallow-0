@@ -1,4 +1,12 @@
 #! /bin/sh
 # (Helps for experiments.)
 
-echo "Hello, $USER! Mash seems to work ;)"
+doit() {
+    echo "Hello, $USER! 'mash' seems working ;)"
+}
+
+undo() {
+    echo "Farewell, $USER! 'mash undo' seems to work ;)"
+}
+
+${mash_action}

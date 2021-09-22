@@ -103,4 +103,4 @@ undo() {
     log info 'UNinstallation ended.'
 }
 
-doit
+$mash_action

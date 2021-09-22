@@ -14,11 +14,6 @@ Useful hints and links for the `ma'shmallow-0` project
   ```
 
 
-## Bash debugging
-
-- excellent article: https://www.shell-tips.com/bash/debug-script/
-
-
 ## Makefile guides
 
 - General tutorials:
@@ -34,9 +29,12 @@ Useful hints and links for the `ma'shmallow-0` project
   - https://stackoverflow.com/questions/4036191
 
 
-## Shell linting
+## Shell (sh/bash)
 
-- Best known: https://github.com/koalaman/shellcheck/
+- Best known linter: https://github.com/koalaman/shellcheck/
+- Good ex. of getopts: https://blog.mafr.de/2007/08/05/cmdline-options-in-shell-scripts/
+- Sh/Bash debugging
+  - excellent article: https://www.shell-tips.com/bash/debug-script/
 
 
 ## git-related
