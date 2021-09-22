@@ -112,5 +112,4 @@ undo() {
     echo 'Undo install done.'
 }
 
-doit
-# undo
+$mash_action

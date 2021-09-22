@@ -97,4 +97,4 @@ undo() {
     log info "** dev-essentials removal successful."
 }
 
-doit
+$mash_action

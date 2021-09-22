@@ -4,6 +4,8 @@
 
 # Assumming lib/libma.sh has been sourced already.
 
+die 22 "pycharm-pro is deprecated in favour of a universal pycharm recipe."
+
 DEBUG=true  # use DEBUG=false to suppress debugging
 
 

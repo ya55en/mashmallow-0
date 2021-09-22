@@ -5,7 +5,6 @@
 _ARCH=x86_64
 _LOCAL="$HOME/.local"
 
-DEBUG=false # use DEBUG=false to suppress debugging
 
 die() {
     rc=$1
@@ -38,7 +37,7 @@ log() {
             echo "I: $msg"
             ;;
         debug*)
-            [ $DEBUG != false ] && echo "DEBUG: $msg" >> /dev/stderr
+            [ x$DEBUG = xtrue ] && echo "DEBUG: $msg" >> /dev/stderr
             ;;
         testfail)
             echo "TEST-FAIL: $msg"

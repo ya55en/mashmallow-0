@@ -119,5 +119,4 @@ undo() {
     fi
 }
 
-doit
-#undo
+$mash_action
