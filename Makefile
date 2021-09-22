@@ -1,31 +1,50 @@
 #: Makefile for the mashmallow-0 project
 #: See https://makefiletutorial.com/
 
+# latest git tag
+tag := $(shell git tag | tail -1)
+
+# current branch
+branch := $(shell git branch --no-color --show-current)
+
+# Anything in src/ matters for re-creating the dist tarball (but install.sh)
+EXCLUDED := install.sh
+SOURCES := $(shell find ./src/ -name "*.*" -a ! -name $(EXCLUDED))
+
 
 #: Set environment variables so that this project's mash is active
 setenv:
 	@./scripts/4make/setenv.sh
 
 
-#: Show commands for deleting current branch
-del-branch:
-	@echo "git checkout main && git branch -d $$(git branch --no-color --show-current)"
-	@echo git push origin --delete -d $$(git branch --no-color --show-current)
-
-
-dist:
-	@mkdir -p ./dist
-	@tar czvf ./dist/mash-$$(git tag | tail -1).tgz -C src --exclude=install.sh .
-
-
-#: Release this commit after versioning
-release:  dist
-	@gh release create "$(git tag | tail -1)" --notes "Unofficial release (still)" ./dist/mash-$$(git tag | tail -1).tgz
+dist:  $(SOURCES)
+	@rm -f ./dist/mash-$(tag).tgz
+	@[ -d ./dist/mash-$(tag).tgz ] || mkdir -p ./dist
+	@[ -f ./dist/mash-$(tag).tgz ] || \
+		tar czvf ./dist/mash-$(tag).tgz -C src --exclude=$(EXCLUDED) .
 
 
 #: Clean up generated artifacts
-clean:
+clean-dist:
 	rm -rf ./dist
 
 
-.PHONY:  setenv del-branch dist release clean
+#: Release this commit after versioning
+show-release:
+	@git log -n1 | ./scripts/4make/show-release.py
+
+
+#: Show commands for deleting current branch
+show-del-branch:
+	@echo '# current branch: $(branch)'
+	@if [ "x$(branch)" = xmain ]; then \
+	   echo '  ** You are on "main"!? - No deletion! ;)' \
+	;else \
+	    echo "\$$ git checkout main" && \
+	    echo "\$$ git branch -d $(branch)" && \
+	    echo "\$$ git push origin --delete $(branch)" && \
+	    echo "\$$ # Don't forget 'git fetch --all --prune'!" \
+	;fi
+
+
+.PHONY:  setenv clean-dist show-release show-del-branch

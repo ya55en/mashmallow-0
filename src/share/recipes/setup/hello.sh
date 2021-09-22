@@ -1,4 +1,4 @@
 #! /bin/sh
 # (Helps for experiments.)
 
-echo "Hello, $USER :("
+echo "Hello, $USER! Mash seems to work ;)"
