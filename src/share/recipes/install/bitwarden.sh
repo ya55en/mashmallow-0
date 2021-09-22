@@ -113,7 +113,7 @@ undo() {
     rm -f "${app_fullpath}"
     result="${result}:$?"
 
-    if [ $result = ':0:0:0:0' ]; then
+    if [ x"$result" = 'x:0:0:0:0' ]; then
         log info "Successfully un-installed bitwarden."
     else
         log warn "Un-installed bitwarden with errors: codes ${result}"
