@@ -1,6 +1,6 @@
 cat << EOS
-# ~/.local/share/applications/com.vscodium.desktop
-# VS Codium - https://vscodium.com/
+# ~/.local/share/applications/com.bitwarden.desktop
+# Bitwarden Password Manager - https://bitwarden.com/
 
 [Desktop Entry]
 Version=1.0
