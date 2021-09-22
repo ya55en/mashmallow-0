@@ -1,4 +1,10 @@
 
+yassen@zorin-x79:~/Work/mashmallow-0.1$ git branch -d 11-undo-cmd-modifier
+warning: deleting branch '11-undo-cmd-modifier' that has been merged to
+         'refs/remotes/origin/11-undo-cmd-modifier', but not yet merged to HEAD.
+Deleted branch 11-undo-cmd-modifier (was fa3544c).
+
+
 Processing triggers for linux-image-5.11.0-27-generic (5.11.0-27.29~20.04.1) ...
 /etc/kernel/postinst.d/initramfs-tools:
 update-initramfs: Generating /boot/initrd.img-5.11.0-27-generic

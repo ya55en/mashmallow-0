@@ -1,5 +1,8 @@
 #! /bin/sh
 
+
+__version__='0.0.3'
+
 # [ -n "$MASH_HOME" ] || die 1 "mash NOT configured - MASH_HOME not set (E1211)"
 _MASH_HOME="${MASH_HOME:-$(dirname "$(dirname "$0")")}"
 
@@ -33,6 +36,16 @@ DEBUG=${DEBUG:-false}
 
 
 [ x$DEBUG = xtrue ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
+
+if [ x"${1}" = x-v ] || [ x"${1}" = x--version ] ; then
+    echo "ma'shmallow v${__version__}"
+    exit 0
+fi
+
+if [ x"${1}" = x-h ] || [ x"${1}" = x--help ] ; then
+    echo "ma'shmallow v${__version__}: help not (yet) available, apologies... :\\"
+    exit 1
+fi
 
 
 # shellcheck disable=SC1090
