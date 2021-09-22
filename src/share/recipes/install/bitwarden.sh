@@ -55,8 +55,9 @@ install_app_image() {
 
 setup_gnome_assets() {
     #: Create/copy .desktop file and an icon.
+    bitwarden_icon='bitwarden-icon-128.png'
 
-    [ -e "${_LOCAL}/share/applications/com.bitwarden.desktop" ] && [ -e "${_LOCAL}/opt/bitwarden/bitwarden-icon.png" ]
+    [ -e "${_LOCAL}/share/applications/com.bitwarden.desktop" ] && [ -e "${_LOCAL}/opt/bitwarden/${bitwarden_icon}" ]
 
     if [ $? = 0 ]; then
         log info "Gnome assets already installed, skipping."
@@ -64,7 +65,7 @@ setup_gnome_assets() {
         log info "Installing gnome assets ..."
         # shellcheck disable=SC1090
         . "$_APPLICATIONS_DIR/com.bitwarden.desktop" > "${_LOCAL}/share/applications/com.bitwarden.desktop"
-        cp -p "${_ICONS_DIR}/bitwarden-icon.png" "${_LOCAL}/opt/bitwarden/bitwarden-icon.png"
+        cp -p "${_ICONS_DIR}/${bitwarden_icon}" "${_LOCAL}/opt/bitwarden/${bitwarden_icon}"
     fi
 }
 
