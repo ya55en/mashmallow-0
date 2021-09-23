@@ -29,8 +29,9 @@ download_appimage() {
     if [ -e "${download_target}" ]; then
         log warn "App file already downloaded/cached, skipping."
     else
+        mkdir -p "${_DOWNLOAD_CACHE}"
         log info "Downloading Bitwarden desktop v${version}..."
-        curl -sL "$_URL_DOWNLOAD" -o "${download_target}"
+        curl -sL "$_URL_DOWNLOAD" -o "${download_target}" || die 25 "Bitwarden download FAILED! (rc=$?)"
     fi
 }
 
