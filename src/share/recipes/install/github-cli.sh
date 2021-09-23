@@ -16,10 +16,8 @@ fi
 version='1.14.0'
 ghcli_filename="gh_${version}_linux_${_short_arch}.tar.gz"
 ghcli_dir="$_LOCAL/opt/gh_${version}_linux_${_short_arch}"
-#TODO: how is the folder supposed to be called?
 
 _URL_DOWNLOAD="https://github.com/cli/cli/releases/download/v${version}/${ghcli_filename}"
-
 log debug "_URL_DOWNLOAD"
 
 download_tarball() {
@@ -32,6 +30,7 @@ download_tarball() {
     else
         log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
         # log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
+        mkdir -p "${_DOWNLOAD_CACHE}"
         log debug "download_cache_dir=$_DOWNLOAD_CACHE"
         log info "Downloading Gh Cli, v${version}..."
         rm -f "${_DOWNLOAD_CACHE}/${ghcli_filename}"
