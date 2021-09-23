@@ -112,11 +112,12 @@ undo() {
     rm -f "${app_fullpath}"
     result="${result}:$?"
 
-    if [ x"$result" = 'x:0:0:0:0' ]; then
+    if [ "$result" = ':0:0:0:0' ]; then
         log info "Successfully un-installed wire."
     else
         log warn "Un-installed wire with errors: codes [${result}]"
     fi
 }
 
+# shellcheck disable=2154
 $mash_action
