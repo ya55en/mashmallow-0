@@ -64,7 +64,7 @@ setup_gnome_assets() {
         log info "Gnome assets already installed, skipping."
     else
         log info "Installing gnome assets ..."
-        # shellcheck disable=SC1090
+        # shellcheck disable=SC1091
         . "$_APPLICATIONS_DIR/com.bitwarden.desktop" > "${_LOCAL}/share/applications/com.bitwarden.desktop"
         cp -p "${_ICONS_DIR}/${bitwarden_icon}" "${_LOCAL}/opt/bitwarden/${bitwarden_icon}"
     fi
@@ -114,11 +114,12 @@ undo() {
     rm -f "${app_fullpath}"
     result="${result}:$?"
 
-    if [ x"$result" = 'x:0:0:0:0' ]; then
+    if [ "$result" = ':0:0:0:0' ]; then
         log info "Successfully un-installed bitwarden."
     else
         log warn "Un-installed bitwarden with errors: codes ${result}"
     fi
 }
 
+# shellcheck disable=2154
 $mash_action

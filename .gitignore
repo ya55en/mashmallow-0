@@ -13,3 +13,8 @@ build/
 
 # IDEs
 .idea/
+
+
+# Local Python  venvs
+venv/
+.venv/
