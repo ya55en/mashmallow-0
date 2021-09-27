@@ -56,13 +56,14 @@ create_bashrcd_script() {
     #: Create `~/.bashrc.d/32-pipx-setup.sh`
     # Creating without idempotency check, so that changes are always reflected.
     # Depends on 'which' - not ideal; TODO: provide default python otherwise
+    bashrcd_script_path="$HOME/.bashrc.d/${bashrcd_script}"
 
-    log info ""
-    cat > "$HOME/.bashrc.d/${bashrcd_script}" << EOS
+    log info "Creating bashrcd script: $bashrcd_script_path"
+    cat > "${bashrcd_script_path}" << EOS
 # pipx-related setup
 export PIPX_HOME="$HOME/.local"
 export PIPX_DEFAULT_PYTHON="$(which python3)"
-# eval "$(register-python-argcomplete3 pipx)"  # see if this can work
+# eval "\$(register-python-argcomplete3 pipx)"  # see if this can work
 EOS
 }
 
@@ -108,7 +109,7 @@ undo() {
     log warn "UNinstalling pipx"
 
     log info "Removing bashrcd script: ${bashrcd_script} ..."
-    rm -f "$HOME/.bashrc.d/${bashrcd_script}"
+    rm -f "${bashrcd_script_path}"
 
     log info "Removing symlink $_LOCAL/bin/pipx ..."
     rm -f "$_LOCAL/bin/pipx"
@@ -116,7 +117,7 @@ undo() {
     log info "Removing pipx venv ..."
     rm -rf "$_PYTHON_VENVS/pipx"
 
-    log info 'UNinstallation ended.'
+    log info 'Pipx-local removed successfully.'
 }
 
 $mash_action
