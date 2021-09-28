@@ -20,8 +20,9 @@ log debug "Version: [${version}]"
 _DOWNLOAD_URL="https://github.com/mvdan/sh/releases/download/v${version}/shfmt_v${version}_linux_${_short_arch}"
 log debug "Download URL: [${_DOWNLOAD_URL}]"
 
-download_in_download_cache() {
+download_into_cache() {
     #: Download into the download cache.
+
     skip="${1:-no-skip}"
 
     if [ "$skip" = skip-if-exists ] && [ -f "${_DOWNLOAD_CACHE}/${shfmt_filename}" ]; then
@@ -41,8 +42,9 @@ download_in_download_cache() {
 }
 
 move_into_opt() {
-    #: Create ./local/opt/shfmt/
-    # and put the versioned binary (e.g. shfmt_v3.3.1_linux_amd64) there.
+    #: Create ./local/opt/shfmt/ and put the versioned binary
+    #: (e.g. shfmt_v3.3.1_linux_amd64) there.
+
     log info "Creating ${shfmt_dir} ..."
     mkdir -p "${shfmt_dir}"
     log info "Moving ${_DOWNLOAD_CACHE}/${shfmt_filename} to opt ..."
@@ -53,12 +55,15 @@ move_into_opt() {
 
 create_symlink() {
     #: Create a symlink in ./local/bin named shfmt.
+
     log info "Creating symlink in ./local/bin named shfmt ..."
     ln -fs "${shfmt_dir}/${shfmt_filename}" "${_LOCAL}/bin/shfmt"
 }
 
 smoke_test() {
-      log debug "Running a smoke test ..."
+    #: Do a smoke test with shfmt.
+
+    log debug "Running a smoke test ..."
     if shfmt --version; then
         log info "Smoke test passed OK. (shfmt --version)"
     else
@@ -78,7 +83,7 @@ EOS
 }
 
 doit() {
-    download_in_download_cache skip-if-exists
+    download_into_cache skip-if-exists
     move_into_opt
     create_symlink
     smoke_test
@@ -87,18 +92,22 @@ doit() {
 }
 
 undo() {
-    log warn "UNinstalling shellcheck version=[$version]"
+    log warn "Removing shfmt version=[$version]"
     log info "Removing symlink $_LOCAL/bin/shfmt ..."
     rm "$_LOCAL/bin/shfmt"
 
     log info "Removing shfmt binary ..."
     rm "${shfmt_dir}/${shfmt_filename}"
 
-    log info "Removing directory ${shfmt_dir} ..."
-    rmdir "${shfmt_dir}" || log info "shfmt directory not empty, so not deleted: ${shfmt_dir}"
-    [ ! -d "${shfmt_dir}" ]
-    log info 'UNinstallation ended.'
-
+    if [ -d "${shfmt_dir}" ]; then
+        log info "Removing directory ${shfmt_dir} ..."
+        rmdir "${shfmt_dir}"
+        [ -d "${shfmt_dir}" ] &&
+            log warn "shfmt directory not empty, so not deleted: ${shfmt_dir}"
+    else
+        log info "Directory already removed: ${shfmt_dir}."
+    fi
+    log info 'shfmt removed successfully.'
 }
 
 $mash_action
