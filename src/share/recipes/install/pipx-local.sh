@@ -106,7 +106,7 @@ doit() {
 }
 
 undo() {
-    log warn "UNinstalling pipx"
+    log warn "Removing pipx-local:"
 
     log info "Removing bashrcd script: ${bashrcd_script} ..."
     rm -f "${bashrcd_script_path}"
@@ -117,7 +117,7 @@ undo() {
     log info "Removing pipx venv ..."
     rm -rf "$_PYTHON_VENVS/pipx"
 
-    log info 'Pipx-local removed successfully.'
+    log info 'pipx-local removed successfully.'
 }
 
 $mash_action
