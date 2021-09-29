@@ -1,8 +1,13 @@
 # .gitignore for mashmallow-0
 
+# locally specific
+tmp/
+
+# backups
 *~
 ~.bak
 
+# build output
 dist/
 build/
 
