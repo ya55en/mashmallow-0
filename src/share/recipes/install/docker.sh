@@ -93,7 +93,7 @@ you can use docker without becoming a super-user.
 
 You need to **REBOOT** so that this may take effect.
 
-After logging out and back in, please **re-RUN this command** [1]
+After rebooting, please **re-RUN this command** [1]
 to do final checks.
 
 Cheers! ;)

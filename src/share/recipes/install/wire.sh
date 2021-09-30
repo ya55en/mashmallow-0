@@ -24,7 +24,7 @@ _URL_DOWNLOAD="https://wire-app.wire.com/linux/${app_file}"
 log debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
 
 download_appimage() {
-  #: Download and install the app image
+    #: Download and install the app image
 
     log debug "download_target=[$download_target]"
     if [ -e "${download_target}" ]; then
@@ -70,7 +70,7 @@ setup_gnome_assets() {
 }
 
 inform_user() {
-    cat <<EOS
+    cat << EOS
 
 Completed. You can use Wire Desktop App instantly, like:
 
