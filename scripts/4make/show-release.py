@@ -22,7 +22,7 @@ regex = re.compile(r'v(\d+\.\d+\.[0-9a-z]+)')
 
 def _main(argv: list) -> int:
     commit = None
-    version = None
+    version = '9.8.7'  # fake number
     release_note = None
 
     after_version = False
@@ -44,9 +44,10 @@ def _main(argv: list) -> int:
 
 
     result = f'''\
- $ # Make sure you have bumped version and committed!
- $ make clean-dist && make dist
+ $ # Make sure you have bumped version and committed with a message like:
+ $ # Release v{version} - Improved docker-related recipes
  $ git tag v{version}
+ $ make clean-dist && make dist
  $ git push && git push --tags
  $ gh release create v{version} --notes "{release_note} ({commit[:7]}, unofficial)" ./dist/mash-v{version}.tgz
 '''

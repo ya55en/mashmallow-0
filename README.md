@@ -5,7 +5,7 @@ for executing SHell recipes on POSIX systems.
 
 ## Installation
 
-Install mash v0.0.4 with:
+Install mash v0.0.5 with:
 
 ```bash
 curl -sL https://github.com/ya55en/mashmallow-0/raw/main/src/install.sh | sh

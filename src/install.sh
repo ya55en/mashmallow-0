@@ -10,7 +10,7 @@ _MASH_HOME="${MASH_HOME:-${_LOCAL}/opt/mash}"
 _DOWNLOAD_CACHE=/tmp
 
 # TODO: auto-detect latest version
-__version__='0.0.4'
+__version__='0.0.5'
 _MASH_FILENAME="mash-v${__version__}.tgz"
 _URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${__version__}/${_MASH_FILENAME}"
 
