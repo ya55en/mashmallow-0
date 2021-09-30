@@ -1,6 +1,5 @@
 #! /bin/sh
 
-
 __version__='0.0.5'
 
 # [ -n "$MASH_HOME" ] || die 1 "mash NOT configured - MASH_HOME not set (E1211)"
@@ -34,19 +33,17 @@ DEBUG=${DEBUG:-false}
 
 # include libma.sh
 
+[ "$DEBUG" = true ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
 
-[ x$DEBUG = xtrue ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
-
-if [ x"${1}" = x-v ] || [ x"${1}" = x--version ] ; then
+if [ "${1}" = '-v' ] || [ "${1}" = '--version' ]; then
     echo "ma'shmallow v${__version__}"
     exit 0
 fi
 
-if [ x"${1}" = x-h ] || [ x"${1}" = x--help ] ; then
+if [ "${1}" = '-h' ] || [ "${1}" = '--help' ]; then
     echo "ma'shmallow v${__version__}: help not (yet) available, apologies... :\\"
     exit 1
 fi
-
 
 # shellcheck disable=SC1090
 {
@@ -54,11 +51,21 @@ fi
     . "${_LIB_DIR}/libma.sh"
 }
 
-mash_action='doit'  # one of 'doit', 'undo'
-if [ x"${1}" = xundo ]; then
-    mash_action='undo'
-    shift
-fi
+mash_action='doit' # one of 'doit', 'undo', 'verify'
+
+case "${1}" in
+    install | setup | self)
+        true
+        ;;
+
+    undo | verify)
+        mash_action="${1}"
+        shift
+        ;;
+    *)
+        die 5 "Unknown verb or modifier: '$1'"
+        ;;
+esac
 
 verb="${1}"
 recipe="${2}"
@@ -67,6 +74,8 @@ script_dir="${_RECIPES_DIR}/${verb}"
 script_full_path="${script_dir}/${recipe}.sh"
 
 log debug "mash_action=${mash_action}"
+log debug "verb=${verb}"
+log debug "recipe=${recipe}"
 log debug "script_dir=${script_dir}"
 log debug "script_full_path=${script_full_path}"
 

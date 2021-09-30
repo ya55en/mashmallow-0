@@ -75,11 +75,7 @@ disable_docker_service() {
 smoke_test() {
     #: Smoke-test current user's ability to run docker images.
 
-    if docker run hello-world; then
-        printf '\nSUCESS.\n'
-    else
-        die 12 '\nDocker smoke text FAILED.'
-    fi
+    docker run hello-world
 }
 
 explain_logout_need() {
@@ -93,13 +89,10 @@ you can use docker without becoming a super-user.
 
 You need to **REBOOT** so that this may take effect.
 
-After rebooting, please **re-RUN this command** [1]
+After rebooting, please execute 'mash verify install docker' command!
 to do final checks.
 
 Cheers! ;)
-
-______
-[1] Re-run 'mash install docker' again after logging back in
 
 EOS
 }
@@ -121,22 +114,24 @@ EOS
 }
 
 doit() {
-    if already_has_docker; then
-        sudo systemctl restart docker.service
-        smoke_test || die 14 'docker already installed but not working (?)'
-        inform_docker_is_working
-    else
-        ensure_sudoer
-        ensure_proper_distro
-        ensure_curl_present
-        log info "Installing docker on ${_DISTRO} ${_CODENAME}..."
-        setup_apt_docker_repo
-        install_docker_ce
-        add_user_to_group_docker
-        disable_docker_service
-        sudo systemctl restart docker.service
-        explain_logout_need
-    fi
+    ensure_sudoer
+    ensure_proper_distro
+    ensure_curl_present
+    log info "Installing docker on ${_DISTRO} ${_CODENAME}..."
+    setup_apt_docker_repo
+    install_docker_ce
+    add_user_to_group_docker
+    disable_docker_service
+    sudo systemctl restart docker.service
+    explain_logout_need
+}
+
+verify() {
+    already_has_docker || die 22 'docker not yet installed (or not found?)'
+    sudo systemctl restart docker.service
+    smoke_test ||
+        die 14 'docker already installed but not working (?)\n** Have you done a REBOOT?? **'
+    inform_docker_is_working
 }
 
 undo() {
