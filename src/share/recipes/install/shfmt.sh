@@ -47,8 +47,8 @@ move_into_opt() {
 
     log info "Creating ${shfmt_dir} ..."
     mkdir -p "${shfmt_dir}"
-    log info "Moving ${_DOWNLOAD_CACHE}/${shfmt_filename} to opt ..."
-    mv "${_DOWNLOAD_CACHE}/${shfmt_filename}" "${shfmt_dir}" ||
+    log info "Copying ${_DOWNLOAD_CACHE}/${shfmt_filename} into opt ..."
+    cp -p "${_DOWNLOAD_CACHE}/${shfmt_filename}" "${shfmt_dir}" ||
         die $? "Moving ${_DOWNLOAD_CACHE}/${shfmt_filename} FAILED (rc=$?)"
     [ -d "$shfmt_dir" ] || die 63 "Shfmt directory NOT found: ${shfmt_dir}"
 }
