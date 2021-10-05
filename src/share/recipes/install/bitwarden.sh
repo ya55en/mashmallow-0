@@ -64,6 +64,7 @@ setup_gnome_assets() {
         log info "Gnome assets already installed, skipping."
     else
         log info "Installing gnome assets ..."
+        mkdir -p "${_LOCAL}/share/applications"
         # shellcheck disable=SC1091
         . "$_APPLICATIONS_DIR/com.bitwarden.desktop" > "${_LOCAL}/share/applications/com.bitwarden.desktop"
         cp -p "${_ICONS_DIR}/${bitwarden_icon}" "${_LOCAL}/opt/bitwarden/${bitwarden_icon}"

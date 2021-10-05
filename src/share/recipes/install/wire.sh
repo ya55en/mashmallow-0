@@ -47,6 +47,7 @@ install_app_image() {
         log warn "Installed app file already exists, skipping. (${app_fullpath})"
     else
         log info "Installing app file ... (${app_fullpath})"
+        mkdir -p "${_LOCAL}/share/applications"
         mkdir -p "$_LOCAL/opt/wire"
         cp -p "${download_target}" "${app_fullpath}"
         chmod +x "${app_fullpath}"

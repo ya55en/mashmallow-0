@@ -133,7 +133,7 @@ add_bashrcd_sourcing_snippet() {
     #: Add ~/.bashrc.d/ activation code to ~/.bashrc.
 
     # shellcheck disable=SC2016
-    if grep -q 'for file in "$HOME/.bashrc.d/"*.sh; do' ~/.bashrc; then
+    if grep -q 'for file in "$HOME/.bashrc.d/' ~/.bashrc; then
         echo "bashrc.d sourcing snippet already set, skipping."
     else
         echo "Setting bashrc.d sourcing snippet..."
