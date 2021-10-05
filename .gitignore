@@ -7,7 +7,11 @@ tmp/
 *~
 ~.bak
 
+<<<<<<< HEAD
 # build output
+=======
+
+>>>>>>> 0ce275e... Add python venv related targets to Makefile #13
 dist/
 build/
 

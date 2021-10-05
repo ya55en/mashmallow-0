@@ -14,13 +14,13 @@ __version__='0.0.5'
 _MASH_FILENAME="mash-v${__version__}.tgz"
 _URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${__version__}/${_MASH_FILENAME}"
 
+echo "DEBUG: HOME='${HOME}'"
 echo "DEBUG: _MASH_HOME='${_MASH_HOME}'"
 echo "DEBUG: _MASH_FILENAME='${_MASH_FILENAME}'"
 echo "DEBUG: _URL_DOWNLOAD='${_URL_DOWNLOAD}'"
 
-create_local() {
-    #: Create ~/.local/{bin,lib,opt,share}. Download
-    #: and install mash core.
+create_dot_local() {
+    #: Create ~/.local/{bin,lib,opt,share}.
 
     if [ -e "$_LOCAL" ]; then
         echo "W: $_LOCAL already exists, skipping."
@@ -43,14 +43,14 @@ create_local() {
 download_mash_core() {
     #: Download mash core tarball and install it.
 
-    target_filename="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
-    echo "install_mash(): target_filename=${target_filename}"
+    target_file_path="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
+    echo "install_mash(): target_file_path=${target_file_path}"
 
-    if [ -e "${target_filename}" ]; then
+    if [ -e "${target_file_path}" ]; then
         echo "Release file already downloaded, skipping."
     else
-        echo "Downloading ${target_filename}..."
-        curl -sL "$_URL_DOWNLOAD" -o "${target_filename}" ||
+        echo "Downloading ${target_file_path}..."
+        curl -sL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
             die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
     fi
 
@@ -60,19 +60,19 @@ install_mash_core() {
     #: Install mash core into $_MASH_HOME, creating
     #: $_MASH_HOME/{bin,etc,lib,share/recipes}.
 
-    target_filename="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
+    target_file_path="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
 
     if [ -e "${_MASH_HOME}" ]; then
         echo "Target directory already exists: ${_MASH_HOME}, skipping."
     else
         echo "Deploying mash archive to target directory ${_MASH_HOME}..."
         mkdir -p "${_MASH_HOME}"
-        tar xf "${target_filename}" -C "${_MASH_HOME}"
+        tar xf "${target_file_path}" -C "${_MASH_HOME}"
     fi
 }
 
 create_bashrcd() {
-    #: Create ~/.bashrc.d/
+    #: Create ~/.bashrc.d/ .
 
     if [ -e "$HOME/.bashrc.d" ]; then
         echo "W: $HOME/.bashrc.d/ already exists, skipping."
@@ -83,15 +83,15 @@ create_bashrcd() {
 }
 
 create_add_to_path_script_00() {
-    #: Create add-to-path script ~/.bashrc.d/00-mash-init.sh
+    #: Create add-to-path script ~/.bashrc.d/00-mash-init.sh.
 
-    target_filename="$HOME/.bashrc.d/00-mash-init.sh"
+    target_file_path="$HOME/.bashrc.d/00-mash-init.sh"
 
-    if [ -e "${target_filename}" ]; then
-        echo "Add-to-path init script already exists, skipping. (${target_filename})"
+    if [ -e "${target_file_path}" ]; then
+        echo "Add-to-path init script already exists, skipping. (${target_file_path})"
     else
-        echo "Installing add-to-path init script ${target_filename}..."
-        cat > "${target_filename}" << EOS
+        echo "Installing add-to-path init script ${target_file_path}..."
+        cat > "${target_file_path}" << EOS
 # ~/.bashrc.d/00-mash-init.sh - mash: initialization: first things first ;)
 
 _LOCAL="\$HOME/.local"
@@ -109,15 +109,15 @@ EOS
 }
 
 create_add_to_path_script_99() {
-    #: Create add-to-path script ~/.bashrc.d/99-mash-setup.sh
+    #: Create add-to-path script ~/.bashrc.d/99-mash-setup.sh.
 
-    target_filename="$HOME/.bashrc.d/99-mash-setup.sh"
+    target_file_path="$HOME/.bashrc.d/99-mash-setup.sh"
 
-    if [ -e "${target_filename}" ]; then
-        echo "Add-to-path setup script already exists, skipping. (${target_filename})"
+    if [ -e "${target_file_path}" ]; then
+        echo "Add-to-path setup script already exists, skipping. (${target_file_path})"
     else
-        echo "Installing add-to-path setup script ${target_filename}..."
-        cat > "${target_filename}" << EOS
+        echo "Installing add-to-path setup script ${target_file_path}..."
+        cat > "${target_file_path}" << EOS
 # ~/.bashrc.d/99-mash-setup.sh - mash: set some variables and do add-to-path mash/bin
 
 MASH_HOME="$_MASH_HOME" ; export MASH_HOME
@@ -130,7 +130,7 @@ EOS
 }
 
 add_bashrcd_sourcing_snippet() {
-    #: Add ~/.bashrc.d/ activation code to ~/.bashrc
+    #: Add ~/.bashrc.d/ activation code to ~/.bashrc.
 
     # shellcheck disable=SC2016
     if grep -q 'for file in "$HOME/.bashrc.d/"*.sh; do' ~/.bashrc; then
@@ -164,7 +164,7 @@ EOS
 }
 
 main() {
-    create_local
+    create_dot_local
     download_mash_core
     install_mash_core
     create_bashrcd

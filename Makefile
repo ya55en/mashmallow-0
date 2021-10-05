@@ -1,4 +1,4 @@
-#: Makefile for the mashmallow-0 project
+#: Main Makefile for the mashmallow-0 project.
 #: See https://makefiletutorial.com/
 
 
@@ -16,7 +16,7 @@ EXCLUDED := install.sh
 SOURCES := $(shell find ./src/ -name "*.*" -a ! -name $(EXCLUDED))
 
 
-#: Set environment variables so that this project's mash is active
+#: Set environment variables so that this project's mash is active.
 setenv:
 	@./scripts/4make/setenv.sh
 
@@ -26,11 +26,26 @@ dist:  $(SOURCES)
 	@[ -d ./dist/mash-$(tag).tgz ] || mkdir -p ./dist
 	@[ -f ./dist/mash-$(tag).tgz ] || \
 		tar czvf ./dist/mash-$(tag).tgz -C src --exclude=$(EXCLUDED) .
+	@echo "Created ./dist/mash-$(tag).tgz."
 
 
-#: Clean up generated artifacts
+#: Clean up generated artifacts.
 clean-dist:
 	rm -rf ./dist
+
+
+#: Clean docker builds. TODO: remove if not needed.
+# clean-docker-builds:
+# 	cd ./docker/focal-debootstrap; $(MAKE) clean-docker-build
+
+
+#: Clean chroot-setup created tarballs.
+clean-tarballs:
+	@cd ./chroot-setup/; $(MAKE) clean-tarballs
+
+
+#: Clean all non-source.
+clean-all:  clean-dist clean-tarballs
 
 
 #: Release this commit after versioning
@@ -38,7 +53,7 @@ show-release:
 	@git log -n1 | ./scripts/4make/show-release.py
 
 
-#: Show commands for deleting current branch
+#: Show commands for deleting current branch.
 show-del-branch:
 	@echo '# current branch: $(branch)'
 	@if [ "x$(branch)" = xmain ]; then \
@@ -51,7 +66,7 @@ show-del-branch:
 	;fi
 
 
-#: Create empty python venv
+#: Create empty python venv.
 create-venv:
 	@if [ -x "$(VENV_DIR)/bin/python3" ]; then \
 		echo "Virtualenv $(VENV_DIR) already exists" \
@@ -63,7 +78,7 @@ create-venv:
 	;fi
 
 
-#: Remove python venv
+#: Remove python venv.
 del-venv:
 	@if [ -x "$(VENV_DIR)/bin/python3" ]; then \
 		rm -r "$(VENV_DIR)" ; \
@@ -75,10 +90,11 @@ del-venv:
 
 PIP_REQUIREMENTS := tests/shell_testbed/requirements.txt
 
-#: Add python venv dependencies
+#: Install python venv dependencies.
 deps:
 	@"$(VENV_DIR)/bin/python3" -m pip install -r "$(PIP_REQUIREMENTS)"
 
 
-.PHONY:  setenv clean-dist show-release show-del-branch
+.PHONY:  setenv clean-dist clean-tarballs clean-all
+.PHONY:  show-release show-del-branch
 .PHONY:  create-venv del-venv deps
