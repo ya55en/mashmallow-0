@@ -6,7 +6,7 @@ doit() {
 }
 
 undo() {
-    echo "Farewell, $USER! 'mash undo' seems to work ;)"
+    echo "Bye, $USER! 'mash undo' seems to work ;)"
 }
 
 ${mash_action}

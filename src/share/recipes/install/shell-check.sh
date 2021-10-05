@@ -66,7 +66,7 @@ create_symlink() {
 
 smoke_test() {
     log debug "Running a smoke test ..."
-    if gh --version; then
+    if shellcheck --version; then
         log info "Smoke test passed OK. (shellcheck --version)"
     else
         log error "Smoke test FAILED! Please check the logs."
