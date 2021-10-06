@@ -2,6 +2,14 @@
 
 #: Upgrade mash core.
 
+
+# TODO: Some refactoring would be great to have in near furture:
+#  - have the section for determining the latest version be a fuction
+#    called with base project URL (https://github.com/ya55en/mashmallow-0
+#    in this case) and a regexp for extracting the version ('v\(.*\)$' in
+#    this case);
+#  - get version variables renamed and double-quoted (following SC2086).
+
 V=$(mash --version)
 curr_version=${V#*v}
 
