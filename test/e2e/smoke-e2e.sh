@@ -1,8 +1,6 @@
 #! /bin/sh
 
 # TODO:
-# Copy this into the chroot when bringing it up
-# Make sure the mash user is sudoer no-pass.
 # Make sure ~/.local/share/applications exists.
 
 ESC=$(printf "\033")
@@ -15,62 +13,94 @@ CBLU="${ESC}[94m"
 ok=0
 nok=0
 
-alias capture_result=' ok=`expr $ok + 1` || nok=`expr $nok + 1`'
-
 failed=''
+mod_global='doit'
 
 testrun() {
-  mash=$1
-  modif=''
-  if [ "$2" = undo ]; then modif='undo '; shift; fi
-  verb=$2
-  recipe=$3
+    if [ "$mod_global" = doit ]; then mod=''; else mod="$mod_global "; fi
+    mod="$([ "$mod_global" = doit ] && printf '' || printf '%s ' $mod_global)"
+    verb=$1
+    recipe=$2
 
-  printf "\n\n-----------------------------------------------------\n\n"
+    tmpl='\n\n----- %s %s ------------------------------------------------\n\n'
+    # shellcheck disable=2059
+    printf "$tmpl" "$verb" "$recipe"
 
-  # shellcheck disable=2086
-  if $mash ${modif}${verb} $recipe; then
-    ok=$(expr $ok + 1)
-  else
-    nok=$(expr $nok + 1)
-    failed="$failed $recipe"
-    printf "\n\n%sFAILED RECIPE: %s !!  FAILED RECIPE: %s !!%s\n\n" "$CRED" "$recipe" "$recipe" "$COFF"
-  fi
+    # shellcheck disable=2086
+    if mash ${mod}${verb} $recipe; then
+        ok=$(expr $ok + 1)
+    else
+        nok=$(expr $nok + 1)
+        failed="$failed $recipe"
+        printf "\n\n%sFAILED RECIPE: %s !!  FAILED RECIPE: %s !!%s\n\n" \
+            "$CRED" "$recipe" "$recipe" "$COFF"
+    fi
 }
 
+full_test() {
+    moderate_test
+    testrun install dev-essentials
+    testrun install docker
+    #testrun install firefox
+    #testrun install pycharm-pro
+}
 
-testrun mash install bitwarden
-testrun mash install wire
+moderate_test() {
+    testrun install bitwarden
+    testrun install wire
 
-#testrun mash install dev-essentials
-testrun mash install docker-compose
-#testrun mash install docker
+    #testrun install dev-essentials
+    testrun install docker-compose
+    #testrun install docker
 
-#testrun mash install firefox
+    #testrun install firefox
 
-testrun mash install github-cli
-testrun mash install pipx-local
-testrun mash install pycharm-community
+    testrun install github-cli
+    testrun install pipx-local
+    testrun install pycharm-community
 
-#testrun mash install pycharm-pro
+    #testrun install pycharm-pro
 
-testrun mash install shell-check
-testrun mash install shfmt
-testrun mash install vscodium
-testrun mash setup python-dev
+    testrun install shell-check
+    testrun install shfmt
+    testrun install vscodium
+    testrun setup python-dev
 
+}
 
-#true && capture_result
-#true && capture_result
-#true && capture_result
-#true && capture_result
+quick_test() {
+    testrun install shell-check
+    testrun install shfmt
+}
 
-total=$(expr $ok + $nok)
+recap() {
+    total=$(expr "$ok" + "$nok")
 
-if [ "$nok" -gt 0 ]; then COL=$CRED; else COL=$CGRN; fi
+    if [ "$nok" -gt 0 ]; then COL=$CRED; else COL=$CGRN; fi
 
-printf "\n\n\nE2E TEST RESULTS: **************************\n"
-echo "TOTAL: $total,  Passed: $ok,  ${COL}FAILED: ${nok}${COFF}"
-[ $nok -gt 0 ] && echo "Failed recipes: ${COL}${failed}${COFF}"
+    printf "\n\n\nE2E TEST RESULTS: **************************\n"
+    echo "TOTAL: $total,  Passed: $ok,  ${COL}FAILED: ${nok}${COFF}"
+    [ "$nok" -gt 0 ] && echo "Failed recipes: ${COL}${failed}${COFF}"
+}
 
-unalias capture_result
+main() {
+    # target_func should be one of `quick`, `average` or `full`
+    target="${1:-quick}"
+    target_func="${target}_test"
+    printf '%s: invoked with target suite "%s"\n\n' "$(basename "$0")" "$target"
+
+    mod_global=doit
+    ${target_func}
+
+    mod_global=undo
+    $target_func
+
+    mod_global=doit
+    ${target_func}
+
+    recap
+}
+
+main "$@"
+echo "nok=$nok"
+exit "$nok"
