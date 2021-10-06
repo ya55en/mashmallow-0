@@ -24,7 +24,7 @@ echo "DEBUG: _URL_DOWNLOAD='${_URL_DOWNLOAD}'"
 create_dot_local() {
     #: Create ~/.local/{bin,lib,opt,share}.
 
-    # mkdir -p "${_LOCAL}"
+    # mkdir -p "${_LOCAL}"  # YD: Do we need this?
 
     if [ -e "$_LOCAL" ]; then
         echo "W: $_LOCAL already exists, skipping."
