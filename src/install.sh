@@ -9,8 +9,10 @@ _LOCAL_SUBDIRS='bin lib opt share'
 _MASH_HOME="${MASH_HOME:-${_LOCAL}/opt/mash}"
 _DOWNLOAD_CACHE=/tmp
 
-# TODO: auto-detect latest version
-__version__='0.0.5'
+_URL_LATEST=https://github.com/ya55en/mashmallow-0/releases/latest
+_URL_DOWNLOAD_RE='^location: https://github.com/ya55en/mashmallow-0/releases/tag/v\(.*\)$'
+__version__=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
+# __version__='0.0.5'
 _MASH_FILENAME="mash-v${__version__}.tgz"
 _URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${__version__}/${_MASH_FILENAME}"
 
@@ -21,6 +23,8 @@ echo "DEBUG: _URL_DOWNLOAD='${_URL_DOWNLOAD}'"
 
 create_dot_local() {
     #: Create ~/.local/{bin,lib,opt,share}.
+
+    # mkdir -p "${_LOCAL}"
 
     if [ -e "$_LOCAL" ]; then
         echo "W: $_LOCAL already exists, skipping."
