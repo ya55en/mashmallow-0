@@ -57,15 +57,18 @@ install_app_image() {
 
 setup_gnome_assets() {
     #: Create/copy .desktop file and an icon.
+    # Copy of their original .desktop file into /share/applications/
+    # We still have our own .desktop by the name com.wire.desktop but it is opsolete now.
+    sleep 14s
 
-    [ -e "${_LOCAL}/share/applications/com.wire.desktop" ] && [ -e "${_LOCAL}/opt/wire/${icon_file}" ]
+    [ -e "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop" ] && [ -e "${_LOCAL}/opt/wire/${icon_file}" ]
 
     if [ $? = 0 ]; then
         log info "Gnome assets already installed, skipping."
     else
         log info "Installing gnome assets ..."
         # shellcheck disable=SC1090
-        . "$_APPLICATIONS_DIR/com.wire.desktop" > "${_LOCAL}/share/applications/com.wire.desktop"
+        . "$_APPLICATIONS_DIR/appimagekit-wire-desktop.desktop" > "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
         cp -p "${_ICONS_DIR}/${icon_file}" "${_LOCAL}/opt/wire/${icon_file}"
     fi
 }
@@ -98,9 +101,9 @@ undo() {
 
     # Remove gnome assets
     log info "Removing gnome assets..."
-    rm -f "${_LOCAL}/opt/wire/wire-icon.png"
+    rm -f "${_ICONS_DIR}/${icon_file}"
     result="${result}:$?"
-    rm -f "${_LOCAL}/share/applications/com.wire.desktop"
+    rm -f "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
     result="${result}:$?"
 
     # Remove symlink
