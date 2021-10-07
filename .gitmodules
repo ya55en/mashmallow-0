@@ -1,0 +1,3 @@
+[submodule "chroot-setup"]
+	path = chroot-setup
+	url = https://github.com/ya55en/mash-0-chroot-setup.git
