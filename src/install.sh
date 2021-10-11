@@ -126,8 +126,15 @@ create_add_to_path_script_99() {
 
 MASH_HOME="$_MASH_HOME" ; export MASH_HOME
 
+# MASH_IMPORT_PATH is necessary for sys.sh 'import()' to work.
+echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/etc" || MASH_IMPORT_PATH="\$MASH_IMPORT_PATH:\$MASH_HOME/etc"
+echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/lib" || MASH_IMPORT_PATH="\$MASH_IMPORT_PATH:\$MASH_HOME/lib"
+export MASH_IMPORT_PATH
+
+# [ -n "\$MASH_IMPORT_PATH" ] || MASH_IMPORT_PATH="\$MASH_HOME/etc:\$MASH_HOME/lib"
+
 echo \$PATH | grep -q "\$MASH_HOME/bin" ||
-    PATH="\$MASH_HOME/bin:\$PATH" ; export PATH
+    PATH="\$MASH_HOME/bin:\$PATH"; export PATH
 
 EOS
     fi

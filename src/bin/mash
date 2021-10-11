@@ -2,6 +2,7 @@
 
 __version__='0.0.5'
 
+
 # [ -n "$MASH_HOME" ] || die 1 "mash NOT configured - MASH_HOME not set (E1211)"
 _MASH_HOME="${MASH_HOME:-$(dirname "$(dirname "$0")")}"
 
@@ -33,6 +34,8 @@ DEBUG=${DEBUG:-false}
 
 # include libma.sh
 
+. "$MASH_HOME/lib/sys.sh"
+
 [ "$DEBUG" = true ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
 
 if [ "${1}" = '-v' ] || [ "${1}" = '--version' ]; then
@@ -46,10 +49,13 @@ if [ "${1}" = '-h' ] || [ "${1}" = '--help' ]; then
 fi
 
 # shellcheck disable=SC1090
-{
-    . "${_MASH_HOME}/etc/mashrc"
-    . "${_LIB_DIR}/libma.sh"
-}
+#{
+#    . "${_MASH_HOME}/etc/mashrc"
+#    . "${_LIB_DIR}/libma.sh"
+#}
+
+import mashrc
+import libma
 
 mash_action='doit' # one of 'doit', 'undo', 'verify'
 
