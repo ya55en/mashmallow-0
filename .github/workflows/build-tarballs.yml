@@ -1,0 +1,45 @@
+---
+#: GitHub actions workflow for building chroot tarballs
+#: for ma'shmallow-0 testing environments.
+
+name: mash-ci
+
+on:
+  # Suppressing builds on push for now; leaving only chron-based builds.
+
+  push:
+    branches:
+      # any branches (must quote the asterisk)
+      - '*'
+      # $default-branch (must be main) doesn't seem to work
+      - main
+
+jobs:
+  test-mash:
+
+    runs-on: ubuntu-latest
+    environment: STAGE
+
+    env:
+      CHROOT_TARBALLS_URL: https://github.com/ya55en/mash-0-chroot-setup/releases/download/v0.0.5
+      CHROOT: /tmp/mash-ramdisk
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: git submodule sync --recursive
+      - run: git submodule update --init --force --recursive --depth=1
+      - run: sudo apt-get update
+      # - run: sudo apt-get upgrade
+      - run: sudo apt-get install -y debootstrap make curl
+      - run: sudo apt-get clean
+
+      - run: sudo mkdir "$CHROOT"
+      - run: cd chroot-setup && ./scripts/create-dot-env.sh <.env.mk.sample >.env.mk
+      - run: cd chroot-setup && make clean-build  # creates ./chroot-setup/build/
+
+      - run: curl -sSL "$CHROOT_TARBALLS_URL/focal-headless.tar.gz" -o ./chroot-setup/build/focal-headless.tar.gz
+      - run: curl -sSL "$CHROOT_TARBALLS_URL/focal-mate-desktop.tar.gz" -o ./chroot-setup/build/focal-mate-desktop.tar.gz
+
+      - run: cd chroot-setup && make mate-desktop-up
+      - run: make test-quick
+      - run: cd chroot-setup && make mate-desktop-down
