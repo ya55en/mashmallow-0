@@ -2,39 +2,38 @@
 
 ## Ideas about installed mash layout
 
-```
-.
-└── mash
-    ├── bin
-    ├── etc
-    ├── lib
-    │   └── self
-    └── recipes
-        ├── fix
-        ├── install
-        └── setup
+New ideas needed for separating the recipes repository and the
+mash-code code.
 
-```
+
+## Testing framework
+
+We want to easily invoke test execution from console (via make)
+and within the CI environment.
+
+Would be great to be able to make a diff with the previous commit
+and execute tests for mash-core only if mash-core files are affected
+(including install.sh), tests for particular recipes if those have
+been changed, and only for them, and (almost) full tests probably
+nightly.
+
 
 ## Ideas about mash cli sub-commands
 
 ```
 mash undo install bitwarden
-mash undo fix i915-firmware
+mash undo fix linux-firmware-i915
 
-mash self update
+mash self puge  # removing EVERYTHING mash
 mash self test
-mash self uninstall
 mash self reinstall
 mash self security-check
 
-mash fix i915-firmware
+mash fix linux-firmware-i915
 
-mash setup dev-essential [1]
-mash setup python-dev
 mash setup python-pip
-mash setup python-pipx [2]
 
+mash setup python-dev
 mash setup golang-dev
 mash setup rust-dev
 mash setup nim-dev
@@ -56,6 +55,19 @@ _____
   - mash install pipx-local
 - rust-4dev
 - golang-4dev
+
+
+### Done (more or less):
+
+## Ideas about mash cli sub-commands
+
+```
+mash undo install bitwarden  # DONE
+mash self update  # DONE, beta
+mash self remove  # DONE, beta (was mash self uninstall)
+mash setup dev-essential [1]  # DONE, beta
+mash setup python-pipx [2]  # DONE, seems stable
+```
 
 _____
 - [1] install dev-essential:
@@ -92,7 +104,23 @@ _____
 _____
 
 
-### Done (more or less):
+## Ideas about installed mash layout
+
+```
+.
+└── mash
+    ├── bin
+    ├── etc
+    ├── lib
+    │   └── self
+    └── recipes
+        ├── fix
+        ├── install
+        └── setup
+
+```
+
+Apps to provide install recipes for:
 
 - Bitwarden
 - VS Code

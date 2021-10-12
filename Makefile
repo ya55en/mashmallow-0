@@ -16,17 +16,18 @@ EXCLUDED := install.sh
 SOURCES := $(shell find ./src/ -name "*.*" -a ! -name $(EXCLUDED))
 
 
-#: Set environment variables so that this project's mash is active.
-setenv:
-	@./scripts/4make/setenv.sh
-
-
 dist:  $(SOURCES)
 	@rm -f ./dist/mash-$(tag).tgz
 	@[ -d ./dist/mash-$(tag).tgz ] || mkdir -p ./dist
 	@[ -f ./dist/mash-$(tag).tgz ] || \
 		tar czvf ./dist/mash-$(tag).tgz -C src --exclude=$(EXCLUDED) .
 	@echo "Created ./dist/mash-$(tag).tgz."
+
+
+#: Set environment variables so that this project's mash is active.
+#: (Do "eval `make setenv`" to get these variables take effect.)
+setenv:
+	@./scripts/4make/setenv.sh
 
 
 #: Clean up generated artifacts.
@@ -88,13 +89,20 @@ del-venv:
 	;fi
 
 
-PIP_REQUIREMENTS := tests/shell_testbed/requirements.txt
+# PIP_REQUIREMENTS := tests/shell_testbed/requirements.txt
 
-#: Install python venv dependencies.
-deps:
-	@"$(VENV_DIR)/bin/python3" -m pip install -r "$(PIP_REQUIREMENTS)"
+# #: Install python venv dependencies.
+# deps:
+# 	@"$(VENV_DIR)/bin/python3" -m pip install -r "$(PIP_REQUIREMENTS)"
+
+
+test-%:
+	@$(MAKE) test-$* -C chroot-setup
 
 
 .PHONY:  setenv clean-dist clean-tarballs clean-all
 .PHONY:  show-release show-del-branch
-.PHONY:  create-venv del-venv deps
+.PHONY:  create-venv del-venv
+
+# No python tools yet, sleeping ;)
+# .PHONY:  deps
