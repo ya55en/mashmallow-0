@@ -44,12 +44,13 @@ def _main(argv: list) -> int:
 
 
     result = f'''\
- $ # Make sure you have bumped version and committed with a message like:
- $ # Release v{version} - Improved docker-related recipes
+ $ # Make sure you have bumped ./next-tag and committed with a message like:
+ $ # Release v{version} - Improve docker-related recipes
  $ git tag v{version}
  $ make clean-dist && make dist
  $ git push && git push --tags
- $ gh release create v{version} --notes "{release_note} ({commit[:7]}, unofficial)" ./dist/mash-v{version}.tgz
+ $ # The command below creates a DRAFT release - publish after successful CI ;)
+ $ gh release create v{version} -d -t v{version} -n "{release_note} ({commit[:7]}, unofficial)" ./dist/mash-v{version}.tgz
 '''
 
     print(result, end="")

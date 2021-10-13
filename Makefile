@@ -7,7 +7,7 @@ VENV_DIR := .venv
 
 # current build version
 # _version_ := $(shell git tag | tail -1)
-_version_ := $(shell ./scripts/4make/dump-version.sh)
+_version_ := $(shell ./scripts/dump-version.sh)
 
 # current branch
 branch := $(shell git branch --no-color --show-current)
@@ -15,18 +15,19 @@ branch := $(shell git branch --no-color --show-current)
 # Anything in src/ matters for re-creating the dist tarball (but install.sh)
 EXCLUDED := install.sh
 SOURCES := $(shell find ./src/ -name "*" -a ! -name $(EXCLUDED))
+DISTFILE := ./dist/mash-v$(_version_).tgz
 
 
-./dist/mash-$(_version_).tgz:  $(SOURCES)
+$(DISTFILE):  $(SOURCES)
 	@echo "_version_=[$(_version_)]"
 	@[ -n "$(_version_)" ] || { echo 'FATAL: version _version_ NOT found in git _version_ log'; exit 11; }
 	@echo $(_version_) > ./src/etc/version
 	@[ -d ./dist/ ] || mkdir -p ./dist
-	@rm -f ./dist/mash-v$(_version_).tgz
-	@tar czvf ./dist/mash-v$(_version_).tgz -C src --exclude=$(EXCLUDED) .
-	@echo "Created ./dist/mash-v$(_version_).tgz."
+	@rm -f $(DISTFILE)
+	@tar czvf $(DISTFILE) -C src --exclude=$(EXCLUDED) .
+	@echo "Created $(DISTFILE)."
 
-dist:  ./dist/mash-$(_version_).tgz
+dist:  $(DISTFILE)
 
 
 show-sources:

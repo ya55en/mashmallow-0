@@ -17,72 +17,81 @@ DEBUG=${DEBUG:-false}
 
 # TODO: move (or remove) include*()
 
-# include() {
-#     lib_script="$1"
-#     # shellcheck disable=SC1090
-#     . "${_LIB_DIR}/${lib_script}"
-# }
-
-# include_recipe() {
-#     verb_n_script="$1"
-#     # shellcheck disable=SC1090
-#     . "${_RECIPES_DIR}/${verb_n_script}"
-# }
-
 # include libma.sh
 
 . "$MASH_HOME/lib/sys.sh"
 
-[ "$DEBUG" = true ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
-
-if [ "$1" = '-v' ] || [ "$1" = '--version' ]; then
-    IFS=-
-    read -r _version_ _hash_ < "$MASH_HOME/etc/version"
-    echo "ma'shmallow v$_version_ ($_hash_)"
-    exit 0
-fi
-
-if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
-    echo "ma'shmallow v$_version_: help not (yet) available, apologies... :\\"
-    # TODO: write a help page
-    exit 1
-fi
-
 import mashrc
 import libma
 
-mash_action='doit' # one of 'doit', 'undo', 'verify'
+_mash_project_name_="ma'shmallow"
 
-case "${1}" in
-    install | setup | self)
-        true
-        ;;
+#: Process first argument if -v or --version.
+process_version() {
 
-    undo | verify)
-        mash_action="${1}"
-        shift
-        ;;
-    *)
-        die 5 "Unknown verb or modifier: '$1'"
-        ;;
-esac
+    if [ "$1" = '-v' ] || [ "$1" = '--version' ]; then
+        IFS=-
+        read -r _version_ _hash_ < "$MASH_HOME/etc/version"
+        [ -n "$_hash_" ] || _hash_='release'  # when on a release commit
+        echo "$_mash_project_name_ v$_version_ ($_hash_)"
+        exit 0
+    fi
+}
 
-verb="${1}"
-recipe="${2}"
+#: Process first argument if -h or --help.
+process_help() {
+    if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
+        echo "$_mash_project_name_ v$_version_: help not (yet) available, apologies... :\\"
+        # TODO: write a help page
+        exit 1
+    fi
 
-script_dir="${_RECIPES_DIR}/${verb}"
-script_full_path="${script_dir}/${recipe}.sh"
+}
 
-log debug "mash_action=${mash_action}"
-log debug "verb=${verb}"
-log debug "recipe=${recipe}"
-log debug "script_dir=${script_dir}"
-log debug "script_full_path=${script_full_path}"
+main() {
+    local _version_
+    local _hash_
 
-[ -e "${script_dir}" ] || die 2 "Unknown verb '${verb}'"
-[ -f "${script_full_path}" ] || die 2 "Unknown recipe '${recipe}'"
 
-# shellcheck disable=SC1090
-. "${script_full_path}"
+    [ "$DEBUG" = true ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
+    process_version "$@"
+    process_help "$@"
 
-# include_recipe "${verb}/${script}"
+    mash_action='doit' # one of 'doit', 'undo', 'verify'
+
+    case "${1}" in
+        install | setup | self)
+            true
+            ;;
+
+        undo | verify)
+            mash_action="${1}"
+            shift
+            ;;
+        *)
+            die 5 "Unknown verb or modifier: '$1'"
+            ;;
+    esac
+
+    verb="${1}"
+    recipe="${2}"
+
+    script_dir="${_RECIPES_DIR}/${verb}"
+    script_full_path="${script_dir}/${recipe}.sh"
+
+    log debug "mash_action=${mash_action}"
+    log debug "verb=${verb}"
+    log debug "recipe=${recipe}"
+    log debug "script_dir=${script_dir}"
+    log debug "script_full_path=${script_full_path}"
+
+    [ -e "${script_dir}" ] || die 2 "Unknown verb '${verb}'"
+    [ -f "${script_full_path}" ] || die 2 "Unknown recipe '${recipe}'"
+
+    # shellcheck disable=SC1090
+    . "${script_full_path}"
+
+    # include_recipe "${verb}/${script}"
+}
+
+main "$@"
