@@ -2,26 +2,13 @@
 
 # set -x
 
+import gh-download
 # Assumming lib/libma.sh has been sourced already.
 
-DEBUG=true
 _ARCH=x86_64
-_LOCAL="$HOME/.local"
 
 # Install Wire
-version='3.26.2941'
-app_file="Wire-${version}_${_ARCH}.AppImage"
-app_fullpath="$_LOCAL/opt/wire/${app_file}"
-download_target="${_DOWNLOAD_CACHE}/${app_file}"
-icon_file="wire-icon-dark-128.png"
-mkdir -p "${_DOWNLOAD_CACHE}"
-
-log debug "version=[$version]"
-
-# https://wire-app.wire.com/linux/Wire-3.26.2941_x86_64.AppImage
-_URL_DOWNLOAD="https://wire-app.wire.com/linux/${app_file}"
-
-log debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
+DEBUG=true
 
 download_appimage() {
     #: Download and install the app image
@@ -57,16 +44,18 @@ install_app_image() {
 
 setup_gnome_assets() {
     #: Create/copy .desktop file and an icon.
+    # Copy of their original .desktop file into /share/applications/
+    # We still have our own .desktop by the name com.wire.desktop but it is opsolete now.
 
-    [ -e "${_LOCAL}/share/applications/com.wire.desktop" ] && [ -e "${_LOCAL}/opt/wire/${icon_file}" ]
+    [ -e "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop" ] # && [ -e "${_LOCAL}/opt/wire/${icon_file}" ]
 
     if [ $? = 0 ]; then
         log info "Gnome assets already installed, skipping."
     else
         log info "Installing gnome assets ..."
         # shellcheck disable=SC1090
-        . "$_APPLICATIONS_DIR/com.wire.desktop" > "${_LOCAL}/share/applications/com.wire.desktop"
-        cp -p "${_ICONS_DIR}/${icon_file}" "${_LOCAL}/opt/wire/${icon_file}"
+        . "$_APPLICATIONS_DIR/appimagekit-wire-desktop.desktop" > "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
+        # cp -p "${_ICONS_DIR}/${icon_file}" "${_LOCAL}/opt/wire/${icon_file}"
     fi
 }
 
@@ -94,13 +83,13 @@ doit() {
 undo() {
     log info "** Un-installing Wire:"
 
-    result=''
+    local result=''
 
     # Remove gnome assets
     log info "Removing gnome assets..."
-    rm -f "${_LOCAL}/opt/wire/wire-icon.png"
+    # rm -f "${_ICONS_DIR}/${icon_file}"
     result="${result}:$?"
-    rm -f "${_LOCAL}/share/applications/com.wire.desktop"
+    rm -f "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
     result="${result}:$?"
 
     # Remove symlink
@@ -120,5 +109,27 @@ undo() {
     fi
 }
 
-# shellcheck disable=2154
-$mash_action
+main() {
+    local version
+    local app_file
+    local app_fullpath
+    local download_target
+
+    version='3.26.2941'
+    app_file="Wire-${version}_${_ARCH}.AppImage"
+    app_fullpath="$_LOCAL/opt/wire/${app_file}"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+
+    # local icon_file
+    # icon_file="wire-icon-dark-128.png"
+
+    # https://wire-app.wire.com/linux/Wire-3.26.2941_x86_64.AppImage
+    _URL_DOWNLOAD="https://wire-app.wire.com/linux/${app_file}"
+    log debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
+    log debug "version=[$version]"
+
+    # shellcheck disable=2154
+    $mash_action
+}
+
+main

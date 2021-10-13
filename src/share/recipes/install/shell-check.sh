@@ -1,67 +1,33 @@
 #!/bin/sh
 
-_ARCH=x86_64
-_LOCAL="$HOME/.local"
-
-# TODO: Determine the latest release (a way similar to the one this is done for Bitwarden would do);
-#  WIP
-
-#_URL_LATEST=https://github.com/koalaman/shellcheck/releases/latest
-#_URL_DOWNLOAD_RE='^location: https://github.com/koalaman/shellcheck/releases/tag/v\(.*\)$'
-#version=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
-#
-#app_file="Bitwarden-${version}-${_ARCH}.AppImage"
-##app_fullpath="${_LOCAL}/opt/bitwarden/${app_file}"
-##download_target="${_DOWNLOAD_CACHE}/${app_file}"
-#
-#log debug "version=[$version]"
-#if [ x"$version" = x ]; then die 3 'Failed to get Shellcheck latest version'; fi
-#
-#_URL_DOWNLOAD="https://github.com/koalaman/shellcheck/releases/download/v${version}/${app_file}
-#/v0.7.2/shellcheck-v0.7.2.linux.x86_64.tar.xz"
-#
-#log debug "_URL_DOWNLOAD=[${_URL_DOWNLOAD}]"
-
-version='0.7.2'
-shellcheck_filename="shellcheck-${version}.linux.${_ARCH}.tar.gz"
-shellcheck_dir="$_LOCAL/opt/shellcheck-v${version}"
-log debug "version=[$version]"
-_URL_DOWNLOAD="https://github.com/koalaman/shellcheck/releases/download/v0.7.2/shellcheck-v0.7.2.linux.x86_64.tar.xz"
-log debug "_URL_DOWNLOAD=[${_URL_DOWNLOAD}]"
+import gh-download
 
 download_tarball() {
     #: Download shellcheck tarball into download_cache_dir
-    skip="${1:-no-skip}"
 
-    if [ "$skip" = skip-if-exists ] && [ -f "${_DOWNLOAD_CACHE}/${shellcheck_filename}" ]; then
-        log warn "Target archive already downloaded, skipping."
-        log warn "File exits: ${_DOWNLOAD_CACHE}/${shellcheck_filename}"
-    else
-        log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
-        # log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
-        mkdir -p "${_DOWNLOAD_CACHE}"
-        log debug "download_cache_dir=$_DOWNLOAD_CACHE"
-        log info "Downloading Shellcheck, v${version}..."
-        rm -f "${_DOWNLOAD_CACHE}/${shellcheck_filename}"
-        curl -sL "$_URL_DOWNLOAD" -o "${_DOWNLOAD_CACHE}/${shellcheck_filename}" ||
-            die 9 "Download FAILED. rc=$? (URL: $_URL_DOWNLOAD)"
-    fi
+    log debug "raw version=[$raw_version]"
+    log debug "version=[$version]"
+    [ -n "$version" ] || {
+        die 3 "Failed to get ${project_path} latest version"
+    }
+    log info "Downloading ${project_path}, v${version} ..."
+    gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 extract_into_opt() {
     #: Extract the shellcheck tarball into ~/.local/opt/.
 
-    log info "Extracting ${_DOWNLOAD_CACHE}/${shellcheck_filename}..."
-    tar xf "${_DOWNLOAD_CACHE}/${shellcheck_filename}" -C "$_LOCAL/opt/" ||
-        die $? "Extracting ${_DOWNLOAD_CACHE}/${shellcheck_filename} FAILED (rc=$?)"
-    [ -d "${shellcheck_dir}" ] || die 2 "Shellcheck directory NOT found: ${shellcheck_dir}"
+    log info "Extracting ${download_target} ..."
+    tar xf "${download_target}" -C "$_LOCAL/opt/" ||
+        die $? "Extracting ${download_target} FAILED (rc=$?)"
+    [ -d "${app_fullpath}" ] || die 2 "Shellcheck directory NOT found: ${app_fullpath}"
 }
 
 create_symlink() {
     #: Create symlink to the shellcheck executable.
 
-    log info "Creating symlink to ${shellcheck_dir}/bin/shellcheck ..."
-    ln -fs "${shellcheck_dir}/shellcheck" "$_LOCAL/bin/shellcheck"
+    log info "Creating symlink to ${app_fullpath}/bin/shellcheck ..."
+    ln -fs "${app_fullpath}/shellcheck" "$_LOCAL/bin/shellcheck"
 }
 
 smoke_test() {
@@ -86,7 +52,7 @@ EOS
 
 doit() {
     log debug "Installing shellcheck version=[$version]"
-    download_tarball skip-if-exists
+    download_tarball
     # check_hashsum
     extract_into_opt
     create_symlink
@@ -101,10 +67,28 @@ undo() {
     log info "Removing symlink $_LOCAL/bin/shellcheck ..."
     rm "$_LOCAL/bin/shellcheck"
 
-    log info "Removing directory ${shellcheck_dir} ..."
-    rm -r "${shellcheck_dir}"
+    log info "Removing directory ${app_fullpath} ..."
+    rm -r "${app_fullpath}"
 
     log info 'UNinstallation ended.'
 }
 
-$mash_action
+main() {
+    _ARCH=x86_64
+    local raw_version
+    local version
+    local app_file
+    local app_fullpath
+    local download_target
+    local project_path='koalaman/shellcheck'
+
+    raw_version="$(gh_latest_raw_version $project_path)"
+    version="${raw_version#v*}"
+    app_file="shellcheck-${raw_version}.linux.${_ARCH}.tar.xz"
+    app_fullpath="${_LOCAL}/opt/shellcheck-v${version}"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+
+    $mash_action
+}
+
+main

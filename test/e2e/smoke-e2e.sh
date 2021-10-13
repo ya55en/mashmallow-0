@@ -45,7 +45,7 @@ full_test() {
     #testrun install pycharm-pro
 }
 
-moderate_test() {
+standard_test() {
     testrun install bitwarden
     testrun install wire
 
@@ -65,7 +65,6 @@ moderate_test() {
     testrun install shfmt
     testrun install vscodium
     testrun setup python-dev
-
 }
 
 quick_test() {

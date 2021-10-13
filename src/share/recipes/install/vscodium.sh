@@ -1,6 +1,11 @@
 #! /bin/sh
 
+# set -x
+
+import gh-download
+
 # Install Visual Studio Code
+
 # Current download URL is:
 #   https://az764295.vo.msecnd.net/stable/83bd43bc519d15e50c4272c6cf5c1479df196a4d/code-stable-x64-1631295096.tar.gz
 
@@ -13,33 +18,16 @@
 
 # TODO: Provide a .desktop file; clean up above notes
 
-# set -x
-
-version='1.60.1'
-ARCH_SHORT=x64
-
-_URL_DOWNLOAD="https://github.com/VSCodium/vscodium/releases/download/${version}/VSCodium-linux-${ARCH_SHORT}-${version}.tar.gz"
-_URL_HASHSUM="https://github.com/VSCodium/vscodium/releases/download/${version}/VSCodium-linux-${ARCH_SHORT}-${version}/.tar.gz.sha256"
-
-vscodium_filename="VSCodium-linux-${ARCH_SHORT}-${version}.tar.gz"
-vscodium_opt_dirname="vscodium-${version}"
-dot_desktop_file='com.vscodium.desktop'
-download_cache_dir="$HOME/.cache/mash/downloads"
-mkdir -p "${download_cache_dir}"
-
 download_tarball() {
     #: Download codium tarball into download_cache_dir
 
-    # TODO: implement download skip if file already there and having proper hashsum
-
-    log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
-    log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
-    log debug "download_cache_dir=$download_cache_dir"
-    log info "Downloading VSCodium, v${version}..."
-    rm -f "${download_cache_dir}/${vscodium_filename}"
-    curl -sL "$_URL_DOWNLOAD" -o "${download_cache_dir}/${vscodium_filename}" ||
-        die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
-
+    log debug "raw version=[$raw_version]"
+    log debug "version=[$version]"
+    [ -n "$version" ] || {
+        die 3 "Failed to get ${project_path} latest version"
+    }
+    log info "Downloading ${project_path}, v${version} ..."
+    gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 check_hashsum() {
@@ -49,25 +37,25 @@ check_hashsum() {
 }
 
 extract_to_opt() {
-    #: Extract the codium tarball into ~/.local/opt/$vscodium_opt_dirname.
+    #: Extract the codium tarball into ~/.local/opt/$app_opt_dirname.
 
-    log info "Extracting ${download_cache_dir}/${vscodium_filename}..."
-    filename="${download_cache_dir}/${vscodium_filename}"
-    dirname="${_LOCAL}/opt/${vscodium_opt_dirname}"
+    log info "Extracting ${download_target} ..."
+    filename="${download_target}"
+    dirname="${_LOCAL}/opt/${app_opt_dirname}"
 
     mkdir -p "${dirname}"
     tar xf "${filename}" -C "${dirname}" ||
         die $? "Extracting ${filename} FAILED (rc=$?)"
-    [ -d "${_LOCAL}/opt/${vscodium_opt_dirname}/bin" ] ||
+    [ -d "${_LOCAL}/opt/${app_opt_dirname}/bin" ] ||
         die 2 "Bin directory NOT found: ${dirname}/bin"
 }
 
 make_symlink_in_local_bin() {
-    #: Create symlink to ${_LOCAL}/opt/${vscodium_opt_dirname}/bin/codium in ~/.local/bin/
+    #: Create symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in ~/.local/bin/
 
-    log info "Creating a symlink to ${_LOCAL}/opt/${vscodium_opt_dirname}/bin/codium in $_LOCAL/bin/..."
+    log info "Creating a symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in $_LOCAL/bin/..."
     # shellcheck disable=SC2016  # Need to pass this verbatim to into_dir_do()
-    into_dir_do "${_LOCAL}/bin" 'ln -fs "${_LOCAL}/opt/${vscodium_opt_dirname}/bin/codium"'
+    into_dir_do "${_LOCAL}/bin" 'ln -fs "${_LOCAL}/opt/${app_opt_dirname}/bin/codium"'
     linked_binary="${_LOCAL}/bin/codium"
     [ -L "$linked_binary" ] || die 2 "Linked binary NOT found: ${linked_binary}"
 }
@@ -94,7 +82,7 @@ smoke_test() {
 }
 
 doit() {
-    log info "Installing codium ${version} (${ARCH_SHORT})..."
+    log info "Installing vscodium v${version} (${ARCH_SHORT})..."
     download_tarball
     check_hashsum || die 77 "Hashsum check FAILED! Please check, aborting."
     extract_to_opt
@@ -106,10 +94,31 @@ doit() {
 undo() {
     log info "*UN*installing codium ${version} (${ARCH_SHORT})..."
     rm "${_LOCAL}/bin/codium" || die 15 "Cannot remove ${_LOCAL}/bin/codium"
-    rm -r "${_LOCAL}/opt/${vscodium_opt_dirname}" || die 15 "Cannot remove ${_LOCAL}/opt/${vscodium_opt_dirname}"
+    rm -r "${_LOCAL}/opt/${app_opt_dirname}" || die 15 "Cannot remove ${_LOCAL}/opt/${app_opt_dirname}"
     rm "${_LOCAL}/share/applications/${dot_desktop_file}"
     smoke_test && die 99 "Coduim NOT removed, still working"
     echo 'Undo install done.'
 }
 
-$mash_action
+main() {
+    ARCH_SHORT=x64
+    local dot_desktop_file
+    local project_path
+    local raw_version
+    local version
+    local app_file
+    local app_opt_dirname
+    local download_target
+
+    dot_desktop_file='com.vscodium.desktop'
+    project_path='VSCodium/vscodium'
+    raw_version="$(gh_latest_raw_version $project_path)"
+    version="${raw_version#v*}"
+    app_file="VSCodium-linux-${ARCH_SHORT}-${version}.tar.gz"
+    app_opt_dirname="vscodium-${version}"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+
+    $mash_action
+}
+
+main
