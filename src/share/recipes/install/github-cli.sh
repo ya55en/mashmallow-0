@@ -1,42 +1,19 @@
 #! /bin/sh
 
+import gh-download
+
 #: Install github cli
-
-ARCH=x86_64
-
-if [ "$ARCH" = x86_64 ]; then
-    _short_arch=amd64
-elif [ "$ARCH" = x86 ]; then
-    _short_arch=386
-# TODO: provide mapping for all supported architectures
-else
-    die 77 "Unknown architecture: ARCH=[$ARCH]"
-fi
-
-version='1.14.0'
-ghcli_filename="gh_${version}_linux_${_short_arch}.tar.gz"
-ghcli_dir="$_LOCAL/opt/gh_${version}_linux_${_short_arch}"
-
-_URL_DOWNLOAD="https://github.com/cli/cli/releases/download/v${version}/${ghcli_filename}"
-log debug "_URL_DOWNLOAD"
 
 download_tarball() {
     #: Download gh cli tarball into download_cache_dir
-    skip="${1:-no-skip}"
 
-    if [ "$skip" = skip-if-exists ] && [ -f "${_DOWNLOAD_CACHE}/${ghcli_filename}" ]; then
-        log warn "Target archive already downloaded, skipping."
-        log warn "File exits: ${_DOWNLOAD_CACHE}/${ghcli_filename}"
-    else
-        log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
-        # log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
-        mkdir -p "${_DOWNLOAD_CACHE}"
-        log debug "download_cache_dir=$_DOWNLOAD_CACHE"
-        log info "Downloading Gh Cli, v${version}..."
-        rm -f "${_DOWNLOAD_CACHE}/${ghcli_filename}"
-        curl -sL "$_URL_DOWNLOAD" -o "${_DOWNLOAD_CACHE}/${ghcli_filename}" ||
-            die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
-    fi
+    log debug "raw version=[$raw_version]"
+    log debug "version=[$version]"
+    [ -n "$version" ] || {
+        die 3 "Failed to get ${project_path} latest version"
+    }
+    log info "Downloading ${project_path}, v${version} ..."
+    gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 # TODO: check hash (no hash provided by upstream; make up one)
@@ -44,17 +21,17 @@ download_tarball() {
 extract_into_opt() {
     #: Extract the github-cli tarball into ~/.local/opt/.
 
-    log info "Extracting ${_DOWNLOAD_CACHE}/${ghcli_filename}..."
-    tar xf "${_DOWNLOAD_CACHE}/${ghcli_filename}" -C "$_LOCAL/opt/" ||
-        die $? "Extracting ${_DOWNLOAD_CACHE}/${ghcli_filename} FAILED (rc=$?)"
-    [ -d "${ghcli_dir}/bin" ] || die 2 "Bin directory NOT found: ${ghcli_dir}/bin"
+    log info "Extracting ${download_target} ..."
+    tar xf "${download_target}" -C "$_LOCAL/opt/" ||
+        die $? "Extracting ${download_target} FAILED (rc=$?)"
+    [ -d "${app_fullpath}/bin" ] || die 2 "Bin directory NOT found: ${app_fullpath}/bin"
 }
 
 create_symlink() {
     #: Create symlink to the gh executable.
 
-    log info "Creating symlink to ${ghcli_dir}/bin/gh ..."
-    ln -fs "${ghcli_dir}/bin/gh" "$_LOCAL/bin/gh"
+    log info "Creating symlink to ${app_fullpath}/bin/gh ..."
+    ln -fs "${app_fullpath}/bin/gh" "$_LOCAL/bin/gh"
 }
 
 smoke_test() {
@@ -81,7 +58,7 @@ EOS
 
 doit() {
     log debug "Installing ghcli version=[$version]"
-    download_tarball skip-if-exists
+    download_tarball
     # check_hashsum
     extract_into_opt
     create_symlink
@@ -96,10 +73,43 @@ undo() {
     log info "Removing symlink $_LOCAL/bin/gh ..."
     rm "$_LOCAL/bin/gh"
 
-    log info "Removing directory ${ghcli_dir} ..."
-    rm -r "${ghcli_dir}"
+    log info "Removing directory ${app_fullpath} ..."
+    rm -r "${app_fullpath}"
 
     log info 'UNinstallation ended.'
 }
 
-$mash_action
+main() {
+    ARCH=x86_64
+    if [ "$ARCH" = x86_64 ]; then
+        _short_arch=amd64
+    elif [ "$ARCH" = x86 ]; then
+        _short_arch=386
+    # TODO: provide mapping for all supported architectures
+    else
+        die 77 "Unknown architecture: ARCH=[$ARCH]"
+    fi
+
+    # _URL_DOWNLOAD="https://github.com/cli/cli/releases/download/v${version}/${ghcli_filename}"
+    # log debug "_URL_DOWNLOAD"
+
+    local raw_version
+    local version
+    local app_file
+    local app_fullpath
+    local download_target
+    local project_path='cli/cli'
+
+    raw_version="$(gh_latest_raw_version $project_path)"
+    version="${raw_version#v*}"
+    # version='1.14.0'
+    app_file="gh_${version}_linux_${_short_arch}.tar.gz"
+    app_fullpath="$_LOCAL/opt/gh_${version}_linux_${_short_arch}"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+    log debug "Version: [${version}]"
+    log debug "Download URL: [${_DOWNLOAD_URL}]"
+
+    $mash_action
+}
+
+main

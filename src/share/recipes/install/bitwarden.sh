@@ -2,37 +2,23 @@
 
 # set -x
 
-# Assumming lib/libma.sh has been sourced already.
+import gh-download
+# Assumming libma has been imported already.
 
 _ARCH=x86_64
-_LOCAL="$HOME/.local"
 
 # Install Bitwarden
-_URL_LATEST=https://github.com/bitwarden/desktop/releases/latest
-_URL_DOWNLOAD_RE='^location: https://github.com/bitwarden/desktop/releases/tag/v\(.*\)$'
-version=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
-
-app_file="Bitwarden-${version}-${_ARCH}.AppImage"
-app_fullpath="${_LOCAL}/opt/bitwarden/${app_file}"
-download_target="${_DOWNLOAD_CACHE}/${app_file}"
-
-log debug "version=[$version]"
-if [ x"$version" = x ]; then die 3 'Failed to get Bitwarden latest version'; fi
-
-_URL_DOWNLOAD="https://github.com/bitwarden/desktop/releases/download/v${version}/${app_file}"
-
-log debug "_URL_DOWNLOAD=[${_URL_DOWNLOAD}]"
 
 download_appimage() {
-    #: Download and install the app image
+    #: Download the app image
 
-    if [ -e "${download_target}" ]; then
-        log warn "App file already downloaded/cached, skipping."
-    else
-        mkdir -p "${_DOWNLOAD_CACHE}"
-        log info "Downloading Bitwarden desktop v${version}..."
-        curl -sL "$_URL_DOWNLOAD" -o "${download_target}" || die 25 "Bitwarden download FAILED! (rc=$?)"
-    fi
+    log debug "raw version=[$raw_version]"
+    log debug "version=[$version]"
+    [ -n "$version" ] || {
+        die 3 "Failed to get ${project_path} latest version"
+    }
+    log info "Downloading ${project_path} app-image ..."
+    gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 check_hashsum() {
@@ -85,7 +71,7 @@ EOS
 }
 
 doit() {
-    log info "** Installing bitwarden:"
+    log info "** Installing bitwarden v${version}:"
     download_appimage
     check_hashsum
     install_app_image
@@ -122,5 +108,22 @@ undo() {
     fi
 }
 
-# shellcheck disable=2154
-$mash_action
+main() {
+    local raw_version
+    local version
+    local app_file
+    local app_fullpath
+    local download_target
+    local project_path='bitwarden/desktop'
+
+    raw_version="$(gh_latest_raw_version $project_path)"
+    version="${raw_version#v*}"
+    app_file="Bitwarden-${version}-${_ARCH}.AppImage"
+    app_fullpath="${_LOCAL}/opt/bitwarden/${app_file}"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+
+    # shellcheck disable=2154
+    $mash_action
+}
+
+main

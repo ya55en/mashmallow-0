@@ -98,7 +98,7 @@ import() {
   _sys__find_module_in_paths "$MASH_IMPORT_PATH" || {
     # TODO: Fix headless chroot env to handle redirection to stderr, then re-enable.
     echo "FATAL: Module $mod_name NOT found in MASH_IMPORT_PATH" # >> /dev/stderr
-    echo "       MASH_IMPORT_PATH=$MASH_IMPORT_PATH"             # >> /dev/stderr
+    echo "       MASH_IMPORT_PATH='$MASH_IMPORT_PATH'"           # >> /dev/stderr
     exit 5
   }
 }

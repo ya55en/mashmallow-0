@@ -1,63 +1,39 @@
 #!/bin/bash
 
-# 0. The installation would determine last version TODO: make it so it does that
+import gh-download
 
-ARCH=x86_64
-if [ "$ARCH" = x86_64 ]; then
-    _short_arch=amd64
-elif [ "$ARCH" = x86 ]; then
-    _short_arch=386
-# TODO: provide mapping for all supported architectures
-else
-    die 77 "Unknown architecture: ARCH=[$ARCH]"
-fi
-
-_LOCAL="$HOME/.local"
-version='3.3.1'
-shfmt_filename="shfmt_v${version}_linux_${_short_arch}"
-shfmt_dir="$_LOCAL/opt/shfmt"
-log debug "Version: [${version}]"
-_DOWNLOAD_URL="https://github.com/mvdan/sh/releases/download/v${version}/shfmt_v${version}_linux_${_short_arch}"
-log debug "Download URL: [${_DOWNLOAD_URL}]"
+# Install shfmt
 
 download_into_cache() {
     #: Download into the download cache.
 
-    skip="${1:-no-skip}"
-
-    if [ "$skip" = skip-if-exists ] && [ -f "${_DOWNLOAD_CACHE}/${shfmt_filename}" ]; then
-        log warn "Target archive already downloaded, skipping."
-        log warn "File exits: ${_DOWNLOAD_CACHE}/${shfmt_filename}"
-    else
-        log debug "_DOWNLOAD_URL=$_DOWNLOAD_URL"
-        # log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
-        mkdir -p "${_DOWNLOAD_CACHE}"
-        log debug "DOWNLOAD_CACHE dir=${_DOWNLOAD_CACHE}"
-        log info "Downloading shfmt, v${version} ..."
-        rm -f "${_DOWNLOAD_CACHE}/${shfmt_filename}"
-        curl -sL "${_DOWNLOAD_URL}" -o "${_DOWNLOAD_CACHE}/${shfmt_filename}" ||
-            die 97 "Download FAILED. rc=$? (URL: ${_DOWNLOAD_URL})"
-        chmod 775 "${_DOWNLOAD_CACHE}/${shfmt_filename}"
-    fi
+    log debug "raw version=[$raw_version]"
+    log debug "version=[$version]"
+    [ -n "$version" ] || {
+        die 3 "Failed to get ${project_path} latest version"
+    }
+    log info "Downloading ${project_path}, v${version} ..."
+    gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 move_into_opt() {
     #: Create ./local/opt/shfmt/ and put the versioned binary
     #: (e.g. shfmt_v3.3.1_linux_amd64) there.
 
-    log info "Creating ${shfmt_dir} ..."
-    mkdir -p "${shfmt_dir}"
-    log info "Copying ${_DOWNLOAD_CACHE}/${shfmt_filename} into opt ..."
-    cp -p "${_DOWNLOAD_CACHE}/${shfmt_filename}" "${shfmt_dir}" ||
-        die $? "Moving ${_DOWNLOAD_CACHE}/${shfmt_filename} FAILED (rc=$?)"
-    [ -d "$shfmt_dir" ] || die 63 "Shfmt directory NOT found: ${shfmt_dir}"
+    log info "Creating ${app_fullpath} ..."
+    mkdir -p "${app_fullpath}"
+    log info "Copying ${download_target} into opt ..."
+    cp -p "${download_target}" "${app_fullpath}" ||
+        die $? "Moving ${download_target} FAILED (rc=$?)"
+    [ -d "$app_fullpath" ] || die 63 "Shfmt directory NOT found: ${app_fullpath}"
+    chmod 755 "${app_fullpath}/${app_file}"
 }
 
 create_symlink() {
     #: Create a symlink in ./local/bin named shfmt.
 
     log info "Creating symlink in ./local/bin named shfmt ..."
-    ln -fs "${shfmt_dir}/${shfmt_filename}" "${_LOCAL}/bin/shfmt"
+    ln -fs "${app_fullpath}/${app_file}" "${_LOCAL}/bin/shfmt"
 }
 
 smoke_test() {
@@ -83,7 +59,7 @@ EOS
 }
 
 doit() {
-    download_into_cache skip-if-exists
+    download_into_cache
     move_into_opt
     create_symlink
     smoke_test
@@ -97,17 +73,47 @@ undo() {
     rm "$_LOCAL/bin/shfmt"
 
     log info "Removing shfmt binary ..."
-    rm "${shfmt_dir}/${shfmt_filename}"
+    rm "${app_fullpath}/${app_file}"
 
-    if [ -d "${shfmt_dir}" ]; then
-        log info "Removing directory ${shfmt_dir} ..."
-        rmdir "${shfmt_dir}"
-        [ -d "${shfmt_dir}" ] &&
-            log warn "shfmt directory not empty, so not deleted: ${shfmt_dir}"
+    if [ -d "${app_fullpath}" ]; then
+        log info "Removing directory ${app_fullpath} ..."
+        rmdir "${app_fullpath}"
+        [ -d "${app_fullpath}" ] &&
+            log warn "shfmt directory not empty, so not deleted: ${app_fullpath}"
     else
-        log info "Directory already removed: ${shfmt_dir}."
+        log info "Directory already removed: ${app_fullpath}."
     fi
     log info 'shfmt removed successfully.'
 }
 
-$mash_action
+main() {
+
+    ARCH=x86_64
+    if [ "$ARCH" = x86_64 ]; then
+        _short_arch=amd64
+    elif [ "$ARCH" = x86 ]; then
+        _short_arch=386
+    # TODO: provide mapping for all supported architectures
+    else
+        die 77 "Unknown architecture: ARCH=[$ARCH]"
+    fi
+
+    local raw_version
+    local version
+    local app_file
+    local app_fullpath
+    local download_target
+    local project_path='mvdan/sh'
+
+    raw_version="$(gh_latest_raw_version $project_path)"
+    version="${raw_version#v*}"
+    app_file="shfmt_v${version}_linux_${_short_arch}"
+    app_fullpath="$_LOCAL/opt/shfmt"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+    # log debug "Version: [${version}]"
+    # log debug "Download URL: [${_DOWNLOAD_URL}]"
+
+    $mash_action
+}
+
+main

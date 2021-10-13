@@ -1,45 +1,30 @@
 #! /bin/sh
 
-_ARCH="$(uname -m)"
-_KERNEL="$(uname -s)"
+import gh-download
 
-_URL_LATEST='https://github.com/docker/compose/releases/latest'
-_URL_DOWNLOAD_RE='^location: https://github.com/docker/compose/releases/tag/v\(.*\)$'
-#_VERSION="$(curl -Is $_URL_LATEST | grep '^location' | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")"
-_VERSION='1.29.2'
-
-# TODO: Versions 2.x follow different URL/ARCH naming convention and need different handling
-
-_BIN_LOC="${_LOCAL}/bin/docker-compose"
-_FILE_URL="https://github.com/docker/compose/releases/download/${_VERSION}/docker-compose-${_KERNEL}-${_ARCH}"
-_file_name="docker-compose-${_KERNEL}-${_ARCH}"
-_download_target="${_DOWNLOAD_CACHE}/${_file_name}"
-
-log debug "_VERSION=$_VERSION"
-log debug "_FILE_URL=$_FILE_URL"
+#: Install Docker Compose
 
 download_into_cache() {
     #: Download into a cache folder.
 
-    if [ -e "${_download_target}" ]; then
-        log info "Already downloaded/cached, skipping."
-    else
-        mkdir -p "${_DOWNLOAD_CACHE}"
-        log info "Downloading decker-compose v${_VERSION} ..."
-        curl -sL "${_FILE_URL}" -o "${_download_target}" ||
-            die 25 "docker-compose download FAILED! (rc=$?)"
-    fi
+    log debug "raw version=[$raw_version]"
+    log debug "version=[$version]"
+    [ -n "$version" ] || {
+        die 3 "Failed to get ${project_path} latest version"
+    }
+    log info "Downloading ${project_path}, v${version} ..."
+    gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 copy_into_bin_loc() {
     #: Copy from $HOME/.cache/mash/downloads to $HOME/.local/bin .
 
-    if [ -e "${_BIN_LOC}/${_file_name}" ]; then
+    if [ -e "${bin_loc}/${app_file}" ]; then
         log warn "Already in $HOME/.local/bin, skipping."
     else
-        log info "Copying ${_file_name} to ${_BIN_LOC} ..."
-        cp "${_download_target}" "${_BIN_LOC}"
-        chmod +x "${_BIN_LOC}"
+        log info "Copying ${app_file} to ${bin_loc} ..."
+        cp "${download_target}" "${bin_loc}"
+        chmod +x "${bin_loc}"
     fi
 }
 
@@ -54,7 +39,6 @@ smoke_test() {
     else
         log error 'docker-compose installation FAILED.'
     fi
-
 }
 
 inform_user() {
@@ -67,7 +51,6 @@ Completed. You can use docker-compose instantly, like:
 Enjoy! ;)
 
 EOS
-
 }
 
 doit() {
@@ -80,9 +63,40 @@ doit() {
 undo() {
     log warn "Removing docker-compose ..."
 
-    log info "Removing binary from ${_BIN_LOC}"
-    rm "${_BIN_LOC}" || die 65 "Could not remove ${_BIN_LOC}/${_file_name} !"
+    log info "Removing binary from ${bin_loc}"
+    rm "${bin_loc}" || die 65 "Could not remove ${bin_loc}/${app_file} !"
     log info "docker-compose removed successfully."
 }
 
-$mash_action
+main() {
+    _ARCH="$(uname -m)"
+    _KERNEL="$(uname -s)"
+
+    # TODO: Versions 2.x follow different URL/ARCH naming convention and need different handling
+
+    # _URL_LATEST='https://github.com/docker/compose/releases/latest'
+    # _URL_DOWNLOAD_RE='^location: https://github.com/docker/compose/releases/tag/v\(.*\)$'
+    # _FILE_URL="https://github.com/docker/compose/releases/download/${_VERSION}/docker-compose-${_KERNEL}-${_ARCH}"
+
+    log debug "_VERSION=$_VERSION"
+    log debug "_FILE_URL=$_FILE_URL"
+
+    local bin_loc
+    local raw_version
+    local version
+    local app_file
+    local download_target
+    local project_path='docker/compose'
+
+    bin_loc="${_LOCAL}/bin/docker-compose"
+    raw_version="$(gh_latest_raw_version $project_path)"
+    version="${raw_version#v*}"
+    app_file="docker-compose-${_KERNEL}-${_ARCH}"
+    download_target="${_DOWNLOAD_CACHE}/${app_file}"
+    log debug "Version: [${version}]"
+    log debug "Download URL: [${_DOWNLOAD_URL}]"
+
+    $mash_action
+}
+
+main
