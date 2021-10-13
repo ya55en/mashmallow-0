@@ -87,15 +87,15 @@ create_bashrcd() {
     fi
 }
 
-create_add_to_path_script_00() {
-    #: Create add-to-path script ~/.bashrc.d/00-mash-init.sh.
+create_bashrcd_script_00() {
+    #: Create bashrcd script ~/.bashrc.d/00-mash-init.sh.
 
     target_file_path="$HOME/.bashrc.d/00-mash-init.sh"
 
     if [ -e "${target_file_path}" ]; then
-        echo "Add-to-path init script already exists, skipping. (${target_file_path})"
+        echo "Bashrcd script '00-mash-init.sh' already exists, skipping. (${target_file_path})"
     else
-        echo "Installing add-to-path init script ${target_file_path}..."
+        echo "Installing bashrcd script ${target_file_path}..."
         cat > "${target_file_path}" << EOS
 # ~/.bashrc.d/00-mash-init.sh - mash: initialization: first things first ;)
 
@@ -113,29 +113,41 @@ EOS
     fi
 }
 
-create_add_to_path_script_99() {
-    #: Create add-to-path script ~/.bashrc.d/99-mash-setup.sh.
+create_bashrcd_script_99_home() {
+    #: Create bashrcd script ~/.bashrc.d/98-mash-home.sh.
 
-    target_file_path="$HOME/.bashrc.d/99-mash-setup.sh"
+    target_file_path="$HOME/.bashrc.d/98-mash-home.sh"
 
     if [ -e "${target_file_path}" ]; then
-        echo "Add-to-path setup script already exists, skipping. (${target_file_path})"
+        echo "Bashrcd script '98-mash-home.sh' already exists, skipping. (${target_file_path})"
     else
-        echo "Installing add-to-path setup script ${target_file_path}..."
+        echo "Installing bashrcd script ${target_file_path}..."
         cat > "${target_file_path}" << EOS
-# ~/.bashrc.d/99-mash-setup.sh - mash: set some variables and do add-to-path mash/bin
+# ~/.bashrc.d/98-mash-home.sh - mash: set some variables and do bashrcd mash/bin
 
 MASH_HOME="$_MASH_HOME" ; export MASH_HOME
+echo \$PATH | grep -q "\$MASH_HOME/bin" || PATH="\$MASH_HOME/bin:\$PATH"; export PATH
+
+EOS
+    fi
+}
+
+create_bashrcd_script_99_import_path() {
+    #: Create bashrcd script ~/.bashrc.d/99-mash-import-path.sh.
+
+    target_file_path="$HOME/.bashrc.d/99-mash-import-path.sh"
+
+    if [ -e "${target_file_path}" ]; then
+        echo "bashrcd script '99-mash-import-path.sh' already exists, skipping. (${target_file_path})"
+    else
+        echo "Installing bashrcd script ${target_file_path}..."
+        cat > "${target_file_path}" << EOS
+# ~/.bashrc.d/99-mash-import-path.sh - mash: set MASH_IMPORT_PATH
 
 # MASH_IMPORT_PATH is necessary for sys.sh 'import()' to work.
-echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/etc" || MASH_IMPORT_PATH="\$MASH_IMPORT_PATH:\$MASH_HOME/etc"
-echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/lib" || MASH_IMPORT_PATH="\$MASH_IMPORT_PATH:\$MASH_HOME/lib"
+echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/etc" || MASH_IMPORT_PATH="\$MASH_HOME/etc:\$MASH_IMPORT_PATH"
+echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/lib" || MASH_IMPORT_PATH="\$MASH_HOME/lib:\$MASH_IMPORT_PATH"
 export MASH_IMPORT_PATH
-
-# [ -n "\$MASH_IMPORT_PATH" ] || MASH_IMPORT_PATH="\$MASH_HOME/etc:\$MASH_HOME/lib"
-
-echo \$PATH | grep -q "\$MASH_HOME/bin" ||
-    PATH="\$MASH_HOME/bin:\$PATH"; export PATH
 
 EOS
     fi
@@ -180,8 +192,9 @@ main() {
     download_mash_core
     install_mash_core
     create_bashrcd
-    create_add_to_path_script_00
-    create_add_to_path_script_99
+    create_bashrcd_script_00
+    create_bashrcd_script_99_home
+    create_bashrcd_script_99_import_path
     add_bashrcd_sourcing_snippet
     instruct_user
 }
