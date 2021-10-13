@@ -9,10 +9,10 @@
 # TODO: provide unit and e2e tests
 # TODO: move to ../
 
-version_regex='^.*v\([0-9]\+.[0-9]\+.[0-9]\+\).*$'
 
 extract_from_message() {
     # local message='Release v 1.2.0 here'
+    local version_regex='^.*v\([0-9]\+.[0-9]\+.[0-9]\+\).*$'
     local message="$(git log -n1 --format=format:%s)"
     local version
 
@@ -40,12 +40,14 @@ main() {
 
     tag="$(extract_from_message)"
     if [ -n "$tag" ]; then
-        hash="release-$(truncated_hash)"
+        # hash="-release"
+        hash='' # we n
     else
-        hash="$(truncated_hash)"
+        hash="-$(truncated_hash)"
+        tag="$(cat ./next-tag || cat ../next-tag)"
     fi
 
-    printf '%s-%s\n' "$tag" "$hash"
+    printf '%s%s\n' "$tag" "$hash"
 }
 
 main
