@@ -29,10 +29,23 @@ dump_next_tag() {
     cat ./next-tag
 }
 
-main() {
-    local tag="$(extract_from_message || dump_next_tag)"
+truncated_hash() {
     local hash="$(git log -n1 --format=format:%H)"
-    printf '%s-%s\n' "$tag" "${hash%"${hash#???????}"}"
+    printf '%s' "${hash%"${hash#?????}"}"
+}
+
+main() {
+    local tag
+    local hash
+
+    tag="$(extract_from_message)"
+    if [ -n "$tag" ]; then
+        hash="release-$(truncated_hash)"
+    else
+        hash="$(truncated_hash)"
+    fi
+
+    printf '%s-%s\n' "$tag" "$hash"
 }
 
 main
