@@ -5,23 +5,32 @@
 PROJECT_NAME := mashmallow-0
 VENV_DIR := .venv
 
-# latest git tag
-tag := $(shell git tag | tail -1)
+# current build version
+# _version_ := $(shell git tag | tail -1)
+_version_ := $(shell ./scripts/4make/dump-version.sh)
 
 # current branch
 branch := $(shell git branch --no-color --show-current)
 
 # Anything in src/ matters for re-creating the dist tarball (but install.sh)
 EXCLUDED := install.sh
-SOURCES := $(shell find ./src/ -name "*.*" -a ! -name $(EXCLUDED))
+SOURCES := $(shell find ./src/ -name "*" -a ! -name $(EXCLUDED))
 
 
-dist:  $(SOURCES)
-	@rm -f ./dist/mash-$(tag).tgz
-	@[ -d ./dist/mash-$(tag).tgz ] || mkdir -p ./dist
-	@[ -f ./dist/mash-$(tag).tgz ] || \
-		tar czvf ./dist/mash-$(tag).tgz -C src --exclude=$(EXCLUDED) .
-	@echo "Created ./dist/mash-$(tag).tgz."
+./dist/mash-$(_version_).tgz:  $(SOURCES)
+	@echo "_version_=[$(_version_)]"
+	@[ -n "$(_version_)" ] || { echo 'FATAL: version _version_ NOT found in git _version_ log'; exit 11; }
+	@echo $(_version_) > ./src/etc/version
+	@[ -d ./dist/ ] || mkdir -p ./dist
+	@rm -f ./dist/mash-v$(_version_).tgz
+	@tar czvf ./dist/mash-v$(_version_).tgz -C src --exclude=$(EXCLUDED) .
+	@echo "Created ./dist/mash-v$(_version_).tgz."
+
+dist:  ./dist/mash-$(_version_).tgz
+
+
+show-sources:
+	@echo "SOURCES=$(SOURCES)"
 
 
 #: Set environment variables so that this project's mash is active.
@@ -32,7 +41,7 @@ setenv:
 
 #: Clean up generated artifacts.
 clean-dist:
-	rm -rf ./dist
+	rm -rf ./dist; mkdir ./dist/
 
 
 #: Clean docker builds. TODO: remove if not needed.
@@ -101,7 +110,7 @@ test-%:
 
 
 .PHONY:  setenv clean-dist clean-tarballs clean-all
-.PHONY:  show-release show-del-branch
+.PHONY:  dist show-release show-del-branch
 .PHONY:  create-venv del-venv
 
 # No python tools yet, sleeping ;)

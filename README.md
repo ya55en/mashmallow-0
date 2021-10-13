@@ -38,7 +38,7 @@ All done, you just sit and watch or take a up of coffee ;)
 
 _ma'shmallow_ is still in exeprimental phase - do NOT install on your production machine! Use a virtual machine, a container or a chroot environment at this phase.
 
-Install mash v0.0.5 with:
+Install the latest stable `mash` with:
 
 ```bash
 curl -sL https://github.com/ya55en/mashmallow-0/raw/main/src/install.sh | sh

@@ -1,6 +1,7 @@
 # .gitignore for mashmallow-0
 
 # locally specific
+src/etc/version
 tmp/
 
 # backups

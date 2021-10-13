@@ -11,8 +11,9 @@ _DOWNLOAD_CACHE=/tmp
 
 _URL_LATEST=https://github.com/ya55en/mashmallow-0/releases/latest
 _URL_DOWNLOAD_RE='^location: https://github.com/ya55en/mashmallow-0/releases/tag/v\(.*\)$'
-__version__=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
-# __version__='0.0.5'
+__latest__=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
+__version__="${1:-$__latest__}"  # version passed as an argument for unreleased builds
+
 _MASH_FILENAME="mash-v${__version__}.tgz"
 _URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${__version__}/${_MASH_FILENAME}"
 
