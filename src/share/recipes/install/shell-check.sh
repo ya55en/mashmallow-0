@@ -1,6 +1,9 @@
 #!/bin/sh
 
+import os
 import gh-download
+
+#: Install shellcheck
 
 download_tarball() {
     #: Download shellcheck tarball into download_cache_dir
@@ -74,7 +77,6 @@ undo() {
 }
 
 main() {
-    _ARCH=x86_64
     local raw_version
     local version
     local app_file
@@ -84,7 +86,7 @@ main() {
 
     raw_version="$(gh_latest_raw_version $project_path)"
     version="${raw_version#v*}"
-    app_file="shellcheck-${raw_version}.linux.${_ARCH}.tar.xz"
+    app_file="shellcheck-${raw_version}.linux.${_OS_ARCH}.tar.xz"
     app_fullpath="${_LOCAL}/opt/shellcheck-v${version}"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
 

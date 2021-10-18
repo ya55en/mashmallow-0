@@ -1,5 +1,6 @@
 #! /bin/sh
 
+import os
 import gh-download
 
 #: Install Docker Compose
@@ -54,10 +55,10 @@ EOS
 }
 
 doit() {
-  download_into_cache
-  copy_into_bin_loc
-  smoke_test
-  inform_user
+    download_into_cache
+    copy_into_bin_loc
+    smoke_test
+    inform_user
 }
 
 undo() {
@@ -69,17 +70,7 @@ undo() {
 }
 
 main() {
-    _ARCH="$(uname -m)"
-    _KERNEL="$(uname -s)"
-
     # TODO: Versions 2.x follow different URL/ARCH naming convention and need different handling
-
-    # _URL_LATEST='https://github.com/docker/compose/releases/latest'
-    # _URL_DOWNLOAD_RE='^location: https://github.com/docker/compose/releases/tag/v\(.*\)$'
-    # _FILE_URL="https://github.com/docker/compose/releases/download/${_VERSION}/docker-compose-${_KERNEL}-${_ARCH}"
-
-    log debug "_VERSION=$_VERSION"
-    log debug "_FILE_URL=$_FILE_URL"
 
     local bin_loc
     local raw_version
@@ -91,8 +82,9 @@ main() {
     bin_loc="${_LOCAL}/bin/docker-compose"
     raw_version="$(gh_latest_raw_version $project_path)"
     version="${raw_version#v*}"
-    app_file="docker-compose-${_KERNEL}-${_ARCH}"
+    app_file="docker-compose-${_OS_KERNEL_NAME}-${_OS_ARCH}"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
+
     log debug "Version: [${version}]"
     log debug "Download URL: [${_DOWNLOAD_URL}]"
 

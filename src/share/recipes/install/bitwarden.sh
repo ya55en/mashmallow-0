@@ -2,12 +2,10 @@
 
 # set -x
 
+import os
 import gh-download
-# Assumming libma has been imported already.
 
-_ARCH=x86_64
-
-# Install Bitwarden
+#: Install Bitwarden
 
 download_appimage() {
     #: Download the app image
@@ -118,7 +116,7 @@ main() {
 
     raw_version="$(gh_latest_raw_version $project_path)"
     version="${raw_version#v*}"
-    app_file="Bitwarden-${version}-${_ARCH}.AppImage"
+    app_file="Bitwarden-${version}-${_OS_ARCH}.AppImage"
     app_fullpath="${_LOCAL}/opt/bitwarden/${app_file}"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
 
