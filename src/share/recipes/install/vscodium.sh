@@ -2,21 +2,13 @@
 
 # set -x
 
+import os
 import gh-download
 
-# Install Visual Studio Code
+#: Install VSCodium
 
-# Current download URL is:
-#   https://az764295.vo.msecnd.net/stable/83bd43bc519d15e50c4272c6cf5c1479df196a4d/code-stable-x64-1631295096.tar.gz
-
-# download tarball to cache dir
-# https://github.com/VSCodium/vscodium/releases/download/1.60.1/VSCodium-linux-x64-1.60.1.tar.gz
 # check hashsum
 # https://github.com/VSCodium/vscodium/releases/download/1.60.1/VSCodium-linux-x64-1.60.1.tar.gz.sha256
-# extract into .local/opt
-# make a symlink in .local/bin/codium to .local/opt/vscodium-1.60.1/bin/vscodium
-
-# TODO: Provide a .desktop file; clean up above notes
 
 download_tarball() {
     #: Download codium tarball into download_cache_dir
@@ -62,6 +54,7 @@ make_symlink_in_local_bin() {
 
 install_dot_desktop() {
     dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file}"
+    mkdir -p "$_LOCAL/share/applications"
     if [ -e "${dot_desktop_fullpath}" ]; then
         log warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
     else
@@ -82,7 +75,7 @@ smoke_test() {
 }
 
 doit() {
-    log info "Installing vscodium v${version} (${ARCH_SHORT})..."
+    log info "Installing vscodium v${version} ($arch_short)..."
     download_tarball
     check_hashsum || die 77 "Hashsum check FAILED! Please check, aborting."
     extract_to_opt
@@ -92,7 +85,7 @@ doit() {
 }
 
 undo() {
-    log info "*UN*installing codium ${version} (${ARCH_SHORT})..."
+    log info "*UN*installing codium v${version} ($arch_short)..."
     rm "${_LOCAL}/bin/codium" || die 15 "Cannot remove ${_LOCAL}/bin/codium"
     rm -r "${_LOCAL}/opt/${app_opt_dirname}" || die 15 "Cannot remove ${_LOCAL}/opt/${app_opt_dirname}"
     rm "${_LOCAL}/share/applications/${dot_desktop_file}"
@@ -100,8 +93,18 @@ undo() {
     echo 'Undo install done.'
 }
 
+get_arch_short() {
+    if [ "$_OS_ARCH" = x86_64 ]; then
+        printf 'x64'
+    elif [ "$_OS_ARCH" = x86 ]; then
+        die 76 "VSCodioum does NOT support arch $_OS_ARCH"
+    # TODO: provide mapping for all supported architectures
+    else
+        die 77 "Architecture not implemented yet: ARCH=[$_OS_ARCH]"
+    fi
+}
+
 main() {
-    ARCH_SHORT=x64
     local dot_desktop_file
     local project_path
     local raw_version
@@ -109,12 +112,14 @@ main() {
     local app_file
     local app_opt_dirname
     local download_target
+    local arch_short
 
+    arch_short="$(get_arch_short)"
     dot_desktop_file='com.vscodium.desktop'
     project_path='VSCodium/vscodium'
     raw_version="$(gh_latest_raw_version $project_path)"
     version="${raw_version#v*}"
-    app_file="VSCodium-linux-${ARCH_SHORT}-${version}.tar.gz"
+    app_file="VSCodium-linux-${arch_short}-${version}.tar.gz"
     app_opt_dirname="vscodium-${version}"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
 

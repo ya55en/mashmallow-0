@@ -1,8 +1,9 @@
 #!/bin/bash
 
+import os
 import gh-download
 
-# Install shfmt
+#: Install shfmt
 
 download_into_cache() {
     #: Download into the download cache.
@@ -87,17 +88,6 @@ undo() {
 }
 
 main() {
-
-    ARCH=x86_64
-    if [ "$ARCH" = x86_64 ]; then
-        _short_arch=amd64
-    elif [ "$ARCH" = x86 ]; then
-        _short_arch=386
-    # TODO: provide mapping for all supported architectures
-    else
-        die 77 "Unknown architecture: ARCH=[$ARCH]"
-    fi
-
     local raw_version
     local version
     local app_file
@@ -107,11 +97,12 @@ main() {
 
     raw_version="$(gh_latest_raw_version $project_path)"
     version="${raw_version#v*}"
-    app_file="shfmt_v${version}_linux_${_short_arch}"
+    app_file="shfmt_v${version}_linux_${_OS_ARCH_SHORT}"
     app_fullpath="$_LOCAL/opt/shfmt"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
-    # log debug "Version: [${version}]"
-    # log debug "Download URL: [${_DOWNLOAD_URL}]"
+
+    log debug "Version: [${version}]"
+    log debug "Download URL: [${_DOWNLOAD_URL}]"
 
     $mash_action
 }

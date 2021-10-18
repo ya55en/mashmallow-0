@@ -1,5 +1,6 @@
 #! /bin/sh
 
+import os
 import gh-download
 
 #: Install github cli
@@ -80,19 +81,6 @@ undo() {
 }
 
 main() {
-    ARCH=x86_64
-    if [ "$ARCH" = x86_64 ]; then
-        _short_arch=amd64
-    elif [ "$ARCH" = x86 ]; then
-        _short_arch=386
-    # TODO: provide mapping for all supported architectures
-    else
-        die 77 "Unknown architecture: ARCH=[$ARCH]"
-    fi
-
-    # _URL_DOWNLOAD="https://github.com/cli/cli/releases/download/v${version}/${ghcli_filename}"
-    # log debug "_URL_DOWNLOAD"
-
     local raw_version
     local version
     local app_file
@@ -102,9 +90,8 @@ main() {
 
     raw_version="$(gh_latest_raw_version $project_path)"
     version="${raw_version#v*}"
-    # version='1.14.0'
-    app_file="gh_${version}_linux_${_short_arch}.tar.gz"
-    app_fullpath="$_LOCAL/opt/gh_${version}_linux_${_short_arch}"
+    app_file="gh_${version}_linux_${_OS_ARCH_SHORT}.tar.gz"
+    app_fullpath="$_LOCAL/opt/gh_${version}_linux_${_OS_ARCH_SHORT}"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
     log debug "Version: [${version}]"
     log debug "Download URL: [${_DOWNLOAD_URL}]"

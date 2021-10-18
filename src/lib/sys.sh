@@ -22,6 +22,15 @@ _name_="$(basename "$0")"
 _SYS__MODEXT='.sh'
 STDERR='/dev/stderr'
 
+#: Terminate execution with given rc and message.
+die() {
+    rc=$1
+    msg="$2"
+
+    echo "FATAL: $msg"
+    exit $rc
+}
+
 #: Return true if given `$str` contains a colon, false (rc=1) otherwise.
 _sys__contains_colon() {
   local str="$1"
