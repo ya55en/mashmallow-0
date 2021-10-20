@@ -1,6 +1,7 @@
 #!/bin/sh
 
 import os
+import logging
 import gh-download
 
 #: Install shellcheck
@@ -8,19 +9,19 @@ import gh-download
 download_tarball() {
     #: Download shellcheck tarball into download_cache_dir
 
-    log debug "raw version=[$raw_version]"
-    log debug "version=[$version]"
+    _debug "raw version=[$raw_version]"
+    _debug "version=[$version]"
     [ -n "$version" ] || {
         die 3 "Failed to get ${project_path} latest version"
     }
-    log info "Downloading ${project_path}, v${version} ..."
+    _info "Downloading ${project_path}, v${version} ..."
     gh_download "$project_path" "$raw_version" "$app_file"
 }
 
 extract_into_opt() {
     #: Extract the shellcheck tarball into ~/.local/opt/.
 
-    log info "Extracting ${download_target} ..."
+    _info "Extracting ${download_target} ..."
     tar xf "${download_target}" -C "$_LOCAL/opt/" ||
         die $? "Extracting ${download_target} FAILED (rc=$?)"
     [ -d "${app_fullpath}" ] || die 2 "Shellcheck directory NOT found: ${app_fullpath}"
@@ -29,16 +30,16 @@ extract_into_opt() {
 create_symlink() {
     #: Create symlink to the shellcheck executable.
 
-    log info "Creating symlink to ${app_fullpath}/bin/shellcheck ..."
+    _info "Creating symlink to ${app_fullpath}/bin/shellcheck ..."
     ln -fs "${app_fullpath}/shellcheck" "$_LOCAL/bin/shellcheck"
 }
 
 smoke_test() {
-    log debug "Running a smoke test ..."
+    _debug "Running a smoke test ..."
     if shellcheck --version; then
-        log info "Smoke test passed OK. (shellcheck --version)"
+        _info "Smoke test passed OK. (shellcheck --version)"
     else
-        log error "Smoke test FAILED! Please check the logs."
+        _error "Smoke test FAILED! Please check the logs."
         exit 56
     fi
 }
@@ -54,26 +55,26 @@ EOS
 }
 
 doit() {
-    log debug "Installing shellcheck version=[$version]"
+    _debug "Installing shellcheck version=[$version]"
     download_tarball
     # check_hashsum
     extract_into_opt
     create_symlink
     smoke_test
     instruct_user
-    log info 'SUCCESS.'
+    _info 'SUCCESS.'
 }
 
 undo() {
-    log warn "UNinstalling shellcheck version=[$version]"
+    _warn "UNinstalling shellcheck version=[$version]"
 
-    log info "Removing symlink $_LOCAL/bin/shellcheck ..."
+    _info "Removing symlink $_LOCAL/bin/shellcheck ..."
     rm "$_LOCAL/bin/shellcheck"
 
-    log info "Removing directory ${app_fullpath} ..."
+    _info "Removing directory ${app_fullpath} ..."
     rm -r "${app_fullpath}"
 
-    log info 'UNinstallation ended.'
+    _info 'UNinstallation ended.'
 }
 
 main() {

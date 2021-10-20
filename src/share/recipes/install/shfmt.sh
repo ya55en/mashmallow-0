@@ -1,6 +1,7 @@
 #!/bin/bash
 
 import os
+import logging
 import gh-download
 
 #: Install shfmt
@@ -8,12 +9,12 @@ import gh-download
 download_into_cache() {
     #: Download into the download cache.
 
-    log debug "raw version=[$raw_version]"
-    log debug "version=[$version]"
+    _debug "raw version=[$raw_version]"
+    _debug "version=[$version]"
     [ -n "$version" ] || {
         die 3 "Failed to get ${project_path} latest version"
     }
-    log info "Downloading ${project_path}, v${version} ..."
+    _info "Downloading ${project_path}, v${version} ..."
     gh_download "$project_path" "$raw_version" "$app_file"
 }
 
@@ -21,9 +22,9 @@ move_into_opt() {
     #: Create ./local/opt/shfmt/ and put the versioned binary
     #: (e.g. shfmt_v3.3.1_linux_amd64) there.
 
-    log info "Creating ${app_fullpath} ..."
+    _info "Creating ${app_fullpath} ..."
     mkdir -p "${app_fullpath}"
-    log info "Copying ${download_target} into opt ..."
+    _info "Copying ${download_target} into opt ..."
     cp -p "${download_target}" "${app_fullpath}" ||
         die $? "Moving ${download_target} FAILED (rc=$?)"
     [ -d "$app_fullpath" ] || die 63 "Shfmt directory NOT found: ${app_fullpath}"
@@ -33,18 +34,18 @@ move_into_opt() {
 create_symlink() {
     #: Create a symlink in ./local/bin named shfmt.
 
-    log info "Creating symlink in ./local/bin named shfmt ..."
+    _info "Creating symlink in ./local/bin named shfmt ..."
     ln -fs "${app_fullpath}/${app_file}" "${_LOCAL}/bin/shfmt"
 }
 
 smoke_test() {
     #: Do a smoke test with shfmt.
 
-    log debug "Running a smoke test ..."
+    _debug "Running a smoke test ..."
     if shfmt --version; then
-        log info "Smoke test passed OK. (shfmt --version)"
+        _info "Smoke test passed OK. (shfmt --version)"
     else
-        log error "Smoke test FAILED! Please check the logs."
+        _error "Smoke test FAILED! Please check the logs."
         exit 58
     fi
 }
@@ -65,26 +66,26 @@ doit() {
     create_symlink
     smoke_test
     instruct_user
-    log info 'SUCCESS.'
+    _info 'SUCCESS.'
 }
 
 undo() {
-    log warn "Removing shfmt version=[$version]"
-    log info "Removing symlink $_LOCAL/bin/shfmt ..."
+    _warn "Removing shfmt version=[$version]"
+    _info "Removing symlink $_LOCAL/bin/shfmt ..."
     rm "$_LOCAL/bin/shfmt"
 
-    log info "Removing shfmt binary ..."
+    _info "Removing shfmt binary ..."
     rm "${app_fullpath}/${app_file}"
 
     if [ -d "${app_fullpath}" ]; then
-        log info "Removing directory ${app_fullpath} ..."
+        _info "Removing directory ${app_fullpath} ..."
         rmdir "${app_fullpath}"
         [ -d "${app_fullpath}" ] &&
-            log warn "shfmt directory not empty, so not deleted: ${app_fullpath}"
+            _warn "shfmt directory not empty, so not deleted: ${app_fullpath}"
     else
-        log info "Directory already removed: ${app_fullpath}."
+        _info "Directory already removed: ${app_fullpath}."
     fi
-    log info 'shfmt removed successfully.'
+    _info 'shfmt removed successfully.'
 }
 
 main() {
@@ -101,8 +102,8 @@ main() {
     app_fullpath="$_LOCAL/opt/shfmt"
     download_target="${_DOWNLOAD_CACHE}/${app_file}"
 
-    log debug "Version: [${version}]"
-    log debug "Download URL: [${_DOWNLOAD_URL}]"
+    _debug "Version: [${version}]"
+    _debug "Download URL: [${_DOWNLOAD_URL}]"
 
     $mash_action
 }

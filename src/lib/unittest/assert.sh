@@ -37,8 +37,8 @@ print_fail() {
 
 print_error() {
     failmsg="$1"
-    out=${2:-/dev/stderr}
-    printf '%s: %s\n' $_curr_test_ "$failmsg" >> $out
+    # out=${2:-/dev/stderr}
+    printf '%s: %s\n' $_curr_test_ "$failmsg" >&2
 }
 
 check_arg_is_num() {

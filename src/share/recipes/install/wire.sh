@@ -2,6 +2,7 @@
 
 # set -x
 
+import logging
 import gh-download
 # Assumming lib/libma.sh has been sourced already.
 
@@ -13,11 +14,11 @@ DEBUG=true
 download_appimage() {
     #: Download and install the app image
 
-    log debug "download_target=[$download_target]"
+    _debug "download_target=[$download_target]"
     if [ -e "${download_target}" ]; then
-        log warn "App file already downloaded/cached, skipping."
+        _warn "App file already downloaded/cached, skipping."
     else
-        log info "Downloading Wire desktop v${version}..."
+        _info "Downloading Wire desktop v${version}..."
         curl -sL "$_URL_DOWNLOAD" -o "${download_target}"
     fi
 }
@@ -31,9 +32,9 @@ check_hashsum() {
 
 install_app_image() {
     if [ -e "${app_fullpath}" ]; then
-        log warn "Installed app file already exists, skipping. (${app_fullpath})"
+        _warn "Installed app file already exists, skipping. (${app_fullpath})"
     else
-        log info "Installing app file ... (${app_fullpath})"
+        _info "Installing app file ... (${app_fullpath})"
         mkdir -p "${_LOCAL}/share/applications"
         mkdir -p "$_LOCAL/opt/wire"
         cp -p "${download_target}" "${app_fullpath}"
@@ -50,9 +51,9 @@ setup_gnome_assets() {
     [ -e "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop" ] # && [ -e "${_LOCAL}/opt/wire/${icon_file}" ]
 
     if [ $? = 0 ]; then
-        log info "Gnome assets already installed, skipping."
+        _info "Gnome assets already installed, skipping."
     else
-        log info "Installing gnome assets ..."
+        _info "Installing gnome assets ..."
         # shellcheck disable=SC1090
         . "$_APPLICATIONS_DIR/appimagekit-wire-desktop.desktop" > "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
         # cp -p "${_ICONS_DIR}/${icon_file}" "${_LOCAL}/opt/wire/${icon_file}"
@@ -72,7 +73,7 @@ EOS
 }
 
 doit() {
-    log info "** Installing Wire:"
+    _info "** Installing Wire:"
     download_appimage
     check_hashsum
     install_app_image
@@ -81,31 +82,31 @@ doit() {
 }
 
 undo() {
-    log info "** Un-installing Wire:"
+    _info "** Un-installing Wire:"
 
     local result=''
 
     # Remove gnome assets
-    log info "Removing gnome assets..."
+    _info "Removing gnome assets..."
     # rm -f "${_ICONS_DIR}/${icon_file}"
     result="${result}:$?"
     rm -f "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
     result="${result}:$?"
 
     # Remove symlink
-    log info "Removing symlink..."
+    _info "Removing symlink..."
     rm -f "$_LOCAL/bin/wire-desktop"
     result="${result}:$?"
 
     # Remove app image file
-    log info "Removing wire app image..."
+    _info "Removing wire app image..."
     rm -f "${app_fullpath}"
     result="${result}:$?"
 
     if [ "$result" = ':0:0:0:0' ]; then
-        log info "Successfully un-installed wire."
+        _info "Successfully un-installed wire."
     else
-        log warn "Un-installed wire with errors: codes [${result}]"
+        _warn "Un-installed wire with errors: codes [${result}]"
     fi
 }
 
@@ -125,8 +126,8 @@ main() {
 
     # https://wire-app.wire.com/linux/Wire-3.26.2941_x86_64.AppImage
     _URL_DOWNLOAD="https://wire-app.wire.com/linux/${app_file}"
-    log debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
-    log debug "version=[$version]"
+    _debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
+    _debug "version=[$version]"
 
     # shellcheck disable=2154
     $mash_action

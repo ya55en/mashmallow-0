@@ -1,7 +1,7 @@
 #! /bin/sh
-
 #: Upgrade mash core.
 
+import logging
 
 # TODO: Some refactoring would be great to have in near furture:
 #  - have the section for determining the latest version be a fuction
@@ -30,22 +30,22 @@ check_version() {
         echo "Already up to date." && exit 0
     else
         echo "An update is available - v${latest_version}"
-        log info "Downloading ..."
+        _info "Downloading ..."
     fi
 }
 
 download_update() {
     #: Download the gzipped archive, as well as install.sh from the main branch;
 
-    log info "Updating to v${latest_version}"
+    _info "Updating to v${latest_version}"
 
     target_file_path="${_DOWNLOAD_CACHE}/${_INSTALL_FILENAME}"
     echo "update_mash(): target_file_path=${target_file_path}"
 
     if [ -e "${target_file_path}" ]; then
-        log info "install.sh already downloaded, overriding."
+        _info "install.sh already downloaded, overriding."
     else
-        log info "Downloading ${target_file_path}..."
+        _info "Downloading ${target_file_path}..."
     fi
     curl -sL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
         die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
@@ -55,7 +55,7 @@ download_update() {
 install_update() {
     #: Execute install.sh with exec thus terminating mash itself.
 
-    log warn "Installing update."
+    _warn "Installing update."
     sleep 3s
     exec /tmp/install.sh
 
@@ -64,8 +64,8 @@ install_update() {
 }
 
 doit() {
-    log info "Mash current version: v${curr_version}"
-    log info "Mash latest version: v${latest_version}"
+    _info "Mash current version: v${curr_version}"
+    _info "Mash latest version: v${latest_version}"
     check_version
     download_update
     install_update

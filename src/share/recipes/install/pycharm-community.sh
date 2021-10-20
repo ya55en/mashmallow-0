@@ -5,8 +5,7 @@
 
 # Assumming lib/libma.sh has been sourced already.
 
-# shellcheck disable=SC2034  # Used in sourced logging code
-DEBUG=true # use DEBUG=false to suppress debugging
+import logging
 
 version='2021.2.2'
 flavor='community'
@@ -24,13 +23,13 @@ download_tarball() {
     skip="${1:-no-skip}"
 
     if [ "x$skip" = xskip-if-exists ] && [ -f "${_DOWNLOAD_CACHE}/${pycharm_filename}" ]; then
-        log warn "File exits: ${_DOWNLOAD_CACHE}/${pycharm_filename}"
-        log warn "Target archive already downloaded, skipping."
+        _warn "File exits: ${_DOWNLOAD_CACHE}/${pycharm_filename}"
+        _warn "Target archive already downloaded, skipping."
     else
-        log debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
-        log debug "_URL_DOWNLOAD=$_URL_HASHSUM"
-        log debug "_DOWNLOAD_CACHE=$_DOWNLOAD_CACHE"
-        log info "Downloading Pycharm ${flavor} edition, v${version}..."
+        _debug "_URL_DOWNLOAD=$_URL_DOWNLOAD"
+        _debug "_URL_DOWNLOAD=$_URL_HASHSUM"
+        _debug "_DOWNLOAD_CACHE=$_DOWNLOAD_CACHE"
+        _info "Downloading Pycharm ${flavor} edition, v${version}..."
         rm -f "${_DOWNLOAD_CACHE}/${pycharm_filename}"
         curl -sL "$_URL_DOWNLOAD" -o "${_DOWNLOAD_CACHE}/${pycharm_filename}" ||
             die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
@@ -46,7 +45,7 @@ check_hashsum() {
 extract_into_opt() {
     #: Extract the pycharm tarball into ~/.local/opt/.
 
-    log info "Extracting ${_DOWNLOAD_CACHE}/${pycharm_filename}..."
+    _info "Extracting ${_DOWNLOAD_CACHE}/${pycharm_filename}..."
     tar xf "${_DOWNLOAD_CACHE}/${pycharm_filename}" -C "$_LOCAL/opt/" ||
         die $? "Extracting ${_DOWNLOAD_CACHE}/${pycharm_filename} FAILED (rc=$?)"
     [ -d "${pycharm_dir}/bin" ] || die 2 "Bin directory NOT found: ${pycharm_dir}/bin"
@@ -82,9 +81,9 @@ EOS
 install_dot_desktop() {
     dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file_dst}"
     if [ -e "${dot_desktop_fullpath}" ]; then
-        log warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
+        _warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
     else
-        log info "Installing a dot-desktop file ... (${dot_desktop_fullpath})"
+        _info "Installing a dot-desktop file ... (${dot_desktop_fullpath})"
         # shellcheck disable=SC1090
         . "${_APPLICATIONS_DIR}/${dot_desktop_file_src}" > "${dot_desktop_fullpath}"
     fi
@@ -97,7 +96,7 @@ smoke_test() {
     # shellcheck disable=SC1090
     . "$HOME/.bashrc.d/42-pycharm-${flavor}.sh"
     printenv.py /dev/null || die 9 "Smoke test running 'printenv.py' FAILED."
-    log debug "Smoke Test: OK (printenv.py /dev/null)"
+    _debug "Smoke Test: OK (printenv.py /dev/null)"
 }
 
 instruct_user() {
@@ -121,7 +120,7 @@ EOS
 }
 
 doit() {
-    log debug "Installing pycharm version=[$version], flavor=${flavor}"
+    _debug "Installing pycharm version=[$version], flavor=${flavor}"
     download_tarball skip-if-exists
     check_hashsum
     extract_into_opt
@@ -130,27 +129,27 @@ doit() {
     create_add_to_path_script "$linked_dir"
     smoke_test
     instruct_user
-    log info 'SUCCESS.'
+    _info 'SUCCESS.'
 }
 
 undo() {
-    log warn "UNinstalling pycharm version=[$version], flavor=${flavor}"
+    _warn "UNinstalling pycharm version=[$version], flavor=${flavor}"
 
-    log info "Removing $HOME/.bashrc.d/42-pycharm-${flavor}.sh..."
+    _info "Removing $HOME/.bashrc.d/42-pycharm-${flavor}.sh..."
     rm "$HOME/.bashrc.d/42-pycharm-${flavor}.sh" ||
-        log warn "Could NOT remove add-to-path file $HOME/.bashrc.d/42-pycharm-${flavor}.sh!"
+        _warn "Could NOT remove add-to-path file $HOME/.bashrc.d/42-pycharm-${flavor}.sh!"
 
-    log info "Removing $_LOCAL/opt/pycharm-${flavor} symlink..."
+    _info "Removing $_LOCAL/opt/pycharm-${flavor} symlink..."
     rm -f "$_LOCAL/opt/pycharm-${flavor}" ||
-        log warn "Could NOT remove symlink $_LOCAL/opt/pycharm-${flavor}!"
+        _warn "Could NOT remove symlink $_LOCAL/opt/pycharm-${flavor}!"
 
     dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file_dst}"
-    log info "Removing dot-desktop ${dot_desktop_fullpath} ..."
+    _info "Removing dot-desktop ${dot_desktop_fullpath} ..."
     rm "${dot_desktop_fullpath}"
 
-    log info "Removing $pycharm_dir..."
+    _info "Removing $pycharm_dir..."
     rm -r "$pycharm_dir" ||
-        log warn "Could NOT remove directory $pycharm_dir!"
+        _warn "Could NOT remove directory $pycharm_dir!"
     # TODO: remove the .desktop file
     cat << EOS
 

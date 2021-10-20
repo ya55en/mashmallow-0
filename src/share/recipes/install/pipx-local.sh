@@ -4,11 +4,13 @@ _LOCAL="$HOME/.local"
 _PYTHON_VENVS="$_LOCAL/venvs"
 bashrcd_script='32-pipx-setup.sh'
 
+import logging
+
 create_venvs_dir() {
     #:  Create `~/.local/venvs`
 
     if ! [ -d "$_PYTHON_VENVS" ]; then
-        log info "Creating ~/.local/venvs directory ..."
+        _info "Creating ~/.local/venvs directory ..."
         mkdir "$_PYTHON_VENVS"
     fi
 }
@@ -17,7 +19,7 @@ install_python3_venv() {
     #:  Install python3-venv
     #TODO: check if python3-venv is installed
 
-    log info "Installing python3-venv ..."
+    _info "Installing python3-venv ..."
     sudo apt-get install python3-venv
 }
 
@@ -25,14 +27,14 @@ create_pipx_venv() {
     #:  Create pipx venv in `~/.local/venvs`
     #TODO: check if pipx venv exists
 
-    log info "Creating pipx venv in '~/.local/venvs' ..."
-    python3 -m venv "$_PYTHON_VENVS/pipx" --prompt pipx-local && log info "Created."
+    _info "Creating pipx venv in '~/.local/venvs' ..."
+    python3 -m venv "$_PYTHON_VENVS/pipx" --prompt pipx-local && _info "Created."
 }
 
 update_trio() {
     #:  Update (pip setuptools wheel) trio
 
-    log info "Updating (pip setuptools wheel) trio ..."
+    _info "Updating (pip setuptools wheel) trio ..."
     "$_PYTHON_VENVS/pipx/bin/python3" -m pip install -U pip setuptools wheel
 }
 
@@ -40,7 +42,7 @@ install_pipx() {
     #:  Install pipx
     #TODO: check if pipx is installed
 
-    log info "Installing pipx..."
+    _info "Installing pipx..."
     "$_PYTHON_VENVS/pipx/bin/python3" -m pip install pipx
 }
 
@@ -48,7 +50,7 @@ create_symlink() {
     #: Create symlink `~/.local/bin/pipx` => `~/.local/venvs/pipx/bin/pipx`
     #TODO: check if symlink already exists
 
-    log info "Creating symlink '~/.local/bin/pipx' => '~/.local/venvs/pipx/bin/pipx'"
+    _info "Creating symlink '~/.local/bin/pipx' => '~/.local/venvs/pipx/bin/pipx'"
     ln -fs "$_PYTHON_VENVS/pipx/bin/pipx" "$_LOCAL/bin/pipx"
 }
 
@@ -58,7 +60,7 @@ create_bashrcd_script() {
     # Depends on 'which' - not ideal; TODO: provide default python otherwise
     bashrcd_script_path="$HOME/.bashrc.d/${bashrcd_script}"
 
-    log info "Creating bashrcd script: $bashrcd_script_path"
+    _info "Creating bashrcd script: $bashrcd_script_path"
     cat > "${bashrcd_script_path}" << EOS
 # pipx-related setup
 export PIPX_HOME="$HOME/.local"
@@ -73,7 +75,7 @@ smoke_test() {
 }
 
 instruct_user() {
-    cat <<EOS
+    cat << EOS
 
 In order to have all your terminals know about the bashrc.d change,
 you need to:
@@ -102,22 +104,22 @@ doit() {
     create_bashrcd_script
     instruct_user
 
-  log info "Done."
+    _info "Done."
 }
 
 undo() {
-    log warn "Removing pipx-local:"
+    _warn "Removing pipx-local:"
 
-    log info "Removing bashrcd script: ${bashrcd_script} ..."
+    _info "Removing bashrcd script: ${bashrcd_script} ..."
     rm -f "${bashrcd_script_path}"
 
-    log info "Removing symlink $_LOCAL/bin/pipx ..."
+    _info "Removing symlink $_LOCAL/bin/pipx ..."
     rm -f "$_LOCAL/bin/pipx"
 
-    log info "Removing pipx venv ..."
+    _info "Removing pipx venv ..."
     rm -rf "$_PYTHON_VENVS/pipx"
 
-    log info 'pipx-local removed successfully.'
+    _info 'pipx-local removed successfully.'
 }
 
 $mash_action

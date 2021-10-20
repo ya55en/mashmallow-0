@@ -3,6 +3,7 @@
 # set -x
 
 import os
+import logging
 import gh-download
 
 #: Install VSCodium
@@ -13,12 +14,12 @@ import gh-download
 download_tarball() {
     #: Download codium tarball into download_cache_dir
 
-    log debug "raw version=[$raw_version]"
-    log debug "version=[$version]"
+    _debug "raw version=[$raw_version]"
+    _debug "version=[$version]"
     [ -n "$version" ] || {
         die 3 "Failed to get ${project_path} latest version"
     }
-    log info "Downloading ${project_path}, v${version} ..."
+    _info "Downloading ${project_path}, v${version} ..."
     gh_download "$project_path" "$raw_version" "$app_file"
 }
 
@@ -31,7 +32,7 @@ check_hashsum() {
 extract_to_opt() {
     #: Extract the codium tarball into ~/.local/opt/$app_opt_dirname.
 
-    log info "Extracting ${download_target} ..."
+    _info "Extracting ${download_target} ..."
     filename="${download_target}"
     dirname="${_LOCAL}/opt/${app_opt_dirname}"
 
@@ -45,7 +46,7 @@ extract_to_opt() {
 make_symlink_in_local_bin() {
     #: Create symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in ~/.local/bin/
 
-    log info "Creating a symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in $_LOCAL/bin/..."
+    _info "Creating a symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in $_LOCAL/bin/..."
     # shellcheck disable=SC2016  # Need to pass this verbatim to into_dir_do()
     into_dir_do "${_LOCAL}/bin" 'ln -fs "${_LOCAL}/opt/${app_opt_dirname}/bin/codium"'
     linked_binary="${_LOCAL}/bin/codium"
@@ -56,9 +57,9 @@ install_dot_desktop() {
     dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file}"
     mkdir -p "$_LOCAL/share/applications"
     if [ -e "${dot_desktop_fullpath}" ]; then
-        log warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
+        _warn "Dot-desktop file exists, skipping. (${dot_desktop_fullpath})"
     else
-        log info "Installing a dot-desktop file ... (${dot_desktop_fullpath})"
+        _info "Installing a dot-desktop file ... (${dot_desktop_fullpath})"
         # shellcheck disable=SC1090
         . "${_APPLICATIONS_DIR}/${dot_desktop_file}" > "${dot_desktop_fullpath}"
     fi
@@ -69,13 +70,13 @@ smoke_test() {
     codium --version > /dev/null 2>&1
     rc=$?
     if [ $rc = 0 ]; then
-        log info "Smoke Test OK (codium --version)"
+        _info "Smoke Test OK (codium --version)"
     fi
     return $rc
 }
 
 doit() {
-    log info "Installing vscodium v${version} ($arch_short)..."
+    _info "Installing vscodium v${version} ($arch_short)..."
     download_tarball
     check_hashsum || die 77 "Hashsum check FAILED! Please check, aborting."
     extract_to_opt
@@ -85,7 +86,7 @@ doit() {
 }
 
 undo() {
-    log info "*UN*installing codium v${version} ($arch_short)..."
+    _info "*UN*installing codium v${version} ($arch_short)..."
     rm "${_LOCAL}/bin/codium" || die 15 "Cannot remove ${_LOCAL}/bin/codium"
     rm -r "${_LOCAL}/opt/${app_opt_dirname}" || die 15 "Cannot remove ${_LOCAL}/opt/${app_opt_dirname}"
     rm "${_LOCAL}/share/applications/${dot_desktop_file}"
