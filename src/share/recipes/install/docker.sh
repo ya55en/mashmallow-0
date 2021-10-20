@@ -1,5 +1,7 @@
 #! /bin/sh
 
+import logging
+
 # Store current user as it does NOT work with $USER below under sudo
 _USER="$USER"
 
@@ -61,13 +63,13 @@ add_user_to_group_docker() {
     #: Add current user to group docker providing access to the docker
     #: daemon unix socket.
 
-    log info "Adding user '${_USER}' to group 'docker'..."
+    _info "Adding user '${_USER}' to group 'docker'..."
     sudo usermod -aG docker "${_USER}"
 }
 
 disable_docker_service() {
-    log info "Disabling docker service..."
-    log info " (docker will still work fine when invoked on the cmd line.)"
+    _info "Disabling docker service..."
+    _info " (docker will still work fine when invoked on the cmd line.)"
     sudo systemctl disable docker
     systemctl status docker --no-pager
 }
@@ -117,7 +119,7 @@ doit() {
     ensure_sudoer
     ensure_proper_distro
     ensure_curl_present
-    log info "Installing docker on ${_DISTRO} ${_CODENAME}..."
+    _info "Installing docker on ${_DISTRO} ${_CODENAME}..."
     setup_apt_docker_repo
     install_docker_ce
     add_user_to_group_docker

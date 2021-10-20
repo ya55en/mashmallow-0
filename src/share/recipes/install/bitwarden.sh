@@ -3,6 +3,7 @@
 # set -x
 
 import os
+import logging
 import gh-download
 
 #: Install Bitwarden
@@ -10,12 +11,12 @@ import gh-download
 download_appimage() {
     #: Download the app image
 
-    log debug "raw version=[$raw_version]"
-    log debug "version=[$version]"
+    _debug "raw version=[$raw_version]"
+    _debug "version=[$version]"
     [ -n "$version" ] || {
         die 3 "Failed to get ${project_path} latest version"
     }
-    log info "Downloading ${project_path} app-image ..."
+    _info "Downloading ${project_path} app-image ..."
     gh_download "$project_path" "$raw_version" "$app_file"
 }
 
@@ -28,9 +29,9 @@ check_hashsum() {
 
 install_app_image() {
     if [ -e "${app_fullpath}" ]; then
-        log warn "Installed app file already exists, skipping. (${app_fullpath})"
+        _warn "Installed app file already exists, skipping. (${app_fullpath})"
     else
-        log info "Installing app file ... (${app_fullpath})"
+        _info "Installing app file ... (${app_fullpath})"
         mkdir -p "$_LOCAL/opt/bitwarden"
         cp -p "${download_target}" "${app_fullpath}"
         chmod +x "${app_fullpath}"
@@ -45,9 +46,9 @@ setup_gnome_assets() {
     [ -e "${_LOCAL}/share/applications/com.bitwarden.desktop" ] && [ -e "${_LOCAL}/opt/bitwarden/${bitwarden_icon}" ]
 
     if [ $? = 0 ]; then
-        log info "Gnome assets already installed, skipping."
+        _info "Gnome assets already installed, skipping."
     else
-        log info "Installing gnome assets ..."
+        _info "Installing gnome assets ..."
         mkdir -p "${_LOCAL}/share/applications"
         # shellcheck disable=SC1091
         . "$_APPLICATIONS_DIR/com.bitwarden.desktop" > "${_LOCAL}/share/applications/com.bitwarden.desktop"
@@ -69,7 +70,7 @@ EOS
 }
 
 doit() {
-    log info "** Installing bitwarden v${version}:"
+    _info "** Installing bitwarden v${version}:"
     download_appimage
     check_hashsum
     install_app_image
@@ -78,31 +79,31 @@ doit() {
 }
 
 undo() {
-    log info "** Un-installing bitwarden:"
+    _info "** Un-installing bitwarden:"
 
     result=''
 
     # Remove gnome assets
-    log info "Removing gnome assets..."
+    _info "Removing gnome assets..."
     rm -f "${_LOCAL}/opt/bitwarden/bitwarden-icon.png"
     result="${result}:$?"
     rm -f "${_LOCAL}/share/applications/com.bitwarden.desktop"
     result="${result}:$?"
 
     # Remove symlink
-    log info "Removing symlink..."
+    _info "Removing symlink..."
     rm -f "$_LOCAL/bin/bitwarden-desktop"
     result="${result}:$?"
 
     # Remove app image file
-    log info "Removing bitwarden app image..."
+    _info "Removing bitwarden app image..."
     rm -f "${app_fullpath}"
     result="${result}:$?"
 
     if [ "$result" = ':0:0:0:0' ]; then
-        log info "Successfully un-installed bitwarden."
+        _info "Successfully un-installed bitwarden."
     else
-        log warn "Un-installed bitwarden with errors: codes ${result}"
+        _warn "Un-installed bitwarden with errors: codes ${result}"
     fi
 }
 

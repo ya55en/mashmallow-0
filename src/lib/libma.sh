@@ -5,6 +5,7 @@
 _ARCH=x86_64
 _LOCAL="$HOME/.local"
 
+import logging
 
 die() {
     rc=$1
@@ -14,42 +15,42 @@ die() {
     exit $rc
 }
 
-include() {
-    lib_script="$1"
+#include() {
+#    lib_script="$1"
+#
+#    # shellcheck disable=SC1090
+#    . "${_LIB_DIR}/${lib_script}"
+#}
 
-    # shellcheck disable=SC1090
-    . "${_LIB_DIR}/${lib_script}"
-}
-
-log() {
-    #: Log the message (conditionally if a debug message)
-
-    level=$1
-    msg="$2"
-    case $level in
-        err*)
-            echo "ERROR: $msg" >> /dev/stderr
-            ;;
-        warn*)
-            echo "WARN: $msg" >> /dev/stderr
-            ;;
-        info*)
-            echo "I: $msg"
-            ;;
-        debug*)
-            [ x$DEBUG = xtrue ] && echo "DEBUG: $msg" >> /dev/stderr
-            ;;
-        testfail)
-            echo "TEST-FAIL: $msg"
-            ;;
-        assertfail)
-            echo "ASSERT-FAIL: $msg"
-            ;;
-        *)
-            die 4 "Unknown log level $level"
-            ;;
-    esac
-}
+#log() {
+#    #: Log the message (conditionally if a debug message)
+#
+#    level=$1
+#    msg="$2"
+#    case $level in
+#        err*)
+#            echo "ERROR: $msg" >> /dev/stderr
+#            ;;
+#        warn*)
+#            echo "WARN: $msg" >> /dev/stderr
+#            ;;
+#        info*)
+#            echo "I: $msg"
+#            ;;
+#        debug*)
+#            [ x$DEBUG = xtrue ] && echo "DEBUG: $msg" >> /dev/stderr
+#            ;;
+#        testfail)
+#            echo "TEST-FAIL: $msg"
+#            ;;
+#        assertfail)
+#            echo "ASSERT-FAIL: $msg"
+#            ;;
+#        *)
+#            die 4 "Unknown log level $level"
+#            ;;
+#    esac
+#}
 
 # into_dir_do "$_LOCAL/bin" 'ln -s $(which python3) python'
 
@@ -64,14 +65,14 @@ into_dir_do() {
     cwd="$(pwd)"
     rc=0
     cd "$dir" || {
-        log error "cd into $dir FAILED"
+        _error "cd into $dir FAILED"
         return $?
     }
     eval "$script" || {
-        log error "into_dir_do(): eval FAILED: script=[$script]"
+        _error "into_dir_do(): eval FAILED: script=[$script]"
         return $?
     }
-    log debug "into_dir_do(): eval rc=$?"
+    _debug "into_dir_do(): eval rc=$?"
     cd "$cwd" || return 0
 }
 

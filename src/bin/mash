@@ -22,6 +22,7 @@ DEBUG=${DEBUG:-false}
 . "$MASH_HOME/lib/sys.sh"
 
 import mashrc
+import logging
 import libma
 
 _mash_project_name_="ma'shmallow"
@@ -79,11 +80,11 @@ main() {
     script_dir="${_RECIPES_DIR}/${verb}"
     script_full_path="${script_dir}/${recipe}.sh"
 
-    log debug "mash_action=${mash_action}"
-    log debug "verb=${verb}"
-    log debug "recipe=${recipe}"
-    log debug "script_dir=${script_dir}"
-    log debug "script_full_path=${script_full_path}"
+    _debug "mash_action=${mash_action}"
+    _debug "verb=${verb}"
+    _debug "recipe=${recipe}"
+    _debug "script_dir=${script_dir}"
+    _debug "script_full_path=${script_full_path}"
 
     [ -e "${script_dir}" ] || die 2 "Unknown verb '${verb}'"
     [ -f "${script_full_path}" ] || die 2 "Unknown recipe '${recipe}'"

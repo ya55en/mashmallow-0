@@ -20,14 +20,13 @@ _sys_name_='sys.sh'
 _name_="$(basename "$0")"
 
 _SYS__MODEXT='.sh'
-STDERR='/dev/stderr'
 
 #: Terminate execution with given rc and message.
 die() {
     rc=$1
     msg="$2"
 
-    echo "FATAL: $msg"
+    echo "FATAL: $msg" >&2
     exit $rc
 }
 
@@ -105,9 +104,8 @@ import() {
   # local mod_filename="${mod_name}${_SYS__MODEXT}"
 
   _sys__find_module_in_paths "$MASH_IMPORT_PATH" || {
-    # TODO: Fix headless chroot env to handle redirection to stderr, then re-enable.
-    echo "FATAL: Module $mod_name NOT found in MASH_IMPORT_PATH" # >> /dev/stderr
-    echo "       MASH_IMPORT_PATH='$MASH_IMPORT_PATH'"           # >> /dev/stderr
+    echo "FATAL: Module $mod_name NOT found in MASH_IMPORT_PATH" >&2
+    echo "       MASH_IMPORT_PATH='$MASH_IMPORT_PATH'"           >&2
     exit 5
   }
 }

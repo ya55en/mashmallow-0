@@ -8,27 +8,28 @@ die 22 "pycharm-pro is deprecated in favour of a universal pycharm recipe."
 
 DEBUG=true  # use DEBUG=false to suppress debugging
 
+import logging
 
 # Install Pycharm Pro
 
 version='2021.2.1'
-log debug "version=[$version]"
+_debug "version=[$version]"
 
 pycharm_filename="pycharm-professional-${version}.tar.gz"
 
 _URL_DOWNLOAD="https://download.jetbrains.com/python/${pycharm_filename}"
 _URL_HASHSUM="https://download.jetbrains.com/python/${pycharm_filename}.sha256"
 
-log debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
-log debug "_URL_DOWNLOAD=[$_URL_HASHSUM]"
+_debug "_URL_DOWNLOAD=[$_URL_DOWNLOAD]"
+_debug "_URL_DOWNLOAD=[$_URL_HASHSUM]"
 
 # Download and install:
-log info "Downloading Pycharm Pro v${version}..."
+_info "Downloading Pycharm Pro v${version}..."
 curl -sL "$_URL_DOWNLOAD" -o "/tmp/${pycharm_filename}"
 
 # TODO: check sha256 from $_URL_HASHSUM
 
-log info "Extracting ${pycharm_filename}..."
+_info "Extracting ${pycharm_filename}..."
 tar xf "/tmp/${pycharm_filename}" -C "$_LOCAL/opt/"
 
 pycharm_dir="$_LOCAL/opt/pycharm-${version}"
@@ -45,5 +46,5 @@ echo "export PATH=\$PATH:${linked_dir}/bin" > ~/.bashrc.d/42-pycharm-pro.sh
 . ~/.bashrc.d/42-pycharm-pro.sh
 printenv.py /dev/null || die 9 "Setting up PATH to include pycharm bin/ FAILED."
 
-log info 'Smoke test passed.'
-log info 'Done. ;)'
+_info 'Smoke test passed.'
+_info 'Done. ;)'
