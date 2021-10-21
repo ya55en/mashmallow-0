@@ -6,32 +6,35 @@
 
 _LOCAL="$HOME/.local"
 _LOCAL_SUBDIRS='bin lib opt share'
+
+# TODO: do we need to honor MASH_HOME here?
 _MASH_HOME="${MASH_HOME:-${_LOCAL}/opt/mash}"
+
 _DOWNLOAD_CACHE=/tmp
 
 _URL_LATEST=https://github.com/ya55en/mashmallow-0/releases/latest
 _URL_DOWNLOAD_RE='^location: https://github.com/ya55en/mashmallow-0/releases/tag/v\(.*\)$'
 __latest__=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
-__version__="${1:-$__latest__}"  # version passed as an argument for unreleased builds
+__version__="${1:-$__latest__}" # version passed as an argument for unreleased builds
 
 _MASH_FILENAME="mash-v${__version__}.tgz"
 _URL_DOWNLOAD="https://github.com/ya55en/mashmallow-0/releases/download/v${__version__}/${_MASH_FILENAME}"
 
-echo "DEBUG: HOME='${HOME}'"
-echo "DEBUG: _MASH_HOME='${_MASH_HOME}'"
-echo "DEBUG: _MASH_FILENAME='${_MASH_FILENAME}'"
-echo "DEBUG: _URL_DOWNLOAD='${_URL_DOWNLOAD}'"
+if [ "$DEBUG" = true ]; then
+    echo "DEBUG: HOME='${HOME}'"
+    echo "DEBUG: _MASH_HOME='${_MASH_HOME}'"
+    echo "DEBUG: _MASH_FILENAME='${_MASH_FILENAME}'"
+    echo "DEBUG: _URL_DOWNLOAD='${_URL_DOWNLOAD}'"
+    echo "DEBUG: __version__='${__version__}'"
+fi
 
+#: Create ~/.local/{bin,lib,opt,share}.
 create_dot_local() {
-    #: Create ~/.local/{bin,lib,opt,share}.
-
-    # mkdir -p "${_LOCAL}"  # YD: Do we need this?
-
     if [ -e "$_LOCAL" ]; then
         echo "W: $_LOCAL already exists, skipping."
     else
         echo "I: Creating directory ${_LOCAL}..."
-        mkdir "${_LOCAL}"
+        mkdir -p "${_LOCAL}"
     fi
 
     for directory in $_LOCAL_SUBDIRS; do
@@ -45,9 +48,8 @@ create_dot_local() {
     done
 }
 
+#: Download mash core tarball and install it.
 download_mash_core() {
-    #: Download mash core tarball and install it.
-
     target_file_path="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
     echo "install_mash(): target_file_path=${target_file_path}"
 
@@ -58,13 +60,11 @@ download_mash_core() {
         curl -sL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
             die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
     fi
-
 }
 
+#: Install mash core into $_MASH_HOME, creating
+#: $_MASH_HOME/{bin,etc,lib,share/recipes}.
 install_mash_core() {
-    #: Install mash core into $_MASH_HOME, creating
-    #: $_MASH_HOME/{bin,etc,lib,share/recipes}.
-
     target_file_path="${_DOWNLOAD_CACHE}/${_MASH_FILENAME}"
 
     if [ -e "${_MASH_HOME}" ]; then
@@ -76,9 +76,8 @@ install_mash_core() {
     fi
 }
 
+#: Create ~/.bashrc.d/ .
 create_bashrcd() {
-    #: Create ~/.bashrc.d/ .
-
     if [ -e "$HOME/.bashrc.d" ]; then
         echo "W: $HOME/.bashrc.d/ already exists, skipping."
     else
@@ -87,9 +86,8 @@ create_bashrcd() {
     fi
 }
 
+#: Create bashrcd script ~/.bashrc.d/00-mash-init.sh.
 create_bashrcd_script_00() {
-    #: Create bashrcd script ~/.bashrc.d/00-mash-init.sh.
-
     target_file_path="$HOME/.bashrc.d/00-mash-init.sh"
 
     if [ -e "${target_file_path}" ]; then
@@ -110,31 +108,20 @@ echo "\$XDG_DATA_DIRS" | grep -q "\$_LOCAL_SHARE_APPS" ||
     XDG_DATA_DIRS="\$_LOCAL_SHARE_APPS:\$XDG_DATA_DIRS"
 
 EOS
-    fi
-}
+        echo "Adding MASH_HOME setup to bashrcd script ${target_file_path}..."
+        cat >> "${target_file_path}" << EOS
 
-create_bashrcd_script_99_home() {
-    #: Create bashrcd script ~/.bashrc.d/98-mash-home.sh.
-
-    target_file_path="$HOME/.bashrc.d/98-mash-home.sh"
-
-    if [ -e "${target_file_path}" ]; then
-        echo "Bashrcd script '98-mash-home.sh' already exists, skipping. (${target_file_path})"
-    else
-        echo "Installing bashrcd script ${target_file_path}..."
-        cat > "${target_file_path}" << EOS
-# ~/.bashrc.d/98-mash-home.sh - mash: set some variables and do bashrcd mash/bin
+# mash: set MASH_HOME and add mash/bin to PATH
 
 MASH_HOME="$_MASH_HOME" ; export MASH_HOME
-echo \$PATH | grep -q "\$MASH_HOME/bin" || PATH="\$MASH_HOME/bin:\$PATH"; export PATH
-
+echo \$PATH | grep -q "\$MASH_HOME/bin" || PATH="\$MASH_HOME/bin:\$PATH"
 EOS
+
     fi
 }
 
+#: Create bashrcd script ~/.bashrc.d/99-mash-import-path.sh.
 create_bashrcd_script_99_import_path() {
-    #: Create bashrcd script ~/.bashrc.d/99-mash-import-path.sh.
-
     target_file_path="$HOME/.bashrc.d/99-mash-import-path.sh"
 
     if [ -e "${target_file_path}" ]; then
@@ -147,33 +134,35 @@ create_bashrcd_script_99_import_path() {
 # MASH_IMPORT_PATH is necessary for sys.sh 'import()' to work.
 echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/etc" || MASH_IMPORT_PATH="\$MASH_HOME/etc:\$MASH_IMPORT_PATH"
 echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/lib" || MASH_IMPORT_PATH="\$MASH_HOME/lib:\$MASH_IMPORT_PATH"
+
 export MASH_IMPORT_PATH
+export PATH
 
 EOS
     fi
 }
 
+#: Add ~/.bashrc.d/ activation code to ~/.bashrc.
 add_bashrcd_sourcing_snippet() {
-    #: Add ~/.bashrc.d/ activation code to ~/.bashrc.
-
     # shellcheck disable=SC2016
-    if grep -q 'for file in "$HOME/.bashrc.d/' ~/.bashrc; then
+    if grep -q 'for file in "\$HOME/\.bashrc.d/"\*\.sh; do' ~/.bashrc; then
         echo "bashrc.d sourcing snippet already set, skipping."
     else
         echo "Setting bashrc.d sourcing snippet..."
         cat >> "$HOME/.bashrc" << EOS
 
 #: mash: sourcing initializing scripts from ~/.bashrc.d/*.sh
-for file in "\$HOME/.bashrc.d/"*.sh; do
-    . "\$file"
-done
+if [ -d "\$HOME/.bashrc.d/" ]; then
+    for file in "\$HOME/.bashrc.d/"*.sh; do
+        . "\$file"
+    done
+fi
 EOS
     fi
 }
 
+#: Print adequate instructions on the console.
 instruct_user() {
-    #: Print adequate instructions on the console.
-
     cat << EOS
 
 Please close and reopen any shell-based terminals
@@ -181,7 +170,7 @@ in order to refresh your variables.
 
 TODO: ** Instruct user what to do after installation. **
 
-TODO: Think on having a refresh-env commad to reload env
+TODO: Think on having a refresh-env command to reload env
 vars from ~/bashrc.d/.
 
 EOS
@@ -193,7 +182,6 @@ main() {
     install_mash_core
     create_bashrcd
     create_bashrcd_script_00
-    create_bashrcd_script_99_home
     create_bashrcd_script_99_import_path
     add_bashrcd_sourcing_snippet
     instruct_user

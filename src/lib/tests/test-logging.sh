@@ -14,13 +14,13 @@
 #:   (b) run this test suite -- it will (re)create the temp file;
 #:   (c) examine the contents of `$__LOGGING__TMP_FILE`;
 #:   (d) copy the `$__LOGGING__TMP_FILE` into `$__LOGGING__SAMPLE_FILE`, e.g.:
-#:       $ cp -p /tmp/logging-test.output src/lib/tests/logging-sample.output
+#:       $ cp -p /tmp/logging-test.output src/lib/tests/test-data/logging-sample.output
 #:   (e) restore the temp file deletion in `teardown_mod()`.
 
 import unittest/assert
 import logging
 
-__LOGGING__SAMPLE_FILE='src/lib/tests/logging-sample.output'
+__LOGGING__SAMPLE_FILE='src/lib/tests/test-data/logging-sample.output'
 __LOGGING__TMP_FILE='/tmp/logging-test.output'
 
 show_aliases() {
@@ -81,8 +81,8 @@ setup_mod() {
 teardown_mod() {
     # Suppress to keep the $__LOGGING__TMP_FILE for copying to the reference
     # file $__LOGGING__SAMPLE_FILE. (Use a noop like ':' or 'true'.)
-    rm -f "$__LOGGING__TMP_FILE"
-    #:
+#    rm -f "$__LOGGING__TMP_FILE"
+    :
 }
 
 test_logging_unknown_level() {

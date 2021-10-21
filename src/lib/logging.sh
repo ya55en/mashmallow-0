@@ -18,40 +18,6 @@ MASH_LOG_LEVEL=${MASH_LOG_LEVEL:-INFO}
 # If DEBUG is set to true - tune the level to DEBUG
 [ "$DEBUG" = true ] && MASH_LOG_LEVEL=DEBUG
 
-#: Color settings for color-enabled terminal
-__logging__set_colors() {
-    C_BOLD='\e[1m'
-    C_OFF='\e[0;00m'
-
-    C_FATAL="${C_BOLD}\e[38;5;196m"
-    C_ERROR='\e[38;5;9m'
-    C_WARN='\e[38;5;3m'
-    C_INFO='\e[38;5;14m'
-    C_SAY='\e[38;5;15m'
-    C_DEBUG='\e[38;5;6m'
-    C_TRACE='\e[38;5;13m'
-}
-
-# shellcheck disable=2034
-__logging__init_color_vars() {
-
-    C_FATAL=
-    C_ERROR=
-    C_WARN=
-    C_INFO=
-    C_SAY=
-    C_DEBUG=
-    C_TRACE=
-    C_BOLD=
-    C_OFF=
-
-    case "$TERM" in
-        *color*)
-            __logging__set_colors
-            ;;
-    esac
-}
-
 # shellcheck disable=2034
 __logging__set_global_vars() {
 
@@ -102,7 +68,7 @@ logging__set_level() {
 
 logging__say() {
     local msg="$1"
-    echo "!! ${C_SAY}$msg${C_OFF}"
+    echo "!! ${C_SAY}${msg}${C_OFF}"
 }
 
 logging__log() {
@@ -130,10 +96,7 @@ logging__log() {
 }
 
 __logging__init() {
-
-    __logging__init_color_vars
     __logging__set_global_vars
-
     logging__set_level "$MASH_LOG_LEVEL"
 
     # shellcheck disable=2139

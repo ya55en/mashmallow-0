@@ -1,0 +1,5 @@
+#! /bin/sh
+
+foo_pkg_bazzrc_func() {
+    printf '%s' 'foo_pkg_bazzrc_func() called'
+}

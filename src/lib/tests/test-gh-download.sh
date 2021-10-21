@@ -1,6 +1,6 @@
 #! /bin/sh
 
-. "$MASH_HOME/lib/sys.sh"
+#. "$MASH_HOME/lib/sys.sh"
 
 import mashrc
 import unittest/assert
@@ -22,7 +22,7 @@ test_gh_latest_version() {
 }
 
 test_gh_latest_version_vscodium() {
-    assert_equal "$(gh_latest_version 'VSCodium/vscodium')" '1.61.1'
+    assert_equal "$(gh_latest_version 'VSCodium/vscodium')" '1.61.2'
 }
 
 test_gh_download() {
