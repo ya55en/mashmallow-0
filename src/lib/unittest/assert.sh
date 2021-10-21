@@ -22,14 +22,20 @@ is_num() {
 }
 
 # shellcheck disable=2120
+#print_pass() {
+#    passmsg="${1:-passed}"
+#    printf 'ok %u - %s: %s\n' $no $_curr_test_ "$passmsg"
+#}
 print_pass() {
-    passmsg="${1:-passed}"
-    printf 'ok %u - %s: %s\n' $no $_curr_test_ "$passmsg"
+    passmsg="${1:-pass}"
+    # printf 'ok %u - %s: %s\n' $no $_curr_test_ "${C_OK}${passmsg}${C_OFF}"
+    echo "ok $no - $_curr_test_: ${C_OK}${passmsg}${C_OFF}"
 }
 
 print_fail() {
     failmsg="$1"
-    printf 'not ok %u - %s: %s\n' $no $_curr_test_ "$failmsg"
+    # printf 'not ok %u - %s: %s\n' $no $_curr_test_ "$failmsg"
+    echo "not ok $no - ${C_ERROR}$_curr_test_: ${failmsg}${C_OFF}"
 
     # _curr_test_rc_ is local for the test runner and reflects any failed checks
     _curr_test_rc_=$(expr $_curr_test_rc +  1)
@@ -37,8 +43,11 @@ print_fail() {
 
 print_error() {
     failmsg="$1"
-    # out=${2:-/dev/stderr}
-    printf '%s: %s\n' $_curr_test_ "$failmsg" >&2
+    # printf '%s: %s\n' $_curr_test_ "$failmsg" >&2
+    echo "${C_ERROR}${_curr_test_}: ${failmsg}${C_OFF}" >&2
+
+    # _curr_test_rc_ is local for the test runner and reflects any failed checks
+    _curr_test_rc_=$(expr $_curr_test_rc +  1)
 }
 
 check_arg_is_num() {

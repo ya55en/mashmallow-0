@@ -7,13 +7,13 @@ _LOCAL="$HOME/.local"
 
 import logging
 
-die() {
-    rc=$1
-    msg="$2"
-
-    echo "FATAL: $msg"
-    exit $rc
-}
+#die() {
+#    rc=$1
+#    msg="$2"
+#
+#    echo "FATAL: $msg"
+#    exit $rc
+#}
 
 #include() {
 #    lib_script="$1"

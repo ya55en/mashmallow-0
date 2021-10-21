@@ -1,0 +1,5 @@
+#! /bin/sh
+
+foorc_func() {
+    printf '%s' 'foorc_func() called'
+}

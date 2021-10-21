@@ -38,7 +38,7 @@ testrun() {
 }
 
 full_test() {
-    moderate_test
+    standard_test
     testrun install dev-essentials
     testrun install docker
     #testrun install firefox
@@ -91,11 +91,17 @@ main() {
     mod_global=doit
     ${target_func}
 
+    mod_global=doit
+    ${target_func}
+
     mod_global=undo
     $target_func
 
     mod_global=doit
     ${target_func}
+
+    mod_global=undo
+    $target_func
 
     recap
 }

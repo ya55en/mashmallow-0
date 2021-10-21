@@ -1,25 +1,10 @@
 #! /bin/sh
 
-# [ -n "$MASH_HOME" ] || die 1 "mash NOT configured - MASH_HOME not set (E1211)"
-_MASH_HOME="${MASH_HOME:-$(dirname "$(dirname "$0")")}"
-
-# Params:
-
-# Dev variables
-
-# Use DEBUG=true to enable debug level messaging. Default is 'false'.
-DEBUG=${DEBUG:-false}
-
-# TODO: Decide if we need include* and move (or remove) these.
-
-# alias include='. $MASH_HOME/'
-# alias include_recipe='. $MASH_HOME/share/recipes'
-
-# TODO: move (or remove) include*()
-
-# include libma.sh
+#: Ma'shmallow main executable.
 
 . "$MASH_HOME/lib/sys.sh"
+
+_MASH_HOME="${MASH_HOME:-$(dirname "$_path_")}"
 
 import mashrc
 import logging
@@ -29,7 +14,6 @@ _mash_project_name_="ma'shmallow"
 
 #: Process first argument if -v or --version.
 process_version() {
-
     if [ "$1" = '-v' ] || [ "$1" = '--version' ]; then
         IFS=-
         read -r _version_ _hash_ < "$MASH_HOME/etc/version"
@@ -53,8 +37,7 @@ main() {
     local _version_
     local _hash_
 
-
-    [ "$DEBUG" = true ] && echo "DEBUG: _MASH_HOME=[$_MASH_HOME]"
+    _debug "_MASH_HOME=[$_MASH_HOME]"
     process_version "$@"
     process_help "$@"
 
@@ -80,19 +63,17 @@ main() {
     script_dir="${_RECIPES_DIR}/${verb}"
     script_full_path="${script_dir}/${recipe}.sh"
 
-    _debug "mash_action=${mash_action}"
-    _debug "verb=${verb}"
-    _debug "recipe=${recipe}"
-    _debug "script_dir=${script_dir}"
-    _debug "script_full_path=${script_full_path}"
+    _debug "mash_action=[${mash_action}]"
+    _debug "verb=[${verb}]"
+    _debug "recipe=[${recipe}]"
+    _debug "script_dir=[${script_dir}]"
+    _debug "script_full_path=[${script_full_path}]"
 
     [ -e "${script_dir}" ] || die 2 "Unknown verb '${verb}'"
     [ -f "${script_full_path}" ] || die 2 "Unknown recipe '${recipe}'"
 
     # shellcheck disable=SC1090
     . "${script_full_path}"
-
-    # include_recipe "${verb}/${script}"
 }
 
 main "$@"

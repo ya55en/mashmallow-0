@@ -1,6 +1,6 @@
 #! /bin/sh
 
-. "$MASH_HOME/lib/sys.sh"
+#. "$MASH_HOME/lib/sys.sh"
 
 import mashrc
 import unittest/assert
