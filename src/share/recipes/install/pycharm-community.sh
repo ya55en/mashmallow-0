@@ -95,8 +95,8 @@ smoke_test() {
 
     # shellcheck disable=SC1090
     . "$HOME/.bashrc.d/42-pycharm-${flavor}.sh"
-    printenv.py /dev/null || die 9 "Smoke test running 'printenv.py' FAILED."
-    _debug "Smoke Test: OK (printenv.py /dev/null)"
+    fsnotifier --version || die 9 "Smoke test running 'fsnotifier --version' FAILED."
+    _debug "Smoke Test: OK (fsnotifier --version)"
 }
 
 instruct_user() {

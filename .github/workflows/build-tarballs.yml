@@ -21,6 +21,7 @@ jobs:
     environment: STAGE
 
     env:
+      # TODO: consider getting the mash-0-chroot-setup release version from somewhere else
       CHROOT_TARBALLS_URL: https://github.com/ya55en/mash-0-chroot-setup/releases/download/v0.0.5
       CHROOT: /tmp/mash-ramdisk
 
@@ -41,5 +42,7 @@ jobs:
       - run: curl -sSL "$CHROOT_TARBALLS_URL/focal-mate-desktop.tar.gz" -o ./chroot-setup/build/focal-mate-desktop.tar.gz
 
       - run: cd chroot-setup && make mate-desktop-up
+      # - run: make test-mash-core
       - run: make test-quick
+      - run: make test-standard
       - run: cd chroot-setup && make mate-desktop-down
