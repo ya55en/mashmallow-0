@@ -43,7 +43,9 @@ __logging__set_global_vars() {
     _LOG_CONSOLE=/dev/stdout    # or empty
     _LOG_FILE=/var/log/mash.log # or empty
 
+    # shellcheck disable=2016
     _LOG_FORMAT_CONSOLE='${time}${color}${level}${coff}:${func} ${color}${msg}${coff}'
+    # shellcheck disable=2016
     _LOG_FORMAT_FILE='${time}${level}: ${msg}'
     _LOG_FORMAT_TIME_FILE='%d %b %H:%M:%S'
     _LOG_FORMAT_TIME_CONSOLE='%H:%M:%S'
@@ -80,7 +82,9 @@ logging__log() {
     local level_name
     local level
 
+    # shellcheck disable=2086
     eval "level_name="\$_LOG_LEVEL_${msg_level}""
+    # shellcheck disable=2086
     eval "level="\$_LOG_LEVEL_C_${msg_level}""
 
     local func=

@@ -21,12 +21,20 @@ nightly.
 ## Ideas about mash cli sub-commands
 
 ```
-mash undo install bitwarden
+mash repair install pycharm-community
+
+mash self config LOG_LEVEL=DEBUG
+mash self config color-scheme=dark-bg
+
+mash self test
+mash self repair
+mash self fix-links
+
 mash undo fix linux-firmware-i915
 
 mash self puge  # removing EVERYTHING mash
 mash self test
-mash self reinstall
+mash self reinstall  (or mash self repair)
 mash self security-check
 
 mash fix linux-firmware-i915
@@ -55,6 +63,17 @@ _____
   - mash install pipx-local
 - rust-4dev
 - golang-4dev
+
+
+## posix-shell-stdlib:
+
+Path to install on a live system:
+- `~/.local/lib/posix-shell/stdlib/`
+
+Any other, non-std libs go to:
+- `~/.local/lib/shell/posix-sh/dist-pkg/`
+
+`~/.local/bin/upgrade-sh-stdlib`  POSIX_SH_IMPORT_PATH
 
 
 ### Done (more or less):
