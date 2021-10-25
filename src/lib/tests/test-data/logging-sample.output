@@ -1,18 +1,11 @@
---- Running show_aliases()...
-_info='logging__log 20'
-_error='logging__log 40'
-_warn='logging__log 30'
-_debug='logging__log 10'
-_fatal='logging__log 50'
-_say='logging__say'
 --- Running logging_all_levels()...
-[38;5;160mFATAL[0;00m: [38;5;160mThis is a FATAL level message ;)[0;00m
-[38;5;9mE[0;00m: [38;5;9mThis is an ERROR level message ;)[0;00m
-[38;5;3mW[0;00m: [38;5;3mThis is a WARN level message ;)[0;00m
-[38;5;14mI[0;00m: [38;5;14mThis is an INFO level message ;)[0;00m
+[38;5;160mFATAL:[1m[22m This is a FATAL level message ;)[0;00m
+[38;5;9mE:[1m[22m This is an ERROR level message ;)[0;00m
+[38;5;3mW:[1m[22m This is a WARN level message ;)[0;00m
+[38;5;14mI:[1m[22m This is an INFO level message ;)[0;00m
 !! [38;5;15mThis is a SAY message that appears only on console.[0;00m
-[38;5;6mD[0;00m: [38;5;6mThis is a DEBUG level message ;)[0;00m
+[38;5;6mD:[1m[22m This is a DEBUG level message ;)[0;00m
 --- Running test-logging#logging_level_error()...
-[38;5;160mFATAL[0;00m: test-logging#logging_level_error: [38;5;160mThis is a FATAL level message ;)[0;00m
-[38;5;9mE[0;00m: test-logging#logging_level_error: [38;5;9mThis is an ERROR level message ;)[0;00m
+[38;5;160mFATAL:[1m test-logging#logging_level_error:[22m This is a FATAL level message ;)[0;00m
+[38;5;9mE:[1m test-logging#logging_level_error:[22m This is an ERROR level message ;)[0;00m
 !! [38;5;15mThis is a SAY message that appears only on console.[0;00m

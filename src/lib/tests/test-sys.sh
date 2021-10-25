@@ -5,6 +5,7 @@
 # import sys by sys ... but hey, this shows explicitly
 # what is under test ;)
 import sys
+import string
 import unittest/assert
 
 setup_mod() {
@@ -50,8 +51,19 @@ test_die__check_message() {
     _LOG_FORMAT_TIME_CONSOLE=
     local stderr_output
     _sys__clear_colors
-    stderr_output="$( (die 123 "dying message") 2>&1)"
-    assert_equal 'FATAL: dying message' "$stderr_output"
+    stderr_output="$( (die 123 "dying message") 2>&1 )"
+
+    # This would fail when hidden ANSI sequences exist in any of the compared args
+    assert_equal "$(len 'FATAL: dying message')" "$(len "$stderr_output")"
+
+    assert_equal 'FATAL: dying message' "$(strip "$stderr_output")"
+
+    # expected='FATAL++: dying message'
+    # if [ "$stderr_output" = "$expected" ]; then
+    #     echo "EQUAL -- OK!!"
+    # else
+    #     echo "NOT EQUAL: expected=[$expected] but was stderr_output=[$stderr_output]"
+    # fi
     _sys__set_colors
     _LOG_FORMAT_TIME_CONSOLE="$_LOG_FORMAT_TIME_CONSOLE_SAVED"
 }

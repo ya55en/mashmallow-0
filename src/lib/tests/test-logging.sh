@@ -62,17 +62,15 @@ setup_mod() {
     _LOG_FORMAT_TIME_CONSOLE=
 
     {
-        show_aliases
         logging_all_levels
         logging_level_error
     } > "$__LOGGING__TMP_FILE"
 
     # Dump on console to show how it works:
-    {
-        show_aliases
-        logging_all_levels
-        logging_level_error
-    }
+    # {
+    #     logging_all_levels
+    #     logging_level_error
+    # }
 
     _LOG_FORMAT_TIME_CONSOLE="$_LOG_FORMAT_TIME_CONSOLE_OLD"
 }
@@ -81,8 +79,8 @@ setup_mod() {
 teardown_mod() {
     # Suppress to keep the $__LOGGING__TMP_FILE for copying to the reference
     # file $__LOGGING__SAMPLE_FILE. (Use a noop like ':' or 'true'.)
-#    rm -f "$__LOGGING__TMP_FILE"
-    :
+    rm -f "$__LOGGING__TMP_FILE"
+    # :
 }
 
 test_logging_unknown_level() {

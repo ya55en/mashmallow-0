@@ -43,7 +43,7 @@ __logging__set_global_vars() {
     _LOG_CONSOLE=/dev/stdout    # or empty
     _LOG_FILE=/var/log/mash.log # or empty
 
-    _LOG_FORMAT_CONSOLE='${time}${color}${level}${coff}:${func} ${color}${msg}${coff}'
+    _LOG_FORMAT_CONSOLE='${time}${color}${level}:${C_BOLD}${func}${C_BOFF} ${msg}${coff}'
     _LOG_FORMAT_FILE='${time}${level}: ${msg}'
     _LOG_FORMAT_TIME_FILE='%d %b %H:%M:%S'
     _LOG_FORMAT_TIME_CONSOLE='%H:%M:%S'
@@ -71,6 +71,9 @@ logging__say() {
     echo "!! ${C_SAY}${msg}${C_OFF}"
 }
 
+# TODO: When printing on console, make `_fatal` and `_error` print to stderr
+#   and the rest print to stdout
+
 logging__log() {
     # printf '\nTRACE: msg_level=[%s] _LOG_LEVEL=[%s]\n' "$1" "$_LOG_LEVEL"
     [ "$1" -ge "$_LOG_LEVEL" ] || return 0
@@ -90,8 +93,6 @@ logging__log() {
     local coff=$C_OFF
     local color=
     eval "color=\$C_${level_name}"
-
-    # printf '%s: %s\n' "$level_name" "$msg"
     eval "echo \"$_LOG_FORMAT_CONSOLE\""
 }
 

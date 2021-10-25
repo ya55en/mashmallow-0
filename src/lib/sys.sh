@@ -23,6 +23,7 @@ die() {
     msg="$2"
 
     _fatal "$msg" >&2
+    #echo "${C_FATAL}FATAL: $msg${C_OFF}" >&2
     exit $rc
 }
 
@@ -33,6 +34,7 @@ _sys__noop() { :; }
 #: Color settings for color-enabled terminal
 _sys__set_colors() {
     C_BOLD='\033[1m'
+    C_BOFF='\033[22m'
     C_OFF='\033[0;00m'
 
     C_FATAL="\033[38;5;160m"
@@ -48,6 +50,7 @@ _sys__set_colors() {
 #: Color settings for color-enabled terminal
 _sys__clear_colors() {
     C_BOLD=
+    C_BOFF=
     C_OFF=
 
     C_FATAL=

@@ -1,15 +1,17 @@
 #! /bin/sh
 
-#. "$MASH_HOME/lib/sys.sh"
-
 import mashrc
 import unittest/assert
 import os
 
 test_os_vars() {
-    local expected_arch="$(uname -p)"
-    local expected_os="$(uname -o)"
-    local expected_kernel_name="$(uname -s)"
+    local expected_arch
+    local expected_os
+    local expected_kernel_name
+
+    expected_arch="$(uname -p)"
+    expected_os="$(uname -o)"
+    expected_kernel_name="$(uname -s)"
 
     assert_equal "$expected_arch" "$_OS_ARCH"
     assert_equal "$expected_os" "$_OS_OS"

@@ -32,7 +32,7 @@ gh_latest_version() {
     local raw_version
     local version
     raw_version="$(gh_latest_raw_version $project_path)"
-    version="${raw_version#v*}"
+    version="${raw_version#v}"
     printf '%s' "$version"
 }
 
