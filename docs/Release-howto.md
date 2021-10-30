@@ -9,7 +9,7 @@ example: `1.2.0`.
 
 _Unreleased builds_ are versioned `major.minon.patch-hash` where
 `hash` is a string composed of the first 5 characters of the git
-commit sha1 hash. Example: `1.2.0-4c68d15`
+commit sha1 hash. Example: `1.2.0-4c68d`
 
 ## Tagging
 

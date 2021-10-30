@@ -14,11 +14,11 @@ wishful_api() {
 }
 
 test_gh_latest_raw_version() {
-    assert_equal "$(gh_latest_raw_version 'bitwarden/desktop')" 'v1.28.3'
+    assert_equal "$(gh_latest_raw_version 'bitwarden/desktop')" 'v1.29.1'
 }
 
 test_gh_latest_version() {
-    assert_equal "$(gh_latest_version 'ya55en/mashmallow-0')" '0.0.6'
+    assert_equal "$(gh_latest_version 'ya55en/mashmallow-0')" '0.0.7'
 }
 
 test_gh_latest_version_vscodium() {
