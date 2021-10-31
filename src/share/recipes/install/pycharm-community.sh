@@ -7,7 +7,7 @@
 
 import logging
 
-version='2021.2.2'
+version='2021.2.3'
 flavor='community'
 
 pycharm_filename="pycharm-${flavor}-${version}.tar.gz"
