@@ -7,6 +7,8 @@
 
 . "$MASH_HOME/lib/sys.sh"
 
+import logging
+
 _sht_name_='shtest'
 
 # shellcheck disable=2120
@@ -53,6 +55,17 @@ parse_module() {
 
     done < "$filename"
     IFS="$IFS_OLD"
+    if [ -n "$single_method" ]; then
+
+        case $test_methods in
+        *$single_method*)
+            test_methods="$single_method"
+            ;;
+        *)
+            _warn "Test method $single_method NOT found in $_mod_path_"
+            ;;
+        esac
+    fi
 }
 
 run() {
@@ -141,9 +154,17 @@ collect() {
             fi
         done
     }
-
-    for path in "$@"; do
-
+    local OLD_IFS="$IFS"
+    IFS=':'
+    local modules_list="$modules"
+    local path
+    while [ -n "$modules_list" ]; do
+        read -r path modules_list << EOS
+$modules_list
+EOS
+        if [ -z "$path" ]; then
+            continue
+        fi
         printf '(1) path=%s\n' "$path"
         if [ -d "$path" ]; then
             scan_directory "$path"
@@ -152,24 +173,47 @@ collect() {
         fi
     done
     printf 'COLLECTED: %s\n' "$test_modules"
+    IFS="$OLD_IFS"
 }
 
 main() {
-    local test_modules
-
     case "$1" in
     --help | -help | help | -h)
         cat << EOS
 Unit test runner v 0.0.0 ;)
 USAGE:
-  $ $(basename "$0") PATH-to-TEST-ENTRY [PATH-to-TEST-ENTRY ...]
+  $ $(basename "$0") TEST-MODULE [TEST-MODULE ...] [-t TEST-CASE]
 
 EOS
         exit 0
         ;;
     esac
 
-    collect "$@"
+    local is_testcase=0
+    local single_method=
+    local modules=
+
+    for ARG in "$@"; do
+        if [ "$is_testcase" = 1 ]; then
+            single_method="$ARG" # TODO: Support multiple testcases
+            is_testcase=0
+        elif [ "$ARG" = "-t" ]; then
+            is_testcase=1
+        elif expr "$ARG" : '-[^t]' > /dev/null; then
+            cat << EOS
+Unknown flag: $ARG
+USAGE:
+  $ $(basename "$0") TEST-MODULE [TEST-MODULE ...] [-t TEST-CASE]
+
+EOS
+            exit 1
+        else
+            modules="$modules:$ARG"
+        fi
+    done
+
+    local test_modules
+    collect "$modules"
     run_many
 }
 
