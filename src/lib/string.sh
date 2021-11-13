@@ -68,8 +68,61 @@ reeval() {
     eval "printf '%s' $1"
 }
 
-
 #: Print length of given argument to stdout.
 len() {
     printf '%u' ${#1}
+}
+
+#: Return success if "$2" is found within "$1", otherwise fail.
+#: If $1 is empty, fail with '1', If $2 is empty, die promptly with 101
+#: as behavior is undefined for $2=''.
+contains() {
+    # Empty string does not contain anything
+    [ -z "$1" ] && return 1
+    # Calling with empty substring is illegal
+    [ -z "$2" ] && die 101 "string#contains: Illegal sub-string '$2'"
+    [ -z "${1##*$2*}" ]
+}
+
+# contains() {
+#     local str="$1"
+#     local substr="$2"
+
+#     # Empty string does not contain anything
+#     [ -z "$str" ] && return 1
+
+#     # Calling with empty substring is illegal
+#     [ -z "$substr" ] && die 101 "string#contains: Illegal sub-string '$2'"
+
+#     case "$str" in
+#         *${substr}*)
+#             return 0
+#             ;;
+#         *)
+#             return 1
+#             ;;
+#     esac
+# }
+
+#: Assign multiple space-delimited values of "$1" to multiple variables
+#: given as the remaining arguments. Example:
+#:   assing_multiple "ONE TWO THREE" one two three
+#: We do not support custom delims, because IFS change affects
+#: the way the list of variables is interpreted.
+assing_multiple() {
+    # IMPORTANT: IFS *must* be set *first* as it affects $* and $@!
+    local multiple_values
+    local varnames
+    local IFS_SAVED="$IFS"
+    IFS=' '
+
+    multiple_values="$1"
+    shift
+    varnames="$*"
+
+    # shellcheck disable=2086,2229
+    read -r $varnames << EOS
+$multiple_values
+EOS
+    IFS="$IFS_SAVED"
 }

@@ -82,3 +82,39 @@ test_len__non_empty_string() {
     assert_equal 3 "$(len 'abc')"
     assert_equal 6 "$(len '123456')"
 }
+
+test_contains__standard_cases_positive() {
+    assert_true contains 'asd' 'a'
+    assert_true contains 'asd' 's'
+    assert_true contains 'asd' 'd'
+    assert_true contains 'hi bye' ' '
+}
+
+test_contains__standard_cases_negative() {
+    assert_false contains 'hello' 'bye'
+    assert_false contains 'hi-bye' ' '
+}
+
+test_contains__corner_cases() {
+    (contains 'abc' '' 2> /dev/null)
+    assert_not_equal 0 $?
+    assert_false contains '' 'abc'
+}
+
+test_assing_multiple__default_delim_two_vars() {
+    assert_true assing_multiple 'value_1 value_2' var1 var2
+    assert_equal "$var1" 'value_1'
+    assert_equal "$var2" 'value_2'
+}
+
+test_assing_multiple__default_delim_two_values_three_vars() {
+    assert_true assing_multiple 'value_1 value_2' var1 var2 var3
+    assert_equal "$var1" 'value_1'
+    assert_equal "$var2" 'value_2'
+    assert_equal "$var3" ''
+}
+
+test_assing_multiple__default_delim_two_values_one_var() {
+    assert_true assing_multiple 'value_1 value_2' var1
+    assert_equal "$var1" 'value_1 value_2'
+}
