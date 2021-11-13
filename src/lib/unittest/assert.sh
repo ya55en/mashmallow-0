@@ -9,8 +9,6 @@
 #   even if one or more of the sub-tests fail.
 # TODO: provide a wrapper for test execution.
 
-
-
 _name_="$(basename "$0")"
 _l4t_name_='lib-4test.sh'
 #echo "$_l4t_name_: _name_=[$_name_], _l4t_name_=[$_l4t_name_]"
@@ -38,7 +36,7 @@ print_fail() {
     echo "not ok $no - ${C_ERROR}$_curr_test_: ${failmsg}${C_OFF}"
 
     # _curr_test_rc_ is local for the test runner and reflects any failed checks
-    _curr_test_rc_=$(expr $_curr_test_rc +  1)
+    _curr_test_rc_=$(expr $_curr_test_rc + 1)
 }
 
 print_error() {
@@ -47,7 +45,7 @@ print_error() {
     echo "${C_ERROR}${_curr_test_}: ${failmsg}${C_OFF}" >&2
 
     # _curr_test_rc_ is local for the test runner and reflects any failed checks
-    _curr_test_rc_=$(expr $_curr_test_rc +  1)
+    _curr_test_rc_=$(expr $_curr_test_rc + 1)
 }
 
 check_arg_is_num() {
@@ -117,13 +115,19 @@ assert_not_equal_num() {
 
 assert_true() {
     "$@" || {
-        print_fail "assert_true FAILED for [$*]"
+        local args_quoted="$1"
+        shift
+        for arg in "$@"; do args_quoted="$args_quoted '$arg'"; done
+        print_fail "assert_true FAILED for [$args_quoted]"
         return 1
     }
 }
 
 assert_false() {
     ! "$@" || {
+        local args_quoted="$1"
+        shift
+        for arg in "$@"; do args_quoted="$args_quoted '$arg'"; done
         print_fail "assert_false FAILED for [$*]"
         return 1
     }
