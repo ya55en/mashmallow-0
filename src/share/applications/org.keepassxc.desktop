@@ -1,0 +1,20 @@
+cat << EOS
+# ~/.local/share/applications/org.keepassxc.desktop
+# KeePassXC - https://keepassxc.org/
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=KeePassXC
+GenericName=Password Manager
+Comment=Cross-Platform Password Manager
+Keywords=keepass;keepassx;keepassxc;
+Exec=${_LOCAL}/bin/keepassxc %F
+TryExec=${_LOCAL}/bin/keepassxc
+Icon=${_LOCAL}/opt/keepassxc/keepassxc-icon.png
+Terminal=false
+Categories=Utility;
+StartupNotify=true
+StartupWMClass=keepassxc;KeePassXC;
+MimeType=application/x-keepassxc;application/x-keepass2;application/x-keepass;application/x-kdbx;
+EOS
