@@ -142,11 +142,11 @@ create_bashrcd_script_99_import_path() {
         cat > "${target_file_path}" << EOS
 # ~/.bashrc.d/99-mash-import-path.sh - mash: set MASH_IMPORT_PATH
 
-# MASH_IMPORT_PATH is necessary for sys.sh 'import()' to work.
-echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/etc" || MASH_IMPORT_PATH="\$MASH_HOME/etc:\$MASH_IMPORT_PATH"
-echo "\$MASH_IMPORT_PATH" | grep -q "\$MASH_HOME/lib" || MASH_IMPORT_PATH="\$MASH_HOME/lib:\$MASH_IMPORT_PATH"
+# $POSIXSH_IMPORT_PATH is necessary for sys.sh 'import()' to work.
+echo "\$POSIXSH_IMPORT_PATH" | grep -q "\$MASH_HOME/etc" || POSIXSH_IMPORT_PATH="\$MASH_HOME/etc:\$POSIXSH_IMPORT_PATH"
+echo "\$POSIXSH_IMPORT_PATH" | grep -q "\$MASH_HOME/lib" || POSIXSH_IMPORT_PATH="\$MASH_HOME/lib:\$POSIXSH_IMPORT_PATH"
 
-export MASH_IMPORT_PATH
+export $POSIXSH_IMPORT_PATH
 export PATH
 
 EOS
