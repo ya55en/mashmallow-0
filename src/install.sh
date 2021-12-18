@@ -28,6 +28,17 @@ if [ "$DEBUG" = true ]; then
     echo "DEBUG: __version__='${__version__}'"
 fi
 
+install_sh_stdlib() {
+    if [ -e "$POSIXSH_STDLIB_HOME/bin/shtest" ]
+    then
+        echo "I: sh-stdlib present: running tests"
+        "$POSIXSH_STDLIB_HOME/bin/shtest" "$POSIXSH_STDLIB_HOME/tests" # TODO: What if tests fail?
+    else
+        echo "I: sh-stdlib not present: downloading and installing"
+        curl -sSL https://github.com/ya55en/sh-stdlib/raw/main/install.sh | sh
+    fi
+}
+
 #: Create ~/.local/{bin,lib,opt,share}.
 create_dot_local() {
     if [ -e "$_LOCAL" ]; then
@@ -177,6 +188,7 @@ EOS
 }
 
 main() {
+    install_sh_stdlib
     create_dot_local
     download_mash_core
     install_mash_core
