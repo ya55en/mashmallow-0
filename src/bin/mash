@@ -2,13 +2,15 @@
 
 #: Ma'shmallow main executable.
 
-. "$MASH_HOME/lib/sys.sh"
+#. "$MASH_HOME/lib/sys.sh"
+. "$POSIXSH_STDLIB_HOME/sys.sh"
 
 _MASH_HOME="${MASH_HOME:-$(dirname "$_path_")}"
 
 import mashrc
 import logging
-import libma
+import os
+import string
 
 _mash_project_name_="ma'shmallow"
 
