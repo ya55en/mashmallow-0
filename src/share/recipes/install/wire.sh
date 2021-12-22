@@ -19,7 +19,7 @@ download_appimage() {
         _warn "App file already downloaded/cached, skipping."
     else
         _info "Downloading Wire desktop v${version}..."
-        curl -sL "$_URL_DOWNLOAD" -o "${download_target}"
+        curl -sSL "$_URL_DOWNLOAD" -o "${download_target}"
     fi
 }
 

@@ -25,7 +25,7 @@ _debug "_URL_DOWNLOAD=[$_URL_HASHSUM]"
 
 # Download and install:
 _info "Downloading Pycharm Pro v${version}..."
-curl -sL "$_URL_DOWNLOAD" -o "/tmp/${pycharm_filename}"
+curl -sSL "$_URL_DOWNLOAD" -o "/tmp/${pycharm_filename}"
 
 # TODO: check sha256 from $_URL_HASHSUM
 

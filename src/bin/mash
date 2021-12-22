@@ -74,6 +74,7 @@ main() {
     [ -e "${script_dir}" ] || die 2 "Unknown verb '${verb}'"
     [ -f "${script_full_path}" ] || die 2 "Unknown recipe '${recipe}'"
 
+    set -e # exit immediately if a command exits with a non-zero status
     # shellcheck disable=SC1090
     . "${script_full_path}"
 }

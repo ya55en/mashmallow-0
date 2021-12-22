@@ -29,7 +29,7 @@ download_deb_file() {
             die 33 "Could NOT create download directory! ($_DOWNLOAD_CACHE)"
         }
         _debug "Downloading [$_slk__download_url]..."
-        curl -sL "$_slk__download_url" -o "$_DOWNLOAD_CACHE/$_slk__filename" || {
+        curl -sSL "$_slk__download_url" -o "$_DOWNLOAD_CACHE/$_slk__filename" || {
             die 33 "$_slk__filename download FAILED! (rc=$?)"
         }
         [ -e "$_DOWNLOAD_CACHE/$_slk__filename" ] || {
