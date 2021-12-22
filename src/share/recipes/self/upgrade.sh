@@ -15,7 +15,7 @@ curr_version=${V#*v}
 
 _URL_LATEST=https://github.com/ya55en/mashmallow-0/releases/latest
 _URL_DOWNLOAD_RE='^location: https://github.com/ya55en/mashmallow-0/releases/tag/v\(.*\)$'
-latest_version=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
+latest_version=$(curl -ISs $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
 
 _DOWNLOAD_CACHE=/tmp
 _INSTALL_FILENAME="install.sh"
@@ -47,7 +47,7 @@ download_update() {
     else
         _info "Downloading ${target_file_path}..."
     fi
-    curl -sL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
+    curl -sSL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
         die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
     chmod 764 "${_DOWNLOAD_CACHE}/${_INSTALL_FILENAME}"
 }

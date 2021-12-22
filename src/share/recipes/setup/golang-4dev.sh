@@ -14,7 +14,7 @@ get_latest_version() {
     _debug "Doing GET [$url] to obtain latest version..."
     # curl complains on bad output below but otherwise everything works ;)
     version=$(
-        curl -sX GET "$url" | head -5 |
+        curl -sSX GET "$url" | head -5 |
             awk '/"version": "go[0-9]+\.[0-9]+\.[0-9]+"/ {print substr($2, 4)}'
     )
     version=${version%*\",} # rstrip ",

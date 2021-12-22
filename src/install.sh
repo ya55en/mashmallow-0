@@ -14,7 +14,7 @@ _DOWNLOAD_CACHE=/tmp
 
 _URL_LATEST=https://github.com/ya55en/mashmallow-0/releases/latest
 _URL_DOWNLOAD_RE='^location: https://github.com/ya55en/mashmallow-0/releases/tag/v\(.*\)$'
-__latest__=$(curl -Is $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
+__latest__=$(curl -ISs $_URL_LATEST | grep ^location | tr -d '\n\r' | sed "s|$_URL_DOWNLOAD_RE|\1|")
 __version__="${1:-$__latest__}" # version passed as an argument for unreleased builds
 
 _MASH_FILENAME="mash-v${__version__}.tgz"
@@ -68,7 +68,7 @@ download_mash_core() {
         echo "Release file already downloaded, skipping."
     else
         echo "Downloading ${target_file_path}..."
-        curl -sL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
+        curl -sSL "$_URL_DOWNLOAD" -o "${target_file_path}" ||
             die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
     fi
 }

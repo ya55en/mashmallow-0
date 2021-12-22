@@ -22,7 +22,7 @@ gh_latest_raw_version() {
     _debug "gh_latest_raw_version(): url_download_re=[$url_download_re]" >&2
 
     local raw_version
-    raw_version=$(curl -Is "$url_latest" | grep ^location | tr -d '\n\r' | sed "s|$url_download_re|\1|")
+    raw_version=$(curl -ISs "$url_latest" | grep ^location | tr -d '\n\r' | sed "s|$url_download_re|\1|")
     printf '%s' "$raw_version"
 }
 
@@ -51,7 +51,7 @@ gh_download() {
         _warn "File already downloaded ($download_target), skipping."
     else
         mkdir -p "${_DOWNLOAD_CACHE}"
-        curl -sL "$download_url" -o "${download_target}" || {
+        curl -sSL "$download_url" -o "${download_target}" || {
             _error "${project_path} download FAILED! (rc=$?)"
         }
     fi

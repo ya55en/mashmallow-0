@@ -17,7 +17,7 @@ download_into_cache() {
         _warn "Archive already downloaded, skipping ($_DOWNLOAD_CACHE/$_jbm__filename)"
     else
         _info "Downloading $_jbm__filename..."
-        curl -sL "$_jbm__download_link" -o "$_DOWNLOAD_CACHE/$_jbm__filename" || {
+        curl -sSL "$_jbm__download_link" -o "$_DOWNLOAD_CACHE/$_jbm__filename" || {
             _die 33 "$_jbm__filename download FAILED! (rc=$?)"
         }
         _debug "Downloaded URL: [$_jbm__download_link]"
