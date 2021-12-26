@@ -80,23 +80,20 @@ doit() {
 }
 
 undo() {
-    _info "** UN-installing dev-essentials..."
+    _info "Removing dev-essentials:"
+    delete_files "Removing p_sswdless sudo setup ${p_sswdless_sudo_fullpath}..." "${p_sswdless_sudo_fullpath}"
+    _info "Removing github-cli..."
+    mash undo install github-cli # TODO: Is this ok here?
+    for package in $apt_packages; do # TODO: Maybe remove all together and not one by one?
+        apt_purge package
+    done
 
-    _info "-- Removing p_sswdless sudo setup ${p_sswdless_sudo_fullpath}..."
-    sudo rm -f "${p_sswdless_sudo_fullpath}"
+#    TODO: ????
+#    # moving at the end trying to reduce the disastrous effect of 'apt-get purge'
+#    _info "-- Removing apt config ${apt_confd_fullpath}..."
+#    sudo rm -f "${apt_confd_fullpath}"
 
-    _info "-- Removing github-cli..."
-    mash install github-cli
-
-    _info "-- Purging apt packages (will ask - please say NO! :)..."
-    # Asking the user on purge, because of issue #19:
-    sudo apt-get purge ${apt_packages}
-
-    # moving at the end trying to reduce the disastrous effect of 'apt-get purge'
-    _info "-- Removing apt config ${apt_confd_fullpath}..."
-    sudo rm -f "${apt_confd_fullpath}"
-
-    _info "** dev-essentials removal successful."
+    _info "dev-essentials removed successfully."
 }
 
 $mash_action

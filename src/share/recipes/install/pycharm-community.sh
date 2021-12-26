@@ -133,31 +133,19 @@ doit() {
 }
 
 undo() {
-    _warn "UNinstalling pycharm version=[$version], flavor=${flavor}"
 
-    _info "Removing $HOME/.bashrc.d/42-pycharm-${flavor}.sh..."
-    rm "$HOME/.bashrc.d/42-pycharm-${flavor}.sh" ||
-        _warn "Could NOT remove add-to-path file $HOME/.bashrc.d/42-pycharm-${flavor}.sh!"
-
-    _info "Removing $_LOCAL/opt/pycharm-${flavor} symlink..."
-    rm -f "$_LOCAL/opt/pycharm-${flavor}" ||
-        _warn "Could NOT remove symlink $_LOCAL/opt/pycharm-${flavor}!"
-
-    dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file_dst}"
-    _info "Removing dot-desktop ${dot_desktop_fullpath} ..."
-    rm "${dot_desktop_fullpath}"
-
-    _info "Removing $pycharm_dir..."
-    rm -r "$pycharm_dir" ||
-        _warn "Could NOT remove directory $pycharm_dir!"
-    # TODO: remove the .desktop file
+    _info "Removing pycharm version=[$version], flavor=${flavor}:"
+    delete_files "Removing $HOME/.bashrc.d/42-pycharm-${flavor}.sh..." "$HOME/.bashrc.d/42-pycharm-${flavor}.sh"
+    delete_files "Removing $_LOCAL/opt/pycharm-${flavor} symlink..." "$_LOCAL/opt/pycharm-${flavor}"
+    delete_files "Removing dot-desktop $_LOCAL/share/applications/${dot_desktop_file_dst} ..." "$_LOCAL/share/applications/${dot_desktop_file_dst}"
+    delete_directory "Removing $pycharm_dir..." "$pycharm_dir"
     cat << EOS
 
 In order to have all your terminals know about the add-to-path change,
 you need to close (and re-open) all open terminals, OR log out, then log
 back in.
 
-UN-installation ended.
+pycharm removed successfully.
 
 EOS
 }

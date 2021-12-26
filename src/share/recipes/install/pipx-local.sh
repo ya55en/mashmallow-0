@@ -108,17 +108,10 @@ doit() {
 }
 
 undo() {
-    _warn "Removing pipx-local:"
-
-    _info "Removing bashrcd script: ${bashrcd_script} ..."
-    rm -f "${bashrcd_script_path}"
-
-    _info "Removing symlink $_LOCAL/bin/pipx ..."
-    rm -f "$_LOCAL/bin/pipx"
-
-    _info "Removing pipx venv ..."
-    rm -rf "$_PYTHON_VENVS/pipx"
-
+    _info "Removing pipx-local:"
+    delete_files "Removing bashrcd script: ${bashrcd_script} ..." "${bashrcd_script_path}"
+    delete_files "Removing symlink $_LOCAL/bin/pipx ..." "$_LOCAL/bin/pipx"
+    delete_directory "Removing pipx venv ..." "$_PYTHON_VENVS/pipx"
     _info 'pipx-local removed successfully.'
 }
 

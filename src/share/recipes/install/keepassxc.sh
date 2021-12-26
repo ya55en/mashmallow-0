@@ -78,36 +78,12 @@ doit() {
 }
 
 undo() {
-    _info "** Un-installing keepassxc:"
-
-    result=''
-
-    # Remove gnome assets
-    _info "Removing gnome assets..."
-    rm -f "${_LOCAL}/opt/keepassxc/keepassxc-icon.png"
-    result="${result}:$?"
-    rm -f "${_LOCAL}/share/applications/org.keepassxc.desktop"
-    result="${result}:$?"
-
-    # Remove symlink
-    _info "Removing symlink..."
-    rm -f "$_LOCAL/bin/keepassxc"
-    result="${result}:$?"
-
-    # Remove app image file
-    _info "Removing keepassxc app image..."
-    rm -f "${app_fullpath}"
-    result="${result}:$?"
-
-    # Remove the opt directory:
-    rmdir "$_LOCAL/opt/keepassxc"
-    result="${result}:$?"
-
-    if [ "$result" = ':0:0:0:0:0' ]; then
-        _info "Successfully un-installed keepassxc."
-    else
-        _warn "Un-installed keepassxc with errors: codes ${result}"
-    fi
+    _info "Removing keepassxc:"
+    delete_files "Removing gnome assets..." "${_LOCAL}/opt/keepassxc/keepassxc-icon.png" "${_LOCAL}/share/applications/org.keepassxc.desktop"
+    delete_files "Removing symlink..." "$_LOCAL/bin/keepassxc"
+    delete_files "Removing keepassxc app image..." "${app_fullpath}"
+    delete_directory "Removing the opt directory..." "$_LOCAL/opt/keepassxc"
+    _info "keepassxc removed successfully."
 }
 
 main() {
