@@ -63,10 +63,9 @@ doit() {
 }
 
 undo() {
-    # Remove jetbrains-mono fonts directory
-    rm -rf "$_jbm__target_dir"
-    _warn "Removed JetBrains-mono font dir $_jbm__target_dir"
-    _info 'DONE.'
+    _info "Removing JetBrains Mono font family:"
+    delete_directory "Removing JetBrains-mono font dir $_jbm__target_dir" "$_jbm__target_dir"
+    _info "JetBrains Mono font family removed successfully."
 }
 
 $mash_action

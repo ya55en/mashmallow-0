@@ -5,6 +5,7 @@
 import os
 import logging
 import gh-download
+import removal
 
 #: Install Bitwarden
 
@@ -78,33 +79,41 @@ doit() {
     inform_user
 }
 
+#undo() {
+#    _info "** Un-installing bitwarden:"
+#
+#    result=''
+#
+#    # Remove gnome assets
+#    _info "Removing gnome assets..."
+#    rm -f "${_LOCAL}/opt/bitwarden/bitwarden-icon.png"
+#    result="${result}:$?"
+#    rm -f "${_LOCAL}/share/applications/com.bitwarden.desktop"
+#    result="${result}:$?"
+#
+#    # Remove symlink
+#    _info "Removing symlink..."
+#    rm -f "$_LOCAL/bin/bitwarden-desktop"
+#    result="${result}:$?"
+#
+#    # Remove app image file
+#    _info "Removing bitwarden app image..."
+#    rm -f "${app_fullpath}"
+#    result="${result}:$?"
+#
+#    if [ "$result" = ':0:0:0:0' ]; then
+#        _info "Successfully un-installed bitwarden."
+#    else
+#        _warn "Un-installed bitwarden with errors: codes ${result}"
+#    fi
+#}
+
 undo() {
-    _info "** Un-installing bitwarden:"
-
-    result=''
-
-    # Remove gnome assets
-    _info "Removing gnome assets..."
-    rm -f "${_LOCAL}/opt/bitwarden/bitwarden-icon.png"
-    result="${result}:$?"
-    rm -f "${_LOCAL}/share/applications/com.bitwarden.desktop"
-    result="${result}:$?"
-
-    # Remove symlink
-    _info "Removing symlink..."
-    rm -f "$_LOCAL/bin/bitwarden-desktop"
-    result="${result}:$?"
-
-    # Remove app image file
-    _info "Removing bitwarden app image..."
-    rm -f "${app_fullpath}"
-    result="${result}:$?"
-
-    if [ "$result" = ':0:0:0:0' ]; then
-        _info "Successfully un-installed bitwarden."
-    else
-        _warn "Un-installed bitwarden with errors: codes ${result}"
-    fi
+    _info "Removing bitwarden:"
+   delete_files 'Removing gnome assets...' "${_LOCAL}/opt/bitwarden/bitwarden-icon.png" "${_LOCAL}/share/applications/com.bitwarden.desktop"
+    delete_files 'Removing symlink...' "$_LOCAL/bin/bitwarden-desktop"
+    delete_files 'Removing bitwarden app image...' "${app_fullpath}"
+    _info "bitwarden removed successfully."
 }
 
 main() {

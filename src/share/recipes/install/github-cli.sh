@@ -70,15 +70,10 @@ doit() {
 }
 
 undo() {
-    _warn "UNinstalling github-cli version=[$version]"
-
-    _info "Removing symlink $_LOCAL/bin/gh ..."
-    rm "$_LOCAL/bin/gh"
-
-    _info "Removing directory ${app_fullpath} ..."
-    rm -r "${app_fullpath}"
-
-    _info 'UNinstallation ended.'
+    _info "Removing github-cli version=[$version]:"
+    delete_files "Removing symlink $_LOCAL/bin/gh ..." "$_LOCAL/bin/gh"
+    delete_directory "Removing directory ${app_fullpath} ..." "${app_fullpath}"
+    _info "github-cli removed successfully."
 }
 
 main() {

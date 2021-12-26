@@ -63,10 +63,8 @@ doit() {
 }
 
 undo() {
-    _warn "Removing docker-compose ..."
-
-    _info "Removing binary from ${bin_loc}"
-    rm "${bin_loc}" || die 65 "Could not remove ${bin_loc}/${app_file} !"
+    _info "Removing docker-compose:"
+    delete_files "Removing binary from ${bin_loc}..." "${bin_loc}"
     _info "docker-compose removed successfully."
 }
 
