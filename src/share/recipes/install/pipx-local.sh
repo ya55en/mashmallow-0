@@ -5,6 +5,7 @@ _PYTHON_VENVS="$_LOCAL/venvs"
 bashrcd_script='32-pipx-setup.sh'
 
 import logging
+import removal
 
 create_venvs_dir() {
     #:  Create `~/.local/venvs`

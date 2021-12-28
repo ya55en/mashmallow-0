@@ -1,6 +1,7 @@
 #!/bin/sh
 
 import os
+import removal
 
 case "$_OS_ARCH" in
 x86_64)
@@ -57,9 +58,9 @@ doit() {
 }
 
 undo() {
-    _warn "Removing slack-desktop .deb file..."
-    sudo apt-get remove -y slack-desktop
-    _info 'DONE.'
+    _info "Removing slack-desktop:"
+    apt_remove slack-desktop
+    _info 'slack-desktop removed successfully.'
 }
 
 # shellcheck disable=SC2154

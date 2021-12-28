@@ -13,7 +13,7 @@ doit() {
 }
 
 undo() {
-    echo "This doesn't really do anything."
+    echo "This is a test recipe, nothing to undo."
 }
 
 ${mash_action}

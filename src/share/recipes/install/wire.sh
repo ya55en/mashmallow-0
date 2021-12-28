@@ -4,7 +4,8 @@
 
 import logging
 import gh-download
-# Assumming lib/libma.sh has been sourced already.
+import removal
+# Assumming lib/libma.sh has been sourced already. # those functions are now in os and string in the stdlib
 
 _ARCH=x86_64
 
@@ -82,32 +83,12 @@ doit() {
 }
 
 undo() {
-    _info "** Un-installing Wire:"
-
-    local result=''
-
-    # Remove gnome assets
-    _info "Removing gnome assets..."
-    # rm -f "${_ICONS_DIR}/${icon_file}"
-    result="${result}:$?"
-    rm -f "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
-    result="${result}:$?"
-
-    # Remove symlink
-    _info "Removing symlink..."
-    rm -f "$_LOCAL/bin/wire-desktop"
-    result="${result}:$?"
-
-    # Remove app image file
-    _info "Removing wire app image..."
-    rm -f "${app_fullpath}"
-    result="${result}:$?"
-
-    if [ "$result" = ':0:0:0:0' ]; then
-        _info "Successfully un-installed wire."
-    else
-        _warn "Un-installed wire with errors: codes [${result}]"
-    fi
+    _info "Removing wire:"
+    # rm -f "${_ICONS_DIR}/${icon_file}" # this was commented in the old implementation
+    delete_files "Removing gnome assets..." "${_LOCAL}/share/applications/appimagekit-wire-desktop.desktop"
+    delete_files "Removing symlink..." "$_LOCAL/bin/wire-desktop"
+    delete_files "Removing wire app image..." "${app_fullpath}"
+    _info 'wire removed successfully.'
 }
 
 main() {

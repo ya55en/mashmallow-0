@@ -3,6 +3,7 @@
 # Assumming lib/libma.sh has been sourced already.
 
 import logging
+import removal
 
 apt_confd_file='95mash'
 apt_confd_fullpath="/etc/apt/apt.conf.d/${apt_confd_file}"
@@ -82,11 +83,8 @@ doit() {
 undo() {
     _info "Removing dev-essentials:"
     delete_files "Removing p_sswdless sudo setup ${p_sswdless_sudo_fullpath}..." "${p_sswdless_sudo_fullpath}"
-    _info "Removing github-cli..."
     mash undo install github-cli # TODO: Is this ok here?
-    for package in $apt_packages; do # TODO: Maybe remove all together and not one by one?
-        apt_purge package
-    done
+    apt_purge $apt_packages
 
 #    TODO: ????
 #    # moving at the end trying to reduce the disastrous effect of 'apt-get purge'

@@ -6,6 +6,7 @@
 # Assumming lib/libma.sh has been sourced already.
 
 import logging
+import removal
 
 version='2021.2.3'
 flavor='community'

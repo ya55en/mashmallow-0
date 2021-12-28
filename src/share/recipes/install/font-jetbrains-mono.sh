@@ -6,6 +6,7 @@
 # Requires: unzip
 
 import logging
+import removal
 
 _jbm__download_link='https://download.jetbrains.com/fonts/JetBrainsMono-2.242.zip'
 _jbm__filename='JetBrainsMono-2.242.zip'

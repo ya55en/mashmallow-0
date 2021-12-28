@@ -41,7 +41,7 @@ test_delete_directory_nonexistent() {
 # TODO: Figure out what to do with these
 # IMPORTANT: the apt tests are (for now) suppressed:
 #   This is because they install an actual (albeit simple and tiny) package.
-#   In the case of apt_purge() there is a Y/N prompt.
+#   In the case of apt_purge() there is a Y/N prompt (because of issue #19).
 #   Use them at your own risk.
 
 __test_apt_remove() {

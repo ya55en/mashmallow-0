@@ -22,7 +22,7 @@ _delete_file() {
 
 delete_files() {
     failed=0
-    if ! [ -z "$1" ]; then
+    if ! [ -z "$1" ]; then # skip printing the message if empty
         _info "$1"
     fi
     shift  # first argument must always be info string to print, the rest of the arguments are files
@@ -35,12 +35,11 @@ delete_files() {
 }
 
 delete_directory() {
-    if ! [ -z "$1" ]; then
+    if ! [ -z "$1" ]; then # skip printing the message if empty
         _info "$1"
     fi
     shift  # first argument must always be info string to print, the second is the directory
-    if [ -e "$1" ]
-    then
+    if [ -d "$1" ]; then
         _debug "Removing directory $1.."
         rm -r "$1"
         rc=$? # saving rc for the error message
@@ -49,7 +48,7 @@ delete_directory() {
             return 1
         fi
     else
-        _warn "Trying to remove directory $1 but it does not exist! Skipping."
+        _warn "Trying to remove directory $1 but it does not exist (or is a file)! Skipping."
     fi
 }
 
@@ -58,7 +57,7 @@ apt_remove() {
         _info "Removing $1..."
         sudo apt remove -y $1
     else
-        _warn "Attempting to remove package $1 but it was not installed! Skipping."
+        _warn "Attempting to remove package(s) $1 but they were not installed! Skipping."
     fi
 }
 
@@ -67,9 +66,8 @@ apt_purge() {
         _info "Purging $1..."
         sudo apt purge $1 # not using -y here because of issue #19
     else
-        _warn "Attempting to purge package $1 but it was not installed! Skipping."
+        _warn "Attempting to purge package(s) $1 but they were not installed! Skipping."
     fi
-
 }
 
 if [ "$_name_" = "$_rm_name_" ]; then

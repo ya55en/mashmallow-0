@@ -1,7 +1,8 @@
 #! /bin/sh
 
 import logging
-# Assumming lib/libma.sh has been sourced already.
+import removal
+# Assumming lib/libma.sh has been sourced already. # those functions are now in os and string in the stdlib
 
 link_path="$_LOCAL/bin/python"
 
@@ -56,23 +57,12 @@ doit() {
 }
 
 undo() {
-    if ! [ -e "${link_path}" ]; then
-        _warn "Link '~/.local/bin/python' python3 not there, skipping."
-    else
-        _info "Removing '~/.local/bin/python' link to python3..."
-        rm "${link_path}"
-        [ -e "${link_path}" ] && die 14 "Removing ${link_path} FAILED!"
-    fi
-
+    _info "Removing python-dev:"
+    delete_files "Removing '~/.local/bin/python' link to python3..." "${link_path}"
     _info "NOT Removing dev-essentials (see #19)."
-    # mash undo install dev-essentials
-
-    _info "Purging apt packages..."
-    sudo apt-get purge ${_apt_packages}
-
-    _info "Removing pipx-local..."
+    # mash undo install dev-essentials # TODO: should this still be the case?
+    apt_purge $_apt_packages
     mash undo install pipx-local
-
     _info "python-dev removed successfully."
 }
 

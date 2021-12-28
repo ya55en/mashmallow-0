@@ -3,6 +3,7 @@
 import os
 import logging
 import gh-download
+import removal
 
 #: Install Docker Compose
 
