@@ -8,6 +8,7 @@
 import os
 import logging
 import gh-download
+import removal
 
 #: Download the app image
 download_appimage() {

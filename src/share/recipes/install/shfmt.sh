@@ -3,6 +3,7 @@
 import os
 import logging
 import gh-download
+import removal
 
 #: Install shfmt
 
@@ -70,21 +71,20 @@ doit() {
 }
 
 undo() {
-    _warn "Removing shfmt version=[$version]"
-    _info "Removing symlink $_LOCAL/bin/shfmt ..."
-    rm "$_LOCAL/bin/shfmt"
+    _info "Removing shfmt version=[$version]:"
+    delete_files "Removing symlink $_LOCAL/bin/shfmt ..." "$_LOCAL/bin/shfmt"
+    delete_files "Removing shfmt binary ..." "${app_fullpath}/${app_file}"
 
-    _info "Removing shfmt binary ..."
-    rm "${app_fullpath}/${app_file}"
-
-    if [ -d "${app_fullpath}" ]; then
-        _info "Removing directory ${app_fullpath} ..."
-        rmdir "${app_fullpath}"
-        [ -d "${app_fullpath}" ] &&
-            _warn "shfmt directory not empty, so not deleted: ${app_fullpath}"
-    else
-        _info "Directory already removed: ${app_fullpath}."
-    fi
+    # TODO: the previous logic deleted the directory only if empty, the new one deletes regardless
+    delete_directory "Removing directory ${app_fullpath} ..." "${app_fullpath}"
+#    if [ -d "${app_fullpath}" ]; then
+#        _info "Removing directory ${app_fullpath} ..."
+#        rmdir "${app_fullpath}"
+#        [ -d "${app_fullpath}" ] &&
+#            _warn "shfmt directory not empty, so not deleted: ${app_fullpath}"
+#    else
+#        _info "Directory already removed: ${app_fullpath}."
+#    fi
     _info 'shfmt removed successfully.'
 }
 

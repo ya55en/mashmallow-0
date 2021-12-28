@@ -5,6 +5,7 @@
 import os
 import logging
 import gh-download
+import removal
 
 #: Install VSCodium
 
@@ -86,12 +87,12 @@ doit() {
 }
 
 undo() {
-    _info "*UN*installing codium v${version} ($arch_short)..."
-    rm "${_LOCAL}/bin/codium" || die 15 "Cannot remove ${_LOCAL}/bin/codium"
-    rm -r "${_LOCAL}/opt/${app_opt_dirname}" || die 15 "Cannot remove ${_LOCAL}/opt/${app_opt_dirname}"
-    rm "${_LOCAL}/share/applications/${dot_desktop_file}"
+    _info "Removing codium v${version} ($arch_short):"
+    delete_files "" "${_LOCAL}/bin/codium"
+    delete_directory "" "${_LOCAL}/opt/${app_opt_dirname}"
+    delete_files "" "${_LOCAL}/share/applications/${dot_desktop_file}"
     smoke_test && die 99 "Coduim NOT removed, still working"
-    echo 'Undo install done.'
+    _info 'codium removed successfully.'
 }
 
 get_arch_short() {
