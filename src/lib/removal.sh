@@ -6,8 +6,7 @@ import assert
 _rm_name_='removal.sh'
 
 _delete_file() {
-    if [ -e "$1" ]
-    then
+    if [ -e "$1" ]; then
         _debug "Removing $1.."
         rm "$1"
         rc=$? # saving rc for the error message
@@ -26,10 +25,9 @@ delete_files() {
         _info "$1"
     fi
     shift  # first argument must always be info string to print, the rest of the arguments are files
-    for var in "$@"
-    do
+    for var in "$@"; do
         _delete_file "$var"
-        failed=$(($failed + $?))
+        failed=$((failed + $?))
     done
     return "$failed"
 }
