@@ -47,7 +47,7 @@ full_test() {
 
 standard_test() {
     testrun install bitwarden
-    testrun install wire
+#    testrun install wire
 
     #testrun install dev-essentials
     testrun install docker-compose

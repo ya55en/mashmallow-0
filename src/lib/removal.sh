@@ -62,7 +62,7 @@ apt_remove() {
 apt_purge() {
     if dpkg -s $1; then
         _info "Purging $1..."
-        sudo apt purge $1 # not using -y here because of issue #19
+        sudo apt purge -y $1
     else
         _warn "Attempting to purge package(s) $1 but they were not installed! Skipping."
     fi

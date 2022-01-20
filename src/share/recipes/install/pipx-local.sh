@@ -22,7 +22,7 @@ install_python3_venv() {
 
     _info "Installing python3-venv ..."
     sudo apt-get update
-    sudo apt-get install python3-venv
+    sudo apt-get install -y python3-venv
 }
 
 create_pipx_venv() {
