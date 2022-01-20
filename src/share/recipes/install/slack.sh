@@ -47,6 +47,7 @@ install_deb_file() {
     # Will bring up this warning (which is harmless and can be ignored):
     # N: Download is performed unsandboxed as root as file '$_DOWNLOAD_CACHE/$_slk__filename'
     # couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+    sudo apt-get update
     sudo apt-get install -y "$_DOWNLOAD_CACHE/$_slk__filename"
     _debug "Installed $_slk__filename from [$_DOWNLOAD_CACHE/$_slk__filename]"
 }

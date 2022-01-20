@@ -24,6 +24,7 @@ apt_packages="
 
 install_apt_packages() {
     _info "Installing apt packages..."
+    sudo apt-get update
     sudo apt-get install -y ${apt_packages}
 }
 
