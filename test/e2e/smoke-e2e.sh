@@ -65,6 +65,7 @@ standard_test() {
     testrun install shfmt
     testrun install vscodium
     testrun setup python-dev
+    testrun setup fail
 }
 
 quick_test() {
