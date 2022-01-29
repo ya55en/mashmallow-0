@@ -65,12 +65,25 @@ standard_test() {
     testrun install shfmt
     testrun install vscodium
     testrun setup python-dev
-    testrun setup fail
+
+    # testing setup fail separately because of expected failure
+    if mash setup fail; then
+        exit 42;
+    else
+       [ "$?" = "5" ] && exit 0 || exit 43
+    fi
 }
 
 quick_test() {
     testrun install shell-check
     testrun install shfmt
+
+    # testing setup fail separately because of expected failure
+    if mash setup fail; then
+        exit 42;
+    else
+       [ "$?" = "5" ] && exit 0 || exit 43
+    fi
 }
 
 recap() {
