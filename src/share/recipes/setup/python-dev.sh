@@ -36,6 +36,7 @@ install_dev_essentials() {
 
 install_apt_packages() {
     _info "Installing apt packages..."
+    sudo apt-get update
     sudo apt-get install -y ${_apt_packages}
 }
 

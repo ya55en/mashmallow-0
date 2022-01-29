@@ -8,7 +8,7 @@ return_errorcode () {
 doit() {
     echo "Step 1: nothing out of the ordinary"
     echo "Step 2: this is the last step you should see"
-    return_errorcode 2
+    return_errorcode 5
     echo "Step 3: if you can see this, something is wrong! (rc=$?)"
 }
 

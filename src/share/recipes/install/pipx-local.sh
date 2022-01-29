@@ -21,7 +21,8 @@ install_python3_venv() {
     #TODO: check if python3-venv is installed
 
     _info "Installing python3-venv ..."
-    sudo apt-get install python3-venv
+    sudo apt-get update
+    sudo apt-get install -y python3-venv
 }
 
 create_pipx_venv() {
@@ -98,6 +99,7 @@ EOS
 
 doit() {
     create_venvs_dir
+    install_python3_venv
     create_pipx_venv
     update_trio
     install_pipx
