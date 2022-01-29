@@ -4,6 +4,7 @@ import os
 import logging
 import gh-download
 import removal
+import install
 
 #: Install github cli
 
@@ -21,21 +22,29 @@ download_tarball() {
 
 # TODO: check hash (no hash provided by upstream; make up one)
 
-extract_into_opt() {
-    #: Extract the github-cli tarball into ~/.local/opt/.
+#extract_into_opt() {
+#    #: Extract the github-cli tarball into ~/.local/opt/.
+#
+#    _info "Extracting ${download_target} ..."
+#    tar xf "${download_target}" -C "$_LOCAL/opt/" ||
+#        die $? "Extracting ${download_target} FAILED (rc=$?)"
+#    [ -d "${app_fullpath}/bin" ] || die 2 "Bin directory NOT found: ${app_fullpath}/bin"
+#}
+extract_into_tmp() {
+    #: Extract the github-cli tarball into /tmp/.
 
     _info "Extracting ${download_target} ..."
-    tar xf "${download_target}" -C "$_LOCAL/opt/" ||
+    tar xf "${download_target}" -C "/tmp/" ||
         die $? "Extracting ${download_target} FAILED (rc=$?)"
-    [ -d "${app_fullpath}/bin" ] || die 2 "Bin directory NOT found: ${app_fullpath}/bin"
+    [ -d "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}/bin" ] || die 2 "Bin directory NOT found: /tmp/gh_${version}_linux_${_OS_ARCH_SHORT}/bin"
 }
 
-create_symlink() {
-    #: Create symlink to the gh executable.
-
-    _info "Creating symlink to ${app_fullpath}/bin/gh ..."
-    ln -fs "${app_fullpath}/bin/gh" "$_LOCAL/bin/gh"
-}
+#create_symlink() {
+#    #: Create symlink to the gh executable.
+#
+#    _info "Creating symlink to ${app_fullpath}/bin/gh ..."
+#    ln -fs "${app_fullpath}/bin/gh" "$_LOCAL/bin/gh"
+#}
 
 smoke_test() {
     #: Smoke-test the new installation
@@ -63,8 +72,10 @@ doit() {
     _debug "Installing ghcli version=[$version]"
     download_tarball
     # check_hashsum
-    extract_into_opt
-    create_symlink
+#    extract_into_opt
+#    create_symlink
+    extract_into_tmp
+    install_single "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}" 'gh' "$version" "gh_${version}_linux_${_OS_ARCH_SHORT}/bin/gh"
     smoke_test
     instruct_user
     _info 'SUCCESS.'

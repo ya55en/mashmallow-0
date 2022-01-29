@@ -6,6 +6,7 @@ import os
 import logging
 import gh-download
 import removal
+import install
 
 #: Install Bitwarden
 
@@ -28,17 +29,17 @@ check_hashsum() {
     true
 }
 
-install_app_image() {
-    if [ -e "${app_fullpath}" ]; then
-        _warn "Installed app file already exists, skipping. (${app_fullpath})"
-    else
-        _info "Installing app file ... (${app_fullpath})"
-        mkdir -p "$_LOCAL/opt/bitwarden"
-        cp -p "${download_target}" "${app_fullpath}"
-        chmod +x "${app_fullpath}"
-        ln -fs "${app_fullpath}" "$_LOCAL/bin/bitwarden-desktop"
-    fi
-}
+#install_app_image() {
+#    if [ -e "${app_fullpath}" ]; then
+#        _warn "Installed app file already exists, skipping. (${app_fullpath})"
+#    else
+#        _info "Installing app file ... (${app_fullpath})"
+#        mkdir -p "$_LOCAL/opt/bitwarden"
+#        cp -p "${download_target}" "${app_fullpath}"
+#        chmod +x "${app_fullpath}"
+#        ln -fs "${app_fullpath}" "$_LOCAL/bin/bitwarden-desktop"
+#    fi
+#}
 
 setup_gnome_assets() {
     #: Create/copy .desktop file and an icon.
@@ -62,7 +63,7 @@ inform_user() {
 
 Completed. You can use Bitwarden Desktop App instantly, like:
 
-  $ bitwarden-desktop
+  $ bitwarden
 
 Enjoy! ;)
 
@@ -74,7 +75,8 @@ doit() {
     _info "** Installing bitwarden v${version}:"
     download_appimage
     check_hashsum
-    install_app_image
+    install_single "$download_target" 'bitwarden' "$version" "$app_file"
+    #install_app_image
     setup_gnome_assets
     inform_user
 }
@@ -82,8 +84,9 @@ doit() {
 undo() {
     _info "Removing bitwarden:"
     delete_files 'Removing gnome assets...' "${_LOCAL}/opt/bitwarden/bitwarden-icon.png" "${_LOCAL}/share/applications/com.bitwarden.desktop"
-    delete_files 'Removing symlink...' "$_LOCAL/bin/bitwarden-desktop"
+    delete_files 'Removing symlink...' "$_LOCAL/bin/bitwarden"
     delete_files 'Removing bitwarden app image...' "${app_fullpath}"
+    # delete_directory "$_LOCAL/opt/bitwarden/$version"  # maybe remove whole directory ?
     _info "bitwarden removed successfully."
 }
 
