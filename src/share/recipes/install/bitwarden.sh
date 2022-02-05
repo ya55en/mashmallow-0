@@ -75,7 +75,7 @@ doit() {
     _info "** Installing bitwarden v${version}:"
     download_appimage
     check_hashsum
-    install_single "$download_target" 'bitwarden' "$version" "$app_file"
+    install_single "$download_target" 'bitwarden' "$version"
     #install_app_image
     setup_gnome_assets
     inform_user

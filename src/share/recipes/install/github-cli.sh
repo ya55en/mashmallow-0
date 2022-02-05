@@ -75,7 +75,7 @@ doit() {
 #    extract_into_opt
 #    create_symlink
     extract_into_tmp
-    install_single "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}" 'gh' "$version" "gh_${version}_linux_${_OS_ARCH_SHORT}/bin/gh"
+    install_single "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}" 'gh' "$version" "bin/gh"
     smoke_test
     instruct_user
     _info 'SUCCESS.'
