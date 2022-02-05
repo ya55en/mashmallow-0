@@ -72,7 +72,7 @@ doit() {
 #    extract_into_opt
 #    create_symlink
     extract_into_tmp
-    install_single "/tmp/shellcheck-v${version}" 'shellcheck' "$version" "shellcheck-v${version}/shellcheck"
+    install_single "/tmp/shellcheck-v${version}" 'shellcheck' "$version" "shellcheck"
     smoke_test
     instruct_user
     _info 'SUCCESS.'
