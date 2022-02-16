@@ -4,6 +4,7 @@ import os
 import logging
 import gh-download
 import removal
+import install
 
 #: Install shfmt
 
@@ -19,25 +20,25 @@ download_into_cache() {
     gh_download "$project_path" "$raw_version" "$app_file"
 }
 
-move_into_opt() {
-    #: Create ./local/opt/shfmt/ and put the versioned binary
-    #: (e.g. shfmt_v3.3.1_linux_amd64) there.
-
-    _info "Creating ${app_fullpath} ..."
-    mkdir -p "${app_fullpath}"
-    _info "Copying ${download_target} into opt ..."
-    cp -p "${download_target}" "${app_fullpath}" ||
-        die $? "Moving ${download_target} FAILED (rc=$?)"
-    [ -d "$app_fullpath" ] || die 63 "Shfmt directory NOT found: ${app_fullpath}"
-    chmod 755 "${app_fullpath}/${app_file}"
-}
-
-create_symlink() {
-    #: Create a symlink in ./local/bin named shfmt.
-
-    _info "Creating symlink in ./local/bin named shfmt ..."
-    ln -fs "${app_fullpath}/${app_file}" "${_LOCAL}/bin/shfmt"
-}
+#move_into_opt() {
+#    #: Create ./local/opt/shfmt/ and put the versioned binary
+#    #: (e.g. shfmt_v3.3.1_linux_amd64) there.
+#
+#    _info "Creating ${app_fullpath} ..."
+#    mkdir -p "${app_fullpath}"
+#    _info "Copying ${download_target} into opt ..."
+#    cp -p "${download_target}" "${app_fullpath}" ||
+#        die $? "Moving ${download_target} FAILED (rc=$?)"
+#    [ -d "$app_fullpath" ] || die 63 "Shfmt directory NOT found: ${app_fullpath}"
+#    chmod 755 "${app_fullpath}/${app_file}"
+#}
+#
+#create_symlink() {
+#    #: Create a symlink in ./local/bin named shfmt.
+#
+#    _info "Creating symlink in ./local/bin named shfmt ..."
+#    ln -fs "${app_fullpath}/${app_file}" "${_LOCAL}/bin/shfmt"
+#}
 
 smoke_test() {
     #: Do a smoke test with shfmt.
@@ -63,8 +64,9 @@ EOS
 
 doit() {
     download_into_cache
-    move_into_opt
-    create_symlink
+#    move_into_opt
+#    create_symlink
+    install_single "$download_target" 'shfmt' "$version"
     smoke_test
     instruct_user
     _info 'SUCCESS.'
