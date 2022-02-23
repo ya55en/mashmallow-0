@@ -121,7 +121,9 @@ doit() {
     archive_filename="$archive_basename.$archive_ext"
 
     download_tarball
-    install_multi "$_DOWNLOAD_CACHE/$archive_filename" 'golang' "$version" "$env_filename"
+    install_multi "$_DOWNLOAD_CACHE/$archive_filename" 'golang' "$version"
+    install_bashrcd_script 'golang' "$env_filename"
+
 #    extract_tarball
 #    create_symlink
 #    create_bashrcd_script
