@@ -55,21 +55,25 @@ install_bashrcd_script(){
     #: Used to create ~/.bashrc.d/ script to setup path
     #:    ($1) recipe_name - the name of the recipe currently being installed
     #:    ($2) env_filename - the name for the ~/.bashrc.d/ script file
-    local recipe_name="$1"; local env_filename="$2"
+    #:    ($3) bin_directory [optional] - path to directory containing the binaries, by default is current/bin
+    local recipe_name="$1"; local env_filename="$2"; local binary_dir="$3"
 
     local env_path="$HOME/.bashrc.d/$env_filename"
-    local recipe_dir="$_LOCAL/opt/$recipe_name"
     if [ -e "$env_path" ]; then
         _warn "Env setup script for $recipe_name already exists, skipping ($env_path)"
         return 4
     fi
     _info "Creating env setup script ($env_path) ..."
 
+    if [ -z "$binary_dir" ]; then
+        #: binary dir not given: defaulting to current/bin
+        binary_dir="$_LOCAL/opt/$recipe_name/current/bin"
+    fi
     cat > "$env_path" << EOS
 # $env_path - mash: add ${recipe_name} bin to PATH
 
-_RECIPE_HOME='${recipe_dir}/current'
-echo \$PATH | grep -q "\$_RECIPE_HOME/bin" || PATH="\$_RECIPE_HOME/bin:\$PATH"
+_RECIPE_HOME='${binary_dir}'
+echo \$PATH | grep -q "\$_RECIPE_HOME" || PATH="\$_RECIPE_HOME:\$PATH"
 
 EOS
 }
