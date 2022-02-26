@@ -20,23 +20,14 @@ download_tarball() {
     gh_download "$project_path" "$raw_version" "$app_file"
 }
 
-#extract_into_opt() {
-#    #: Extract the shellcheck tarball into ~/.local/opt/.
+#extract_into_tmp() {
+#    #: Extract the shellcheck tarball into /tmp/.
 #
 #    _info "Extracting ${download_target} ..."
-#    tar xf "${download_target}" -C "$_LOCAL/opt/" ||
+#    tar xf "${download_target}" -C "/tmp/" ||
 #        die $? "Extracting ${download_target} FAILED (rc=$?)"
-#    [ -d "${app_fullpath}" ] || die 2 "Shellcheck directory NOT found: ${app_fullpath}"
+#    [ -d "/tmp/shellcheck-v${version}" ] || die 2 "Shellcheck directory NOT found: /tmp/shellcheck-v${version}"
 #}
-
-extract_into_tmp() {
-    #: Extract the shellcheck tarball into /tmp/.
-
-    _info "Extracting ${download_target} ..."
-    tar xf "${download_target}" -C "/tmp/" ||
-        die $? "Extracting ${download_target} FAILED (rc=$?)"
-    [ -d "/tmp/shellcheck-v${version}" ] || die 2 "Shellcheck directory NOT found: /tmp/shellcheck-v${version}"
-}
 
 #create_symlink() {
 #    #: Create symlink to the shellcheck executable.
@@ -69,10 +60,7 @@ doit() {
     _debug "Installing shellcheck version=[$version]"
     download_tarball
     # check_hashsum
-#    extract_into_opt
-#    create_symlink
-    extract_into_tmp
-    install_single "/tmp/shellcheck-v${version}" 'shellcheck' "$version" "shellcheck"
+    install_single "$download_target" 'shellcheck' "$version"
     smoke_test
     instruct_user
     _info 'SUCCESS.'

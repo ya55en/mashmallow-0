@@ -30,14 +30,14 @@ download_tarball() {
 #        die $? "Extracting ${download_target} FAILED (rc=$?)"
 #    [ -d "${app_fullpath}/bin" ] || die 2 "Bin directory NOT found: ${app_fullpath}/bin"
 #}
-extract_into_tmp() {
-    #: Extract the github-cli tarball into /tmp/.
-
-    _info "Extracting ${download_target} ..."
-    tar xf "${download_target}" -C "/tmp/" ||
-        die $? "Extracting ${download_target} FAILED (rc=$?)"
-    [ -d "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}/bin" ] || die 2 "Bin directory NOT found: /tmp/gh_${version}_linux_${_OS_ARCH_SHORT}/bin"
-}
+#extract_into_tmp() {
+#    #: Extract the github-cli tarball into /tmp/.
+#
+#    _info "Extracting ${download_target} ..."
+#    tar xf "${download_target}" -C "/tmp/" ||
+#        die $? "Extracting ${download_target} FAILED (rc=$?)"
+#    [ -d "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}/bin" ] || die 2 "Bin directory NOT found: /tmp/gh_${version}_linux_${_OS_ARCH_SHORT}/bin"
+#}
 
 #create_symlink() {
 #    #: Create symlink to the gh executable.
@@ -72,10 +72,7 @@ doit() {
     _debug "Installing ghcli version=[$version]"
     download_tarball
     # check_hashsum
-#    extract_into_opt
-#    create_symlink
-    extract_into_tmp
-    install_single "/tmp/gh_${version}_linux_${_OS_ARCH_SHORT}" 'gh' "$version" "bin/gh"
+    install_single "$download_target" 'gh' "$version" 'bin/gh'
     smoke_test
     instruct_user
     _info 'SUCCESS.'
