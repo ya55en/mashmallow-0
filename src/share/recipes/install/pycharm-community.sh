@@ -91,7 +91,7 @@ doit() {
     download_tarball skip-if-exists
     check_hashsum
     install_multi "$_DOWNLOAD_CACHE/$pycharm_filename" "pycharm-$flavor" "$version"
-    install_bashrcd_script 'pycharm-community' "42-pycharm-$flavor.sh"
+    install_bashrcd_script "pycharm-$flavor" "42-pycharm-$flavor.sh"
     install_dot_desktop
     smoke_test
     instruct_user
