@@ -35,7 +35,6 @@ install_single() {
             count=$((count+1))
         done
         if [ "$count" -eq 1 ]; then
-            echo "$count"
             #: move the files one directory up and delete the now empty directory
             local unarchived_dir="$(ls $recipe_dir/$version)"
             mv "$recipe_dir/$version/$unarchived_dir"/* "$recipe_dir/$version"
