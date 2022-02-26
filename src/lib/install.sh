@@ -8,7 +8,6 @@ _install_name_='install.sh'
 install_single() {
     #: Used to install single-binary recipes
     #: $1 - path to source, $2 - name, $3 - version, $4 (optional) - relative path to binary (w/o the first dir)
-    echo "install_single($1, $2, $3, $4) called!"
     dir_fullpath="$_LOCAL/opt/$2/$3"
     mkdir -p "$dir_fullpath"
     ln -fs  "$dir_fullpath" "$_LOCAL/opt/$2/current"
@@ -32,8 +31,7 @@ install_multi() {
     #: create proper .local/opt/name/version directory structure and extract the tarball
     local recipe_dir="$_LOCAL/opt/$recipe_name"
     if [ -e "$recipe_dir/$version" ]; then
-        _warn "Current version seems to have been installed in $recipe_dir"
-        # exit here?
+        die 9 "Current version seems to have been installed in $recipe_dir - please remove and try again."
     fi
     mkdir -p "$recipe_dir"
     _info "Extracting tarball into $recipe_dir ..."
@@ -48,7 +46,6 @@ install_multi() {
         ln -fs  "$recipe_dir/$version" "$recipe_dir/current"
         [ -e "$recipe_dir/$version" ] || die 33 "Creating symlink 'current' to $recipe_dir/$version FAILED"
     fi
-
 }
 
 install_bashrcd_script(){
