@@ -7,18 +7,62 @@ _install_name_='install.sh'
 
 install_single() {
     #: Used to install single-binary recipes
-    #: $1 - path to source, $2 - name, $3 - version, $4 (optional) - relative path to binary (w/o the first dir)
-    dir_fullpath="$_LOCAL/opt/$2/$3"
-    mkdir -p "$dir_fullpath"
-    ln -fs  "$dir_fullpath" "$_LOCAL/opt/$2/current"
-    cp -pr "$1" "$dir_fullpath/$2"
-    if [ -z "$4" ]; then
-        path_to_bin="$2"
-    else
-        path_to_bin="$2/$4"
+    #:    ($1) source_path - path to the source directory/file
+    #:    ($2) recipe_name - the name of the recipe currently being installed
+    #:    ($3) version - the version of the recipe currently being installed
+    #:    ($4) bin_path [optional] - in case of archive - relative path to binary inside
+    local source_path="$1"; local recipe_name="$2"; local version="$3"; local bin_path="${4:-$recipe_name}"
+
+    local recipe_dir="$_LOCAL/opt/$recipe_name"
+    if [ -e "$recipe_dir/$version" ]; then
+        die 9 "Current version seems to have been installed in $recipe_dir - please remove and try again."
     fi
-    chmod +x "$dir_fullpath/$path_to_bin"
-    ln -fs "$_LOCAL/opt/$2/current/$path_to_bin" "$_LOCAL/bin/$2"
+
+    #: extract source
+    mkdir -p "$recipe_dir/$version"
+    local archive_stderr="$(tar xf $source_path -C $recipe_dir/$version 2>&1 >/dev/null)"
+    if [ "$(echo $archive_stderr | grep -c 'tar: This does not look like a tar archive')" = '1' ]; then
+        #: source is (assuming no bad input) a single binary - just copy it
+        _info "Copying binary into $recipe_dir ..."
+        cp -pr "$source_path" "$recipe_dir/$version/$recipe_name"
+    elif [ -z "$archive_stderr" ]; then
+        #: source is a tarball
+        _info "Extracting tarball into $recipe_dir ..."
+        #: check if further unpacking necessary
+        local count=0
+        local files="$(ls $recipe_dir/$version)"
+        for dir in $files; do
+            count=$((count+1))
+        done
+        if [ "$count" -eq 1 ]; then
+            echo "$count"
+            #: move the files one directory up and delete the now empty directory
+            local unarchived_dir="$(ls $recipe_dir/$version)"
+            mv "$recipe_dir/$version/$unarchived_dir"/* "$recipe_dir/$version"
+            rm -r "$recipe_dir/$version/$unarchived_dir"
+        fi
+    else
+        die $? "Extracting $source_path FAILED (rc=$?) (stderr=$archive_stderr)"
+    fi
+    chmod +x "$recipe_dir/$version/$bin_path"
+
+    #: create 'current' symlink
+    if [ -L "$recipe_dir/current" ]; then
+        _warn "Symlink $recipe_dir/current has already been created, skipping."
+    else
+        _info "Creating symlink 'current' to $recipe_dir/$version ..."
+        ln -fs  "$recipe_dir/$version" "$recipe_dir/current"
+        [ -e "$recipe_dir/$version" ] || die 33 "Creating symlink 'current' to $recipe_dir/$version FAILED"
+    fi
+
+    #: create symlink in ~/.local/bin
+    if [ -L "$_LOCAL/bin/$recipe_name" ]; then
+        _warn "Symlink $_LOCAL/bin/$recipe_name has already been created, skipping."
+    else
+        _info "Creating symlink '$recipe_name' in $_LOCAL/bin ..."
+        ln -fs "$recipe_dir/current/$bin_path" "$_LOCAL/bin/$(basename $bin_path)"
+        [ -e "$recipe_dir/$version" ] || die 33 "Creating symlink '$recipe_name' in $_LOCAL/bin FAILED"
+    fi
 }
 
 install_multi() {
@@ -52,8 +96,8 @@ install_bashrcd_script(){
     #: Used to create ~/.bashrc.d/ script to setup path
     #:    ($1) recipe_name - the name of the recipe currently being installed
     #:    ($2) env_filename - the name for the ~/.bashrc.d/ script file
-    #:    ($3) bin_directory [optional] - path to directory containing the binaries, by default is current/bin
-    local recipe_name="$1"; local env_filename="$2"; local binary_dir="$3"
+    #:    ($3) bin_directory [optional] - path to directory containing the binaries, defaults to current/bin
+    local recipe_name="$1"; local env_filename="$2"; local binary_dir="${3:-$_LOCAL/opt/$recipe_name/current/bin}"
 
     local env_path="$HOME/.bashrc.d/$env_filename"
     if [ -e "$env_path" ]; then
@@ -62,10 +106,6 @@ install_bashrcd_script(){
     fi
     _info "Creating env setup script ($env_path) ..."
 
-    if [ -z "$binary_dir" ]; then
-        #: binary dir not given: defaulting to current/bin
-        binary_dir="$_LOCAL/opt/$recipe_name/current/bin"
-    fi
     cat > "$env_path" << EOS
 # $env_path - mash: add ${recipe_name} bin to PATH
 
@@ -74,7 +114,6 @@ echo \$PATH | grep -q "\$_RECIPE_HOME" || PATH="\$_RECIPE_HOME:\$PATH"
 
 EOS
 }
-
 
 
 if [ "$_name_" = "$_install_name_" ]; then

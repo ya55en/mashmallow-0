@@ -29,18 +29,6 @@ check_hashsum() {
     true
 }
 
-#install_app_image() {
-#    if [ -e "${app_fullpath}" ]; then
-#        _warn "Installed app file already exists, skipping. (${app_fullpath})"
-#    else
-#        _info "Installing app file ... (${app_fullpath})"
-#        mkdir -p "$_LOCAL/opt/bitwarden"
-#        cp -p "${download_target}" "${app_fullpath}"
-#        chmod +x "${app_fullpath}"
-#        ln -fs "${app_fullpath}" "$_LOCAL/bin/bitwarden-desktop"
-#    fi
-#}
-
 setup_gnome_assets() {
     #: Create/copy .desktop file and an icon.
     bitwarden_icon='bitwarden-icon-128.png'
@@ -76,7 +64,6 @@ doit() {
     download_appimage
     check_hashsum
     install_single "$download_target" 'bitwarden' "$version"
-    #install_app_image
     setup_gnome_assets
     inform_user
 }

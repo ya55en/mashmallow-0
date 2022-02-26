@@ -31,40 +31,16 @@ check_hashsum() {
     /bin/true
 }
 
-#extract_to_opt() {
-#    #: Extract the codium tarball into ~/.local/opt/$app_opt_dirname.
+#extract_into_tmp() {
+#    #: Extract the codium tarball into /tmp/
 #
 #    _info "Extracting ${download_target} ..."
-#    filename="${download_target}"
-#    dirname="${_LOCAL}/opt/${app_opt_dirname}"
-#
-#    mkdir -p "${dirname}"
-#    tar xf "${filename}" -C "${dirname}" ||
-#        die $? "Extracting ${filename} FAILED (rc=$?)"
-#    [ -d "${_LOCAL}/opt/${app_opt_dirname}/bin" ] ||
-#        die 2 "Bin directory NOT found: ${dirname}/bin"
+#    target_dir="/tmp/vscodium-${version}"
+#    mkdir -p "${target_dir}"
+#    tar xf "${download_target}" -C "${target_dir}" ||
+#        die $? "Extracting ${download_target} FAILED (rc=$?)"
+#    [ -d "${target_dir}/bin" ] || die 2 "Bin directory NOT found: ${target_dir}/bin"
 #}
-
-#make_symlink_in_local_bin() {
-#    #: Create symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in ~/.local/bin/
-#
-#    _info "Creating a symlink to ${_LOCAL}/opt/${app_opt_dirname}/bin/codium in $_LOCAL/bin/..."
-#    # shellcheck disable=SC2016  # Need to pass this verbatim to into_dir_do()
-#    into_dir_do "${_LOCAL}/bin" 'ln -fs "${_LOCAL}/opt/${app_opt_dirname}/bin/codium"'
-#    linked_binary="${_LOCAL}/bin/codium"
-#    [ -L "$linked_binary" ] || die 2 "Linked binary NOT found: ${linked_binary}"
-#}
-
-extract_into_tmp() {
-    #: Extract the codium tarball into /tmp/
-
-    _info "Extracting ${download_target} ..."
-    target_dir="/tmp/vscodium-${version}"
-    mkdir -p "${target_dir}"
-    tar xf "${download_target}" -C "${target_dir}" ||
-        die $? "Extracting ${download_target} FAILED (rc=$?)"
-    [ -d "${target_dir}/bin" ] || die 2 "Bin directory NOT found: ${target_dir}/bin"
-}
 
 install_dot_desktop() {
     dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file}"
@@ -92,10 +68,7 @@ doit() {
     _info "Installing vscodium v${version} ($arch_short)..."
     download_tarball
     check_hashsum || die 77 "Hashsum check FAILED! Please check, aborting."
-#    extract_to_opt
-#    make_symlink_in_local_bin
-    extract_into_tmp
-    install_single "/tmp/vscodium-${version}" 'vscodium' "$version" 'bin/codium'
+    install_single "$download_target" 'vscodium' "$version" 'bin/codium'
     install_dot_desktop
 
     smoke_test

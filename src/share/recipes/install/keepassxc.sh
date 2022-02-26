@@ -9,6 +9,7 @@ import os
 import logging
 import gh-download
 import removal
+import install
 
 #: Download the app image
 download_appimage() {
@@ -27,17 +28,17 @@ check_hashsum() {
     true
 }
 
-install_app_image() {
-    if [ -e "${app_fullpath}" ]; then
-        _warn "Installed app file already exists, skipping. (${app_fullpath})"
-    else
-        _info "Installing app file ... (${app_fullpath})"
-        mkdir -p "$_LOCAL/opt/keepassxc"
-        cp -p "${download_target}" "${app_fullpath}"
-        chmod +x "${app_fullpath}"
-        ln -fs "${app_fullpath}" "$_LOCAL/bin/keepassxc"
-    fi
-}
+#install_app_image() {
+#    if [ -e "${app_fullpath}" ]; then
+#        _warn "Installed app file already exists, skipping. (${app_fullpath})"
+#    else
+#        _info "Installing app file ... (${app_fullpath})"
+#        mkdir -p "$_LOCAL/opt/keepassxc"
+#        cp -p "${download_target}" "${app_fullpath}"
+#        chmod +x "${app_fullpath}"
+#        ln -fs "${app_fullpath}" "$_LOCAL/bin/keepassxc"
+#    fi
+#}
 
 setup_gnome_assets() {
     #: Create/copy .desktop file and an icon.
@@ -73,7 +74,8 @@ doit() {
     _info "** Installing KeePassXC v${version}:"
     download_appimage
     check_hashsum
-    install_app_image
+#    install_app_image
+    install_single "$download_target" 'keepassxc' "$version"
     setup_gnome_assets
     inform_user
 }
