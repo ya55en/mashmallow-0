@@ -13,6 +13,7 @@
 
 import logging
 import gh-download
+import install
 
 download_tarball() {
     #: Download shellcheck tarball into download_cache_dir
@@ -29,48 +30,6 @@ download_tarball() {
 check_hashsum() {
     # TODO: implement
     :
-}
-
-#: Extract the shellcheck tarball into ~/.local/opt/.
-extract_into_opt() {
-    if [ -e "${app_main_dir}" ]; then
-        _warn "The target directory already exists, skipping ($app_main_dir)."
-        _warn "(If you still want to install, please remove it manually.)"
-        return 0
-    fi
-    _info "Extracting ${download_target} ..."
-    mkdir -p "${app_main_dir}"
-    tar xf "${download_target}" -C "${app_main_dir}" ||
-        die $? "Extracting ${download_target} FAILED (rc=$?)"
-    [ -d "${app_main_dir}" ] || die 2 "chromium directory NOT found: ${app_main_dir}"
-}
-
-create_symlink() {
-    #: Create symlink to the shellcheck executable.
-    if [ -e "${app_main_dir}/current" ]; then
-        _warn "Symlink already exists, skipping (${app_main_dir}/current)"
-    else
-        _info "Creating symlink to ${app_main_dir}/$app_basename ..."
-        into_dir_do "${app_main_dir}" "ln -s $app_basename current"
-    fi
-}
-
-#: Create an add-to-path script in ~/.bashrc.d/
-create_bashrcd_script() {
-    local linked_dir="${app_main_dir}/current"
-    local script_name='52-uchromium-path.sh'
-
-    [ -e "$linked_dir" ] || die 33 "linked directory NOT found: [$linked_dir]"
-    _info "Creating env-setup script ~/.bashrc.d/$script_name ..."
-    cat > "$HOME/.bashrc.d/$script_name" << EOS
-# ~/.bashrc.d/$script_name - mash: add ungoogled chromium dir to PATH
-
-_UCHROMIUM_DIR='${linked_dir}'
-echo \$PATH | grep -q "\$_UCHROMIUM_DIR" || PATH="\$_UCHROMIUM_DIR:\$PATH"
-
-EOS
-
-    . "$HOME/.bashrc.d/$script_name"
 }
 
 smoke_test() {
@@ -98,9 +57,8 @@ doit() {
     _debug "Installing ungoogled chromium version=[$version]"
     download_tarball
     check_hashsum
-    extract_into_opt
-    create_symlink
-    create_bashrcd_script
+    install_multi "$download_target" "ungoogled-chromium" "$version"
+    install_bashrcd_script 'ungoogled-chromium' '52-uchromium-path.sh' "${_LOCAL}/opt/ungoogled-chromium/current"
     smoke_test
     instruct_user
 }
