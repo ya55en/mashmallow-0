@@ -27,23 +27,6 @@ download_nodejs_tarball() {
     fi
 }
 
-#extract_archive() {
-#    # this creates ~/.local/opt/nodejs/node-v${version}-linux-x64/,
-#    # e.g.: ~/.local/opt/nodejs/node-v16.13.0-linux-x64/
-#
-#    _debug "_LOCAL=[$_LOCAL]"
-#    mkdir -p "$_LOCAL/opt/${opt_dir}/"
-#    tar -xf "$download_path" -C "$_LOCAL/opt/${opt_dir}/"
-#}
-#
-#create_symlinks() {
-#    # we need one in ~/.local/opt/ to point to ~/.local/opt/node-v16.13.0-linux-x64/
-#    [ -d "$_LOCAL/opt/${opt_dir}/${archive_main_name}" ] || {
-#        _die 33 "Cannot find directory $_LOCAL/opt/$archive_main_name"
-#    }
-#    cd "$_LOCAL/opt/${opt_dir}" && ln -s "$archive_main_name" current
-#}
-
 #: Create environment setup script in ~/.bashrc.d/
 create_env_setup_script() {
     local linked_dir="$_LOCAL/opt/${opt_dir}/current"
@@ -100,8 +83,6 @@ EOS
 doit() {
     _info "Setting up nodejs $version..."
     download_nodejs_tarball
-#    extract_archive
-#    create_symlinks
     install_multi "$download_path" 'nodejs' "$version"
     create_env_setup_script
     upgrade_npm
