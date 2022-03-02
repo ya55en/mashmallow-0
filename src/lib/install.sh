@@ -7,11 +7,10 @@ _install_name_='install.sh'
 
 install_single() {
     #: Used to install single-binary recipes
-    #:    ($1) source_path - path to the source directory/file
-    #:    ($2) recipe_name - the name of the recipe currently being installed
-    #:    ($3) version - the version of the recipe currently being installed
-    #:    ($4) bin_path [optional] - in case of archive - relative path to binary inside
-    local source_path="$1"; local recipe_name="$2"; local version="$3"; local bin_path="${4:-$recipe_name}"
+    local source_path="$1"               #: source_path - path to the source directory/file
+    local recipe_name="$2"               #: recipe_name - the name of the recipe currently being installed
+    local version="$3"                   #: version - the version of the recipe currently being installed
+    local bin_path="${4:-$recipe_name}"  #: bin_path [optional] - in case of archive - relative path to binary inside
 
     local recipe_dir="$_LOCAL/opt/$recipe_name"
     if [ -e "$recipe_dir/$version" ]; then
@@ -66,10 +65,9 @@ install_single() {
 
 install_multi() {
     #: Used to install multi-binary recipes
-    #:    ($1) tarball_path - path to the source tarball
-    #:    ($2) recipe_name - the name of the recipe currently being installed
-    #:    ($3) version - the version of the recipe currently being installed
-    local tarball_path="$1"; local recipe_name="$2"; local version="$3"
+    local tarball_path="$1"  #: tarball_path - path to the source tarball
+    local recipe_name="$2"   #: recipe_name - the name of the recipe currently being installed
+    local version="$3"       #: version - the version of the recipe currently being installed
 
     #: create proper .local/opt/name/version directory structure and extract the tarball
     local recipe_dir="$_LOCAL/opt/$recipe_name"
@@ -93,10 +91,10 @@ install_multi() {
 
 install_bashrcd_script(){
     #: Used to create ~/.bashrc.d/ script to setup path
-    #:    ($1) recipe_name - the name of the recipe currently being installed
-    #:    ($2) env_filename - the name for the ~/.bashrc.d/ script file
-    #:    ($3) bin_directory [optional] - path to directory containing the binaries, defaults to current/bin
-    local recipe_name="$1"; local env_filename="$2"; local binary_dir="${3:-$_LOCAL/opt/$recipe_name/current/bin}"
+    local recipe_name="$1"   #: recipe_name - the name of the recipe currently being installed
+    local env_filename="$2"  #: env_filename - the name for the ~/.bashrc.d/ script file
+    local binary_dir="$3"    #: bin_directory [optional] - path to directory containing the binaries, defaults to current/bin
+    binary_dir="${3:-$_LOCAL/opt/$recipe_name/current/bin}"
 
     local env_path="$HOME/.bashrc.d/$env_filename"
     if [ -e "$env_path" ]; then
