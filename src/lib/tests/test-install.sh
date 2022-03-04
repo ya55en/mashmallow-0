@@ -3,9 +3,9 @@
 import unittest/assert
 import install
 
-#teardown_mod() {
-#    rm -rf /tmp/mash-tests
-#}
+teardown_mod() {
+    rm -rf /tmp/mash-tests
+}
 
 create_test_archive() {
     local path_to_dir="$1"
