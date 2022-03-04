@@ -6,13 +6,18 @@ import assert
 _install_name_='install.sh'
 
 install_single() {
-    #: Used to install single-binary recipes
+    #: Used to install single-binary recipes.
+    #: When calling from a test, set test_environment to true before calling.
+    #:    WARNING: this will install recipes inside /tmp/ - do this only for testing!
     local source_path="$1"               #: source_path - path to the source directory/file
     local recipe_name="$2"               #: recipe_name - the name of the recipe currently being installed
     local version="$3"                   #: version - the version of the recipe currently being installed
     local bin_path="${4:-$recipe_name}"  #: bin_path [optional] - in case of archive - relative path to binary inside
 
     local recipe_dir="$_LOCAL/opt/$recipe_name"
+    if [ "$test_environment" = true ]; then
+        recipe_dir="/tmp/mash-tests/$recipe_name"
+    fi
     if [ -e "$recipe_dir/$version" ]; then
         die 9 "Current version seems to have been installed in $recipe_dir - please remove and try again."
     fi
@@ -29,8 +34,7 @@ install_single() {
         _info "Extracting tarball into $recipe_dir ..."
         #: check if further unpacking necessary
         local count=0
-        local files="$(ls $recipe_dir/$version)"
-        for dir in $files; do
+        for dir in $recipe_dir/$version/*; do
             count=$((count+1))
         done
         if [ "$count" -eq 1 ]; then
@@ -54,23 +58,33 @@ install_single() {
     fi
 
     #: create symlink in ~/.local/bin
-    if [ -L "$_LOCAL/bin/$recipe_name" ]; then
-        _warn "Symlink $_LOCAL/bin/$recipe_name has already been created, skipping."
+    local local_bin="$_LOCAL/bin"
+    if [ "$test_environment" = true ]; then
+        local_bin="/tmp/mash-tests/bin"
+        mkdir -p "$local_bin"
+    fi
+    if [ -L "$local_bin/$recipe_name" ]; then
+        _warn "Symlink $local_bin/$recipe_name has already been created, skipping."
     else
-        _info "Creating symlink '$recipe_name' in $_LOCAL/bin ..."
-        ln -fs "$recipe_dir/current/$bin_path" "$_LOCAL/bin/$(basename $bin_path)"
-        [ -e "$recipe_dir/$version" ] || die 33 "Creating symlink '$recipe_name' in $_LOCAL/bin FAILED"
+        _info "Creating symlink '$recipe_name' in $local_bin ..."
+        ln -fs "$recipe_dir/current/$bin_path" "$local_bin/$(basename $bin_path)"
+        [ -e "$recipe_dir/$version" ] || die 33 "Creating symlink '$recipe_name' in $local_bin FAILED"
     fi
 }
 
 install_multi() {
-    #: Used to install multi-binary recipes
+    #: Used to install multi-binary recipes.
+    #: When calling from a test, set test_environment to true before calling.
+    #:    WARNING: this will install recipes inside /tmp/ - do this only for testing!
     local tarball_path="$1"  #: tarball_path - path to the source tarball
     local recipe_name="$2"   #: recipe_name - the name of the recipe currently being installed
     local version="$3"       #: version - the version of the recipe currently being installed
 
     #: create proper .local/opt/name/version directory structure and extract the tarball
     local recipe_dir="$_LOCAL/opt/$recipe_name"
+    if [ "$test_environment" = true ]; then
+        recipe_dir="/tmp/mash-tests/$recipe_name"
+    fi
     if [ -e "$recipe_dir/$version" ]; then
         die 9 "Current version seems to have been installed in $recipe_dir - please remove and try again."
     fi
@@ -90,13 +104,18 @@ install_multi() {
 }
 
 install_bashrcd_script(){
-    #: Used to create ~/.bashrc.d/ script to setup path
+    #: Used to create ~/.bashrc.d/ script to setup path.
+    #: When calling from a test, set test_environment to true before calling.
+    #:    WARNING: this will place scripts inside /tmp/ - do this only for testing!
     local recipe_name="$1"   #: recipe_name - the name of the recipe currently being installed
     local env_filename="$2"  #: env_filename - the name for the ~/.bashrc.d/ script file
     local binary_dir="$3"    #: bin_directory [optional] - path to directory containing the binaries, defaults to current/bin
     binary_dir="${3:-$_LOCAL/opt/$recipe_name/current/bin}"
 
     local env_path="$HOME/.bashrc.d/$env_filename"
+    if [ "$test_environment" = true ]; then
+        env_path="/tmp/mash-tests/.bashrc.d/$env_filename"
+    fi
     if [ -e "$env_path" ]; then
         _warn "Env setup script for $recipe_name already exists, skipping ($env_path)"
         return 4
