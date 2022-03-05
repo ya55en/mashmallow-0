@@ -3,9 +3,9 @@
 import unittest/assert
 import install
 
-teardown_mod() {
-    rm -rf /tmp/mash-tests
-}
+#teardown_mod() {
+#    rm -rf /tmp/mash-tests
+#}
 
 create_test_archive() {
     local path_to_dir="$1"
@@ -74,7 +74,10 @@ test_install_multi() {
 
 test_install_bashrcd_script() {
     local test_environment=true
+    local expected_md5=`md5sum $MASH_HOME/lib/tests/test-data/78-multi-archive-test.sh | awk '{print $1}'`
     mkdir -p '/tmp/mash-tests/.bashrc.d'
     install_bashrcd_script 'multi-archive' '78-multi-archive-test.sh' '/tmp/mash-tests/multi-archive/current/test-subdirectory-2'
+    local actual_md5=`md5sum /tmp/mash-tests/.bashrc.d/78-multi-archive-test.sh | awk '{print $1}'`
     assert_true [ -f '/tmp/mash-tests/.bashrc.d/78-multi-archive-test.sh' ]
+    assert_equal "$actual_md5" "$expected_md5"
 }
