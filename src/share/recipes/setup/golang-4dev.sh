@@ -23,6 +23,7 @@ get_latest_version() {
 }
 
 download_tarball() {
+    mkdir -p "$_DOWNLOAD_CACHE"
     if [ -f "$_DOWNLOAD_CACHE/$archive_filename" ]; then
         _info "Tarball already downloaded, skipping. ($_DOWNLOAD_CACHE/$archive_filename)"
     else

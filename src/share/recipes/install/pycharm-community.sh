@@ -32,6 +32,7 @@ download_tarball() {
         _debug "_URL_DOWNLOAD=$_URL_HASHSUM"
         _debug "_DOWNLOAD_CACHE=$_DOWNLOAD_CACHE"
         _info "Downloading Pycharm ${flavor} edition, v${version}..."
+        mkdir -p "${_DOWNLOAD_CACHE}"
         rm -f "${_DOWNLOAD_CACHE}/${pycharm_filename}"
         curl -sSL "$_URL_DOWNLOAD" -o "${_DOWNLOAD_CACHE}/${pycharm_filename}" ||
             die 9 "Download failed. (URL: $_URL_DOWNLOAD)"
