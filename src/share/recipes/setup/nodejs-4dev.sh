@@ -17,6 +17,7 @@ to_lower() {
 }
 
 download_nodejs_tarball() {
+    mkdir -p "$_DOWNLOAD_CACHE"
     if [ -e "$download_path" ]; then
         _warn "Nodejs archive already downloaded/cached, skipping."
         _debug "Tarball exists: [$download_path]"
