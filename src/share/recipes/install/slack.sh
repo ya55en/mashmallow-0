@@ -25,7 +25,6 @@ download_deb_file() {
         _warn "DEB file already downloaded, skipping ($_DOWNLOAD_CACHE/$_slk__filename)"
     else
         _info "Downloading $_slk__filename..."
-        mkdir -p "$_DOWNLOAD_CACHE"
         [ -d "$_DOWNLOAD_CACHE" ] || {
             die 33 "Could NOT create download directory! ($_DOWNLOAD_CACHE)"
         }
