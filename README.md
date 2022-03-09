@@ -62,6 +62,12 @@ Clone this repository (and a submodule for test environments) with:
 $ git clone --recurse-submodules https://ya55en@github.com/ya55en/mashmallow-0.git
 ```
 
+or
+
+```bash
+$ git clone --recurse-submodules git@github.com:ya55en/mashmallow-0.git
+```
+
 To get your repository code to take effect when you run mash, do:
 
 ```bash
