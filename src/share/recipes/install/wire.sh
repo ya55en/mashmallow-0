@@ -16,7 +16,6 @@ download_appimage() {
     #: Download and install the app image
 
     _debug "download_target=[$download_target]"
-    mkdir -p "${_DOWNLOAD_CACHE}"
     if [ -e "${download_target}" ]; then
         _warn "App file already downloaded/cached, skipping."
     else

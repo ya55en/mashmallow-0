@@ -31,17 +31,6 @@ check_hashsum() {
     /bin/true
 }
 
-#extract_into_tmp() {
-#    #: Extract the codium tarball into /tmp/
-#
-#    _info "Extracting ${download_target} ..."
-#    target_dir="/tmp/vscodium-${version}"
-#    mkdir -p "${target_dir}"
-#    tar xf "${download_target}" -C "${target_dir}" ||
-#        die $? "Extracting ${download_target} FAILED (rc=$?)"
-#    [ -d "${target_dir}/bin" ] || die 2 "Bin directory NOT found: ${target_dir}/bin"
-#}
-
 install_dot_desktop() {
     dot_desktop_fullpath="$_LOCAL/share/applications/${dot_desktop_file}"
     mkdir -p "$_LOCAL/share/applications"
