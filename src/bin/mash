@@ -17,9 +17,15 @@ _mash_project_name_="ma'shmallow"
 #: Process first argument if -v or --version.
 process_version() {
     if [ "$1" = '-v' ] || [ "$1" = '--version' ]; then
-        IFS=-
-        read -r _version_ _hash_ < "$MASH_HOME/etc/version"
-        [ -n "$_hash_" ] || _hash_='release'  # when on a release commit
+        if [ -e "$MASH_HOME/etc/version" ]; then
+            IFS=-
+            read -r _version_ _hash_ <"$MASH_HOME/etc/version"
+        else
+            # TODO: simplify the git hash extraction
+            _version_="$(cat ./next-tag)-$(git log -n1 | head -1 | awk '{print substr($2, 0, 5)}')"
+            _hash_='DEV'
+        fi
+        [ -n "$_hash_" ] || _hash_='release' # when on a release commit
         echo "$_mash_project_name_ v$_version_ ($_hash_)"
         exit 0
     fi
