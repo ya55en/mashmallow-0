@@ -9,7 +9,7 @@ import logging
 import removal
 import install
 
-version='2021.2.3'
+version='2022.1.1'
 flavor='community'
 
 pycharm_filename="pycharm-${flavor}-${version}.tar.gz"

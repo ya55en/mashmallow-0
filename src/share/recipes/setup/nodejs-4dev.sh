@@ -99,8 +99,7 @@ undo() {
 main() {
     # TODO: get the latest version automagically [1]
     # Looking here for older versions: https://nodejs.org/dist/
-    # local version='16.13.0' # FIXME: bring the latest LTS back
-    local version='15.14.0'
+    local version='16.15.0'
     local download_url='N/A'
     local download_path='N/A'
     local os_kernel='N/A'

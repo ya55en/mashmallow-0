@@ -59,18 +59,21 @@ Enjoy! ;)
 EOS
 }
 
+# shellcheck disable=SC2039
 doit() {
     # https://go.dev/dl/go1.17.3.linux-amd64.tar.gz
-    local _arch
+    # local _arch
     local dl_base_url='https://go.dev/dl/'
     local version
     local archive_basename
     local archive_ext='tar.gz'
     local archive_filename
-    local opt_dir='golang'
+    # local opt_dir='golang'
     local env_filename='88-golang-path.sh'
 
-    get_latest_version
+    # get_latest_version
+    # or fix a version:
+    version='1.17.10'
     archive_basename="go${version}.linux-${_OS_ARCH_SHORT}"
     archive_filename="$archive_basename.$archive_ext"
 

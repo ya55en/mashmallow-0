@@ -1,7 +1,8 @@
 #! /bin/sh
 
+import os
 import logging
-import assert
+#import assert
 
 _install_name_='install.sh'
 
@@ -88,19 +89,28 @@ install_multi() {
     if [ -e "$recipe_dir/$version" ]; then
         die 9 "Current version seems to have been installed in $recipe_dir - please remove and try again."
     fi
-    mkdir -p "$recipe_dir"
-    _info "Extracting tarball into $recipe_dir ..."
-    tar xf "$tarball_path" -C "$recipe_dir" ||
+
+    # Make sure the ./tmp is empty:
+    rm -rf "$recipe_dir/tmp"; mkdir -p "$recipe_dir/tmp"
+
+    _info "Extracting tarball into $recipe_dir/tmp ..."
+    tar xf "$tarball_path" -C "$recipe_dir/tmp" ||
         die $? "Extracting $source_path FAILED (rc=$?)"
-    mv "$recipe_dir/$(ls $recipe_dir)" "$recipe_dir/$version"
-    #: create 'current' symlink
+    mv "$recipe_dir/tmp/$(ls $recipe_dir/tmp)" "$recipe_dir/$version"
+    rm -r "$recipe_dir/tmp"
+    [ -e "$recipe_dir/$version" ] || die 33 "Setting up $recipe_dir/$version FAILED"
+
+    # Create 'current' symlink:
     if [ -L "$recipe_dir/current" ]; then
-        _warn "Symlink $recipe_dir/current has already been created, skipping."
-    else
-        _info "Creating symlink 'current' to $recipe_dir/$version ..."
-        ln -fs  "$recipe_dir/$version" "$recipe_dir/current"
-        [ -e "$recipe_dir/$version" ] || die 33 "Creating symlink 'current' to $recipe_dir/$version FAILED"
+        _warn "Symlink 'current' exists, overwriting..."
+        rm "$recipe_dir/current"
     fi
+    _info "Creating symlink 'current' to $version (in $recipe_dir)..."
+    # shellcheck disable=SC2016
+    into_dir_do "$recipe_dir" "ln -fs '$version' current"
+
+    # ln -fs  "$recipe_dir/$version" "$recipe_dir/current"
+    [ -L "$recipe_dir/current" ] || die 33 "Creating symlink 'current' to $recipe_dir/$version FAILED"
 }
 
 install_bashrcd_script(){
