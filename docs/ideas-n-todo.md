@@ -1,5 +1,35 @@
 # Raw ideas about *mash*
 
+## Repository interface
+
+- repo_metadata
+- recipes_all
+- recipes_by_name [reg-exp-for-name]
+- recipes_by_date {-from datetime} {-to datetime}
+- recipes_by_category {comma-separated-categories}
+- recipe_versions {recipe-name}
+- recipe_metadata
+- recipe_package
+
+### repo_metadata
+- type |local-t1,git-t1,web-t1|
+- name
+- description
+- url
+- [owner]
+
+### recipe_metadata
+- name
+- version
+- orig-source
+- orig-author
+- orig-hashsum
+- orig-release-date
+- package-maintainer
+- package-date
+- subject
+- description
+
 ## Ideas about installed mash layout
 
 New ideas needed for separating the recipes repository and the
